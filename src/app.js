@@ -2,7 +2,7 @@
 const KEY="deocoach-africa-v1";
 let S={profile:{cur:"NGN"},sig:{},comp:{},yr:1,offer:{},deals:[],stage:null,fun:{},ch:{},per:{self:{},oth:{}},hrs:{},pm:3,sub:{niches:[],cities:[],cad:"daily"},sonar:{yr:3,niche:"all",city:null},plan:{}};
 try{const r=localStorage.getItem(KEY);if(r){const o=JSON.parse(r);S=Object.assign(S,o);if(typeof S.yr!=="number"||S.yr<1)S.yr=1;}}catch(e){}
-S.sub=Object.assign({niches:[],cities:[],cad:"daily"},S.sub);S.sonar=Object.assign({yr:3,niche:"all",city:null,power:true},S.sonar);S.plan=S.plan||{};
+S.sub=Object.assign({niches:[],cities:[],cad:"daily"},S.sub);S.sonar=Object.assign({yr:3,niche:"all",city:null,power:true},S.sonar);S.plan=S.plan||{};if(S.lookAuto){const ks=["royal","constellation","savannah","kente","adire","emerald","couture","ivory","aurora"];S.look=ks[(ks.indexOf(S.look)+1)%ks.length];}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}}
 function esc(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
 function num(v){const n=parseFloat(String(v??"").replace(/,/g,""));return isNaN(n)?0:n;}
@@ -14,6 +14,10 @@ function hashStr(s){let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt
 const nicheById=id=>NICHES.find(n=>n.id===id);
 const cityById=id=>CITIES.find(c=>c.id===id);
 
+const LOOKS={"royal": {"name": "Royal Horizon", "tag": "Navy night and old gold", "bg": "rgb(7,13,36)", "acc": "rgb(201,168,76)", "head": "See where coaching is going \u2014 and get there first."}, "constellation": {"name": "Constellation", "tag": "Gold light on a violet sky", "bg": "rgb(5,6,17)", "acc": "rgb(236,219,170)", "head": "Every coach has a star map. Find yours."}, "savannah": {"name": "Savannah Gold", "tag": "Dusk over the savannah", "bg": "rgb(24,13,8)", "acc": "rgb(232,164,64)", "head": "The future belongs to coaches who move early."}, "kente": {"name": "Kente Royale", "tag": "Bold gold, emerald and crimson", "bg": "rgb(8,8,8)", "acc": "rgb(245,192,32)", "head": "Bold coaches build Africa's future."}, "adire": {"name": "Adire Indigo", "tag": "Indigo cloth and silver", "bg": "rgb(9,15,46)", "acc": "rgb(204,218,255)", "head": "Read the patterns. Weave your future."}, "emerald": {"name": "Emerald Boardroom", "tag": "Private-bank calm", "bg": "rgb(10,30,25)", "acc": "rgb(216,192,134)", "head": "Coaching, examined with care."}, "couture": {"name": "Couture", "tag": "Fashion-magazine luxury", "bg": "rgb(10,10,10)", "acc": "rgb(234,100,30)", "head": "The art of the coaching business."}, "ivory": {"name": "Ivory Gallery", "tag": "Light, airy and gilded", "bg": "rgb(250,246,236)", "acc": "rgb(146,108,26)", "head": "Your gift, made visible and valuable."}, "aurora": {"name": "Aurora", "tag": "Northern lights and glass", "bg": "rgb(5,11,18)", "acc": "rgb(128,244,220)", "head": "Find the coach you were made to be."}};
+function applyLook(){const k=LOOKS[S.look]?S.look:"royal";document.documentElement.setAttribute("data-look",k);
+ const m=document.getElementById("lookmenu");if(m)m.innerHTML=`<div class="small" style="padding:4px 8px 8px">Choose your experience</div>`+Object.entries(LOOKS).map(([id,l])=>`<button class="${id===k?"on":""}" onclick="S.look='${id}';save();applyLook();render();document.getElementById('lookmenu').classList.remove('open')"><span class="sw" style="background:radial-gradient(circle at 35% 35%,${l.acc},${l.bg} 70%)"></span><span><b>${l.name}</b><span class="small">${l.tag}</span></span></button>`).join("")+`<button onclick="cycleLooks()"><span class="sw" style="background:conic-gradient(${Object.values(LOOKS).map(l=>l.acc).join(",")})"></span><span><b>Surprise me</b><span class="small">A new experience every visit</span></span></button>`;}
+function cycleLooks(){const ks=Object.keys(LOOKS);S.look=ks[(ks.indexOf(S.look)+1)%ks.length];S.lookAuto=true;save();applyLook();render();}
 /* ---------- engines ---------- */
 function signature(){const a=S.sig;if(Object.keys(a).length<SIG_ITEMS.length)return null;const sc={cat:0,str:0,lis:0,tea:0};SIG_ITEMS.forEach((it,i)=>sc[it[1]]+=a[i]||0);const o=Object.keys(sc).sort((x,y)=>sc[y]-sc[x]);return{sc,p:o[0],s:o[1]};}
 function compAvg(ids){const v=(ids||COMPS.map(c=>c[0])).map(i=>S.comp[i]||0).filter(x=>x>0);return v.length?v.reduce((a,b)=>a+b,0)/v.length:0;}
@@ -105,18 +109,18 @@ function plan(months){
 
 /* ---------- navigation ---------- */
 const VIEWS=[
- ["home","✦","Command Centre",""],
+ ["start","✧","Start here",""],["home","✦","Command Centre",""],
  ["atlas","◉","Horizon Atlas","Futures & opportunities"],["briefing","☼","Daily & weekly briefing","Futures & opportunities"],["minds","❖","City Minds & Culture","Futures & opportunities"],["opps","✉","Opportunity Desk","Futures & opportunities"],["evidence","▤","Evidence & insight feeds","Futures & opportunities"],
  ["profile","☺","My profile","Me"],["signature","✧","Coach Signature","Me"],["ladder","▲","Competency Ladder","Me"],
  ["niches","⌁","Niche Radar · 10 years","Money"],["income","₦","Capability to Income","Money"],
  ["brand","◈","Brand Compass","Brand"],["funnel","▽","Brand Funnel","Brand"],["stuck","➚","Stuck & growth plan","Brand"],
  ["toolkit","⚙","Client Toolkit","Grow"],["mentor","☯","Supervisor Desk","Grow"]];
-const NEW=["atlas","briefing","minds","evidence","opps"];
+const NEW=["start","atlas","briefing","minds","evidence","opps"];
 function doneMap(){return{profile:!!S.profile.name,signature:!!signature(),ladder:compAvg()>0,niches:!!S.profile.niche,income:S.deals.length>0,brand:S.stage!==null,funnel:!!funnel(),stuck:num(S.hrs.total)>0};}
 function updateChrome(){const d=doneMap();const cur=(location.hash||"#home").slice(1);let h="",grp="";
   VIEWS.forEach(v=>{if(v[3]&&v[3]!==grp){grp=v[3];h+=`<div class="grp">${grp}</div>`;}h+=`<button class="${cur===v[0]?"on":""}" onclick="location.hash='${v[0]}'"><span class="ic">${v[1]}</span>${v[2]}${d[v[0]]?'<span class="ok">✓</span>':NEW.includes(v[0])?'<span class="new">NEW</span>':""}</button>`;});
   document.getElementById("nav").innerHTML=h;document.getElementById("who").textContent=S.profile.name?`${S.profile.name}${S.profile.cityId&&cityById(S.profile.cityId)?" · "+cityById(S.profile.cityId).n:""}`:"";}
-function render(){stopGlobes();const cur=(location.hash||"#home").slice(1);const fn=V[cur]||V[{sonar:"atlas",cheques:"income"}[cur]]||V.home;document.getElementById("main").innerHTML=fn();updateChrome();if(AFTER[cur])AFTER[cur]();}
+function render(){stopGlobes();applyLook();const cur=(location.hash||"#home").slice(1);const fn=V[cur]||V[{sonar:"atlas",cheques:"income"}[cur]]||V.home;const mn=document.getElementById("main");mn.innerHTML=fn();mn.querySelectorAll("svg *").forEach(el=>["fill","stroke"].forEach(a=>{const v=el.getAttribute(a);if(v&&v.includes("var("))el.style[a]=v;}));updateChrome();if(AFTER[cur])AFTER[cur]();}
 window.addEventListener("hashchange",()=>{render();window.scrollTo(0,0);});
 const V={},AFTER={};
 
@@ -125,12 +129,13 @@ V.home=()=>{const sg=signature(),f=funnel(),top=nicheScores(S.yr)[0],by=deals(),
  const pct=Math.round(Object.values(d).filter(Boolean).length/Object.keys(d).length*100);const m=by[c]||{paid:0,pipe:0,fc:0};const b=briefing("daily");
  const lead=cityRank(5,"all")[0];
  return `<div class="card"><div class="hero"><div><div class="tag">DATA-DRIVEN COACHING ACROSS AFRICA</div>
- <h1>${S.profile.name?"Welcome, "+esc(S.profile.name.split(" ")[0])+".":"See where coaching is going — and get there first."}</h1>
+ <h1>${S.profile.name?"Welcome, "+esc(S.profile.name.split(" ")[0])+".":(LOOKS[S.look]||LOOKS.royal).head}</h1>
  <p class="lead">Sense where opportunities are rising across African cities, know what people there care about, read the culture, find live tenders and jobs, and turn your capabilities into income with a plan from 90 days to 5 years.</p>
- <div class="flex"><a class="btn" href="#atlas">Open Horizon Atlas</a><a class="btn ghost" href="#opps">Opportunities</a><a class="btn ghost" href="#briefing">Today's briefing</a><a class="btn ghost" href="#${!d.profile?"profile":!d.signature?"signature":!d.funnel?"funnel":"stuck"}">${pct<100?"Continue setup ("+pct+"%)":"My growth plan"}</a></div>
+ <div class="flex"><a class="btn" href="#start">Where do I start?</a><a class="btn ghost" href="#atlas">Horizon Atlas</a><a class="btn ghost" href="#opps">Opportunities</a><a class="btn ghost" href="#briefing">Today's briefing</a><a class="btn ghost" href="#${!d.profile?"profile":!d.signature?"signature":!d.funnel?"funnel":"stuck"}">${pct<100?"Continue setup ("+pct+"%)":"My growth plan"}</a></div>
  <p class="small" style="margin-top:12px">Strongest signal by Year 5: <b style="color:var(--teal)">${lead.c.n}</b> (${lead.s}/100 across its top niches).</p></div>
  <div class="globe-wrap"><div class="globe-hud">◉ Horizon · Year 5 · all niches</div><canvas id="heroGlobe" height="420"></canvas></div></div></div>
  <div class="grid g3">
+  <div class="stat"><div class="k">Activation Index</div><div class="v">${activation().idx}/100</div><div class="s"><a href="#start">See all 14 dimensions</a></div></div>
   <div class="stat"><div class="k">Coach signature</div><div class="v">${sg?STYLES[sg.p].name:"—"}</div><div class="s">${sg?"Secondary: "+STYLES[sg.s].name:'<a href="#signature">Take the 2-minute scan</a>'}</div></div>
   <div class="stat"><div class="k">Top niche · Year ${S.yr}</div><div class="v" style="font-size:1rem">${top.n}</div><div class="s">Fit ${top.score}/100</div></div>
   <div class="stat"><div class="k">Income (${c})</div><div class="v">${money(m.paid)}</div><div class="s">Pipeline ${money(m.pipe)} · forecast ${money(m.fc)}</div></div>
@@ -148,7 +153,7 @@ V.atlas=()=>{const s=S.sonar;const R=cityRank(s.yr,s.niche);const sel=s.city?cit
  <div class="grid g2"><div><label>Year ahead</label><div class="yearbar"><span class="yv">Year ${s.yr}</span><input type="range" min="1" max="10" value="${s.yr}" oninput="S.sonar.yr=+this.value;save();render()"></div></div>
  <div><label>Niche</label><select onchange="S.sonar.niche=this.value;save();render()"><option value="all">All niches (each city's strongest)</option>${NICHES.map(n=>`<option value="${n.id}" ${s.niche===n.id?"selected":""}>${n.n}</option>`).join("")}</select></div></div></div>
  <div class="sonar-layout"><div class="card" style="padding:10px"><div class="globe-wrap"><div class="globe-hud">◉ Horizon · Year ${s.yr} · ${nsel?esc(nsel.n):"all niches"}${sel?" · "+sel.n:""}</div>
-  <div class="zoombar"><button onclick="S.sonar.power=!S.sonar.power;save();render()" title="Power Centres on/off" style="${s.power?"background:#ff7a5a;color:#111a3d":""}">⚡</button><button onclick="playYears()" title="Play years 1–10">▶</button><button onclick="zoomAtlas(1.4)" title="Zoom in">+</button><button onclick="zoomAtlas(1/1.4)" title="Zoom out">−</button><button onclick="zoomAtlas(0);S.sonar.city=null;save();render()" title="Whole continent">⟲</button></div>
+  <div class="zoombar"><button onclick="S.sonar.power=!S.sonar.power;save();render()" title="Power Centres on/off" style="${s.power?"background:var(--quakeC);color:var(--onacc)":""}">⚡</button><button onclick="playYears()" title="Play years 1–10">▶</button><button onclick="zoomAtlas(1.4)" title="Zoom in">+</button><button onclick="zoomAtlas(1/1.4)" title="Zoom out">−</button><button onclick="zoomAtlas(0);S.sonar.city=null;save();render()" title="Whole continent">⟲</button></div>
   <canvas id="atlasGlobe" height="580"></canvas></div>
   <p class="small" style="padding:0 10px">${s.power?"⚡ Power Centres on: red shockwaves mark clusters where <b>your</b> capabilities are worth most; magnitude grows with power. ":""}Ring size = opportunity score. Gold = strongest; teal = fastest rising. Scores are DeoCoach scenario estimates, sharpened by your field intelligence.</p></div>
  <div class="card"><h2>Opportunity ranking · Year ${s.yr}</h2><input placeholder="Find a city…" oninput="filterRank(this.value)" style="margin-bottom:8px">${R.map((r,i)=>`<div class="rank ${sel&&sel.id===r.c.id?"on":""}" data-n="${r.c.n.toLowerCase()} ${r.c.c.toLowerCase()}" onclick="pickCity('${r.c.id}')"><span class="small">${i+1}</span><span><b>${r.c.n}</b> <span class="small">${r.c.c}</span></span><div class="bar ${r.g>=Math.max(...R.map(x=>x.g))*0.75?"teal":""}"><i style="width:${r.s}%"></i></div><span class="small">${r.s}${r.g>0?" ↑"+r.g:""}</span></div>`).join("")}</div></div>
@@ -221,18 +226,18 @@ V.ladder=()=>{const set=COMPS.filter(c=>S.comp[c[0]]);const gaps=[...set].sort((
 
 /* ---------- Niche Radar: 10-year panorama ---------- */
 V.niches=()=>{const t=S.yr;const L=nicheScores(t);const top6=L.slice(0,6);
- const W=760,H=260,px=x=>40+(x-1)*(W-60)/9,py=v=>H-28-(v/10)*(H-50);const cols=["#ecd593","#3dd6c6","#5b9bff","#f0a73a","#45c486","#e58fd0"];
- const svg=`<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto">${[0,2.5,5,7.5,10].map(v=>`<line x1="40" x2="${W-20}" y1="${py(v)}" y2="${py(v)}" stroke="rgba(255,255,255,.08)"/><text x="30" y="${py(v)+4}" fill="#a7aec6" font-size="10" text-anchor="end">${v}</text>`).join("")}
-  ${[1,2,3,4,5,6,7,8,9,10].map(x=>`<text x="${px(x)}" y="${H-8}" fill="${x===t?"#ecd593":"#a7aec6"}" font-size="11" text-anchor="middle" font-weight="${x===t?700:400}">Y${x}</text>`).join("")}
-  <line x1="${px(t)}" x2="${px(t)}" y1="12" y2="${H-26}" stroke="#C9A84C" stroke-dasharray="4 4"/>
+ const W=760,H=260,px=x=>40+(x-1)*(W-60)/9,py=v=>H-28-(v/10)*(H-50);const cols=["var(--gold2)","var(--teal)","var(--blue)","var(--amber)","var(--green)","var(--pink)"];
+ const svg=`<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto">${[0,2.5,5,7.5,10].map(v=>`<line x1="40" x2="${W-20}" y1="${py(v)}" y2="${py(v)}" stroke="rgba(var(--tint),.08)"/><text x="30" y="${py(v)+4}" fill="var(--mute)" font-size="10" text-anchor="end">${v}</text>`).join("")}
+  ${[1,2,3,4,5,6,7,8,9,10].map(x=>`<text x="${px(x)}" y="${H-8}" fill="${x===t?"var(--gold2)":"var(--mute)"}" font-size="11" text-anchor="middle" font-weight="${x===t?700:400}">Y${x}</text>`).join("")}
+  <line x1="${px(t)}" x2="${px(t)}" y1="12" y2="${H-26}" stroke="var(--gold)" stroke-dasharray="4 4"/>
   ${top6.map((n,i)=>`<polyline fill="none" stroke="${cols[i]}" stroke-width="2.5" points="${[1,2,3,4,5,6,7,8,9,10].map(x=>px(x)+","+py(curve(n,x))).join(" ")}"/><circle cx="${px(t)}" cy="${py(curve(n,t))}" r="4.5" fill="${cols[i]}"/>`).join("")}</svg>`;
- const heat=v=>`rgba(201,168,76,${(0.08+v/10*0.8).toFixed(2)})`;
+ const heat=v=>`rgba(var(--acc),${(0.08+v/10*0.8).toFixed(2)})`;
  return `<div class="card"><h1>Niche Radar · 10-year panorama</h1><p class="lead">Which coaching niches pay, who pays, and how that changes from Year 1 to Year 10. Fit blends the market outlook with your signature and competencies.</p>
  <div class="yearbar"><span class="yv">Year ${t}</span><input type="range" min="1" max="10" value="${t}" oninput="S.yr=+this.value;save();render()" style="flex:1"></div>
  <div class="flex" style="margin-top:6px">${top6.map((n,i)=>`<span class="small"><span style="color:${cols[i]}">●</span> ${n.n}</span>`).join("")}</div>${svg}
  <div class="note">Year 1–2 is mostly paid by individuals, Years 3–5 increasingly by institutions, Years 6–10 by systems: national programmes, platforms and multi-country contracts. Outlooks are DeoCoach planning estimates.</div></div>
  <div class="card"><h2>Panorama heat map — market outlook by year</h2><div style="overflow-x:auto"><table class="heat"><tr><th style="min-width:220px">Niche</th>${[1,2,3,4,5,6,7,8,9,10].map(x=>`<th style="text-align:center;${x===t?"color:#fff":""}">Y${x}</th>`).join("")}</tr>
- ${NICHES.map(n=>`<tr><td style="padding:4px 6px;font-size:.8rem;text-align:left">${n.n}</td>${[1,2,3,4,5,6,7,8,9,10].map(x=>{const v=curve(n,x);return `<td style="background:${heat(v)};${x===t?"outline:2px solid #ecd593":""}">${v.toFixed(0)}</td>`}).join("")}</tr>`).join("")}</table></div></div>
+ ${NICHES.map(n=>`<tr><td style="padding:4px 6px;font-size:.8rem;text-align:left">${n.n}</td>${[1,2,3,4,5,6,7,8,9,10].map(x=>{const v=curve(n,x);return `<td style="background:${heat(v)};${x===t?"outline:2px solid var(--gold2)":""}">${v.toFixed(0)}</td>`}).join("")}</tr>`).join("")}</table></div></div>
  <div class="card"><h2>Your fit · Year ${t}</h2><table><tr><th>#</th><th>Niche</th><th>Fit</th><th>Who pays</th><th>Fee</th><th></th></tr>
  ${L.map((n,i)=>`<tr><td>${i+1}</td><td><b>${n.n}</b></td><td style="width:120px"><div class="bar"><i style="width:${n.score}%"></i></div><span class="small">${n.score}/100</span></td><td class="small">${n.payer}</td><td>${"●".repeat(n.fee)}${"○".repeat(3-n.fee)}</td><td><button class="btn sm ${S.profile.niche===n.id?"":"ghost"}" onclick="setv('profile.niche','${n.id}',true)">${S.profile.niche===n.id?"My niche":"Choose"}</button></td></tr>`).join("")}</table></div>`;};
 

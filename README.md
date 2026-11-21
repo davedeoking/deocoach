@@ -1,6 +1,6 @@
-# DeoCoach — Edition for African Coaches (v0.3)
+# DeoCoach — Edition for African Coaches (v0.4)
 
-Capability to income · horizon foresight · cultural intelligence. Single-page app built from `src/` with `python3 src/build.py`. v0.3: Horizon Atlas (zoomable 10-year foresight globe of 30 cities, fly-to-city deployment engine, cultural intelligence, field intelligence that learns, City Analyst AI), Opportunity Desk (live World Bank/ReliefWeb/Adzuna search, portals, email alerts). v0.2 added, daily/weekly briefings with insight feeds, City Minds, Evidence Bank, a 10-year Niche Radar panorama and growth plans from 90 days to 5 years in 3-month steps.
+Capability to income · horizon foresight · cultural intelligence. v0.4: nine switchable luxury Experiences (Royal Horizon, Constellation, Savannah Gold, Kente Royale, Adire Indigo, Emerald Boardroom, Couture, Ivory Gallery, Aurora), Start here with 8 guided questions (where do I start, where is my money, which city, why am I not selling…), Coach X-Ray (8 layers, borrowed from the DeoSales Sales X-Ray), Activation Index (14 dimensions). Single-page app built from `src/` with `python3 src/build.py`. v0.3: Horizon Atlas (zoomable 10-year foresight globe of 30 cities, fly-to-city deployment engine, cultural intelligence, field intelligence that learns, City Analyst AI), Opportunity Desk (live World Bank/ReliefWeb/Adzuna search, portals, email alerts). v0.2 added, daily/weekly briefings with insight feeds, City Minds, Evidence Bank, a 10-year Niche Radar panorama and growth plans from 90 days to 5 years in 3-month steps.
 
 Modules:
 
