@@ -129,7 +129,7 @@ V.home=()=>{const sg=signature(),f=funnel(),top=nicheScores(S.yr)[0],by=deals(),
  <p class="lead">Sense where opportunities are rising across African cities, know what people there care about, read the culture, find live tenders and jobs, and turn your capabilities into income with a plan from 90 days to 5 years.</p>
  <div class="flex"><a class="btn" href="#atlas">Open Horizon Atlas</a><a class="btn ghost" href="#opps">Opportunities</a><a class="btn ghost" href="#briefing">Today's briefing</a><a class="btn ghost" href="#${!d.profile?"profile":!d.signature?"signature":!d.funnel?"funnel":"stuck"}">${pct<100?"Continue setup ("+pct+"%)":"My growth plan"}</a></div>
  <p class="small" style="margin-top:12px">Strongest signal by Year 5: <b style="color:var(--teal)">${lead.c.n}</b> (${lead.s}/100 across its top niches).</p></div>
- <div class="globe-wrap"><div class="globe-hud">◉ Horizon scan · Year 5 · all niches</div><canvas id="heroGlobe" height="420"></canvas></div></div></div>
+ <div class="globe-wrap"><div class="globe-hud">◉ Horizon · Year 5 · all niches</div><canvas id="heroGlobe" height="420"></canvas></div></div></div>
  <div class="grid g3">
   <div class="stat"><div class="k">Coach signature</div><div class="v">${sg?STYLES[sg.p].name:"—"}</div><div class="s">${sg?"Secondary: "+STYLES[sg.s].name:'<a href="#signature">Take the 2-minute scan</a>'}</div></div>
   <div class="stat"><div class="k">Top niche · Year ${S.yr}</div><div class="v" style="font-size:1rem">${top.n}</div><div class="s">Fit ${top.score}/100</div></div>
@@ -147,7 +147,7 @@ V.atlas=()=>{const s=S.sonar;const R=cityRank(s.yr,s.niche);const sel=s.city?cit
  return `<div class="card"><h1>Horizon Atlas</h1><p class="lead">A panoramic view of where coaching opportunity is likely to rise across Africa over 10 years. Drag to turn the globe, scroll or use + and − to zoom, and tap a city: the engine flies in and deploys a plan for you.</p>
  <div class="grid g2"><div><label>Year ahead</label><div class="yearbar"><span class="yv">Year ${s.yr}</span><input type="range" min="1" max="10" value="${s.yr}" oninput="S.sonar.yr=+this.value;save();render()"></div></div>
  <div><label>Niche</label><select onchange="S.sonar.niche=this.value;save();render()"><option value="all">All niches (each city's strongest)</option>${NICHES.map(n=>`<option value="${n.id}" ${s.niche===n.id?"selected":""}>${n.n}</option>`).join("")}</select></div></div></div>
- <div class="sonar-layout"><div class="card" style="padding:10px"><div class="globe-wrap"><div class="globe-hud">◉ Horizon scan · Year ${s.yr} · ${nsel?esc(nsel.n):"all niches"}${sel?" · "+sel.n:""}</div>
+ <div class="sonar-layout"><div class="card" style="padding:10px"><div class="globe-wrap"><div class="globe-hud">◉ Horizon · Year ${s.yr} · ${nsel?esc(nsel.n):"all niches"}${sel?" · "+sel.n:""}</div>
   <div class="zoombar"><button onclick="zoomAtlas(1.4)" title="Zoom in">+</button><button onclick="zoomAtlas(1/1.4)" title="Zoom out">−</button><button onclick="zoomAtlas(0);S.sonar.city=null;save();render()" title="Whole continent">⟲</button></div>
   <canvas id="atlasGlobe" height="580"></canvas></div>
   <p class="small" style="padding:0 10px">Ring size = opportunity score. Gold = strongest; teal = fastest rising. Scores are DeoCoach scenario estimates, sharpened by your field intelligence.</p></div>

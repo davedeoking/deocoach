@@ -503,7 +503,7 @@ V.home=()=>{const sg=signature(),f=funnel(),top=nicheScores(S.yr)[0],by=deals(),
  <p class="lead">Sense where opportunities are rising across African cities, know what people there care about, read the culture, find live tenders and jobs, and turn your capabilities into income with a plan from 90 days to 5 years.</p>
  <div class="flex"><a class="btn" href="#atlas">Open Horizon Atlas</a><a class="btn ghost" href="#opps">Opportunities</a><a class="btn ghost" href="#briefing">Today's briefing</a><a class="btn ghost" href="#${!d.profile?"profile":!d.signature?"signature":!d.funnel?"funnel":"stuck"}">${pct<100?"Continue setup ("+pct+"%)":"My growth plan"}</a></div>
  <p class="small" style="margin-top:12px">Strongest signal by Year 5: <b style="color:var(--teal)">${lead.c.n}</b> (${lead.s}/100 across its top niches).</p></div>
- <div class="globe-wrap"><div class="globe-hud">◉ Horizon scan · Year 5 · all niches</div><canvas id="heroGlobe" height="420"></canvas></div></div></div>
+ <div class="globe-wrap"><div class="globe-hud">◉ Horizon · Year 5 · all niches</div><canvas id="heroGlobe" height="420"></canvas></div></div></div>
  <div class="grid g3">
   <div class="stat"><div class="k">Coach signature</div><div class="v">${sg?STYLES[sg.p].name:"—"}</div><div class="s">${sg?"Secondary: "+STYLES[sg.s].name:'<a href="#signature">Take the 2-minute scan</a>'}</div></div>
   <div class="stat"><div class="k">Top niche · Year ${S.yr}</div><div class="v" style="font-size:1rem">${top.n}</div><div class="s">Fit ${top.score}/100</div></div>
@@ -521,7 +521,7 @@ V.atlas=()=>{const s=S.sonar;const R=cityRank(s.yr,s.niche);const sel=s.city?cit
  return `<div class="card"><h1>Horizon Atlas</h1><p class="lead">A panoramic view of where coaching opportunity is likely to rise across Africa over 10 years. Drag to turn the globe, scroll or use + and − to zoom, and tap a city: the engine flies in and deploys a plan for you.</p>
  <div class="grid g2"><div><label>Year ahead</label><div class="yearbar"><span class="yv">Year ${s.yr}</span><input type="range" min="1" max="10" value="${s.yr}" oninput="S.sonar.yr=+this.value;save();render()"></div></div>
  <div><label>Niche</label><select onchange="S.sonar.niche=this.value;save();render()"><option value="all">All niches (each city's strongest)</option>${NICHES.map(n=>`<option value="${n.id}" ${s.niche===n.id?"selected":""}>${n.n}</option>`).join("")}</select></div></div></div>
- <div class="sonar-layout"><div class="card" style="padding:10px"><div class="globe-wrap"><div class="globe-hud">◉ Horizon scan · Year ${s.yr} · ${nsel?esc(nsel.n):"all niches"}${sel?" · "+sel.n:""}</div>
+ <div class="sonar-layout"><div class="card" style="padding:10px"><div class="globe-wrap"><div class="globe-hud">◉ Horizon · Year ${s.yr} · ${nsel?esc(nsel.n):"all niches"}${sel?" · "+sel.n:""}</div>
   <div class="zoombar"><button onclick="zoomAtlas(1.4)" title="Zoom in">+</button><button onclick="zoomAtlas(1/1.4)" title="Zoom out">−</button><button onclick="zoomAtlas(0);S.sonar.city=null;save();render()" title="Whole continent">⟲</button></div>
   <canvas id="atlasGlobe" height="580"></canvas></div>
   <p class="small" style="padding:0 10px">Ring size = opportunity score. Gold = strongest; teal = fastest rising. Scores are DeoCoach scenario estimates, sharpened by your field intelligence.</p></div>
@@ -779,13 +779,10 @@ function startGlobe(id,o){
       ctx.fillStyle=sel?"rgba(61,214,198,.22)":af?"rgba(201,168,76,.13)":"rgba(255,255,255,.035)";ctx.fill();
       ctx.strokeStyle=sel?"rgba(61,214,198,.9)":af?"rgba(236,213,147,.55)":"rgba(255,255,255,.09)";ctx.lineWidth=sel?1.4:af?.7:.5;ctx.stroke();});
     ctx.beginPath();path({type:"Sphere"});ctx.strokeStyle="rgba(61,214,198,.35)";ctx.lineWidth=1.2;ctx.stroke();
-    const ctr=proj([20,2])||[W/2,H/2];const ang=(t*.9)%(Math.PI*2),rad=Math.max(W,H)*1.2;
-    for(let i=0;i<24;i++){const a0=ang-i*.025,a1=ang-(i+1)*.025;ctx.beginPath();ctx.moveTo(ctr[0],ctr[1]);ctx.arc(ctr[0],ctr[1],rad,a1,a0);ctx.closePath();ctx.fillStyle=`rgba(61,214,198,${.09*(1-i/24)})`;ctx.fill();}
-    ctx.beginPath();ctx.moveTo(ctr[0],ctr[1]);ctx.lineTo(ctr[0]+Math.cos(ang)*rad,ctr[1]+Math.sin(ang)*rad);ctx.strokeStyle="rgba(61,214,198,.5)";ctx.lineWidth=1.1;ctx.stroke();
-    pts=[];const centre=[-st.rot[0],-st.rot[1]];
+        pts=[];const centre=[-st.rot[0],-st.rot[1]];
     R.forEach(r=>{if(d3g.geoDistance([r.c.lon,r.c.lat],centre)>=Math.PI/2)return;const p=proj([r.c.lon,r.c.lat]);if(!p)return;const x=p[0],y=p[1];if(x<-20||y<-20||x>W+20||y>H+20)return;pts.push({...r,x,y});
       const rise=r.g>=gmax*.75,col=rise?"61,214,198":"236,213,147";const r0=(2.5+r.s/14)*Math.min(2,Math.sqrt(st.k));const ph=(hashStr(r.c.id)%100)/100;
-      let ca=Math.atan2(y-ctr[1],x-ctr[0]);if(ca<0)ca+=Math.PI*2;let d=ang-ca;if(d<0)d+=Math.PI*2;const ping=d<.6?1-d/.6:0;
+      const ping=0;
       const k=((t*.6+ph)%1);ctx.beginPath();ctx.arc(x,y,r0+k*r0*2.6,0,Math.PI*2);ctx.strokeStyle=`rgba(${col},${(1-k)*.55})`;ctx.lineWidth=1.3;ctx.stroke();
       const gr=ctx.createRadialGradient(x,y,0,x,y,r0*2.2+ping*8);gr.addColorStop(0,`rgba(${col},.85)`);gr.addColorStop(1,`rgba(${col},0)`);ctx.beginPath();ctx.arc(x,y,r0*2.2+ping*8,0,Math.PI*2);ctx.fillStyle=gr;ctx.fill();
       ctx.beginPath();ctx.arc(x,y,2.4,0,Math.PI*2);ctx.fillStyle="#fff";ctx.fill();

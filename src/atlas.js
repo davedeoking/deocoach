@@ -26,13 +26,10 @@ function startGlobe(id,o){
       ctx.fillStyle=sel?"rgba(61,214,198,.22)":af?"rgba(201,168,76,.13)":"rgba(255,255,255,.035)";ctx.fill();
       ctx.strokeStyle=sel?"rgba(61,214,198,.9)":af?"rgba(236,213,147,.55)":"rgba(255,255,255,.09)";ctx.lineWidth=sel?1.4:af?.7:.5;ctx.stroke();});
     ctx.beginPath();path({type:"Sphere"});ctx.strokeStyle="rgba(61,214,198,.35)";ctx.lineWidth=1.2;ctx.stroke();
-    const ctr=proj([20,2])||[W/2,H/2];const ang=(t*.9)%(Math.PI*2),rad=Math.max(W,H)*1.2;
-    for(let i=0;i<24;i++){const a0=ang-i*.025,a1=ang-(i+1)*.025;ctx.beginPath();ctx.moveTo(ctr[0],ctr[1]);ctx.arc(ctr[0],ctr[1],rad,a1,a0);ctx.closePath();ctx.fillStyle=`rgba(61,214,198,${.09*(1-i/24)})`;ctx.fill();}
-    ctx.beginPath();ctx.moveTo(ctr[0],ctr[1]);ctx.lineTo(ctr[0]+Math.cos(ang)*rad,ctr[1]+Math.sin(ang)*rad);ctx.strokeStyle="rgba(61,214,198,.5)";ctx.lineWidth=1.1;ctx.stroke();
-    pts=[];const centre=[-st.rot[0],-st.rot[1]];
+        pts=[];const centre=[-st.rot[0],-st.rot[1]];
     R.forEach(r=>{if(d3g.geoDistance([r.c.lon,r.c.lat],centre)>=Math.PI/2)return;const p=proj([r.c.lon,r.c.lat]);if(!p)return;const x=p[0],y=p[1];if(x<-20||y<-20||x>W+20||y>H+20)return;pts.push({...r,x,y});
       const rise=r.g>=gmax*.75,col=rise?"61,214,198":"236,213,147";const r0=(2.5+r.s/14)*Math.min(2,Math.sqrt(st.k));const ph=(hashStr(r.c.id)%100)/100;
-      let ca=Math.atan2(y-ctr[1],x-ctr[0]);if(ca<0)ca+=Math.PI*2;let d=ang-ca;if(d<0)d+=Math.PI*2;const ping=d<.6?1-d/.6:0;
+      const ping=0;
       const k=((t*.6+ph)%1);ctx.beginPath();ctx.arc(x,y,r0+k*r0*2.6,0,Math.PI*2);ctx.strokeStyle=`rgba(${col},${(1-k)*.55})`;ctx.lineWidth=1.3;ctx.stroke();
       const gr=ctx.createRadialGradient(x,y,0,x,y,r0*2.2+ping*8);gr.addColorStop(0,`rgba(${col},.85)`);gr.addColorStop(1,`rgba(${col},0)`);ctx.beginPath();ctx.arc(x,y,r0*2.2+ping*8,0,Math.PI*2);ctx.fillStyle=gr;ctx.fill();
       ctx.beginPath();ctx.arc(x,y,2.4,0,Math.PI*2);ctx.fillStyle="#fff";ctx.fill();
