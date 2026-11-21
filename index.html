@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0D1B4B">
+<link rel="manifest" href="/manifest.json">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<title>DeoCoach — Edition for African Coaches</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--navy:#0D1B4B;--navy2:#16275f;--gold:#C9A84C;--gold2:#e6cf8a;--ink:#1b2033;--mute:#5d6478;--bg:#f6f3ea;--card:#fff;--line:#e4dcc6;--green:#2e8b57;--amber:#d98e04;--blue:#2f6fd6;--grey:#a9adb8;--red:#c0392b}
+*{box-sizing:border-box}
+body{margin:0;font-family:Inter,system-ui,sans-serif;color:var(--ink);background:var(--bg);font-size:15px;line-height:1.5}
+h1,h2,h3{font-family:Cinzel,Georgia,serif;color:var(--navy);margin:0 0 .4em}
+h1{font-size:1.6rem}h2{font-size:1.25rem}h3{font-size:1rem;font-family:Inter,sans-serif;font-weight:700}
+a{color:var(--navy2)}
+.top{background:var(--navy);color:#fff;padding:14px 20px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.crest{width:42px;height:42px;border-radius:50%;background:radial-gradient(circle at 30% 30%,var(--gold2),var(--gold));display:grid;place-items:center;font-family:Cinzel;color:var(--navy);font-weight:700}
+.top .t1{font-family:Cinzel;font-size:1.2rem;color:var(--gold2)}
+.top .t2{font-size:.8rem;opacity:.85}
+.top .who{margin-left:auto;font-size:.85rem;opacity:.9}
+.wrap{display:flex;min-height:calc(100vh - 70px)}
+nav{width:240px;background:#fff;border-right:1px solid var(--line);padding:12px 8px;flex-shrink:0}
+nav button{display:flex;align-items:center;gap:10px;width:100%;text-align:left;border:0;background:none;padding:9px 12px;border-radius:10px;font:inherit;font-size:.9rem;color:var(--ink);cursor:pointer}
+nav button:hover{background:#f4eedb}
+nav button.on{background:var(--navy);color:#fff}
+nav .num{width:22px;height:22px;border-radius:50%;background:#efe6cc;color:var(--navy);display:grid;place-items:center;font-size:.72rem;font-weight:700;flex-shrink:0}
+nav button.on .num{background:var(--gold);color:var(--navy)}
+nav .ok{margin-left:auto;color:var(--green);font-size:.8rem}
+nav .grp{font-size:.7rem;text-transform:uppercase;letter-spacing:.08em;color:var(--mute);padding:12px 12px 4px}
+main{flex:1;padding:24px;max-width:1100px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px;margin-bottom:18px}
+.lead{color:var(--mute);margin:.2em 0 1em}
+.grid{display:grid;gap:14px}
+.g2{grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+.g3{grid-template-columns:repeat(auto-fit,minmax(210px,1fr))}
+.g4{grid-template-columns:repeat(auto-fit,minmax(160px,1fr))}
+label{font-size:.82rem;font-weight:600;color:var(--mute);display:block;margin-bottom:4px}
+input,select,textarea{width:100%;padding:9px 11px;border:1px solid var(--line);border-radius:10px;font:inherit;background:#fffdf7}
+input:focus,select:focus{outline:2px solid var(--gold);border-color:var(--gold)}
+.btn{background:var(--navy);color:#fff;border:0;border-radius:10px;padding:10px 16px;font:inherit;font-weight:600;cursor:pointer}
+.btn.gold{background:var(--gold);color:var(--navy)}
+.btn.ghost{background:none;color:var(--navy);border:1px solid var(--navy)}
+.btn.sm{padding:6px 10px;font-size:.82rem}
+.stat{background:linear-gradient(160deg,var(--navy),var(--navy2));color:#fff;border-radius:14px;padding:16px}
+.stat .k{font-size:.75rem;text-transform:uppercase;letter-spacing:.06em;color:var(--gold2)}
+.stat .v{font-family:Cinzel;font-size:1.3rem;margin:4px 0}
+.stat .s{font-size:.8rem;opacity:.85}
+.stat a{color:var(--gold2)}
+.pill{display:inline-block;padding:2px 10px;border-radius:99px;font-size:.75rem;font-weight:600;background:#efe6cc;color:var(--navy)}
+.likert{display:flex;gap:6px;flex-wrap:wrap}
+.likert button{width:38px;height:34px;border:1px solid var(--line);border-radius:8px;background:#fffdf7;cursor:pointer;font:inherit}
+.likert button.on{background:var(--gold);border-color:var(--gold);color:var(--navy);font-weight:700}
+.q{padding:10px 0;border-bottom:1px dashed var(--line);display:flex;gap:12px;justify-content:space-between;align-items:center;flex-wrap:wrap}
+.bar{height:10px;background:#efe6cc;border-radius:99px;overflow:hidden}
+.bar>i{display:block;height:100%;background:var(--gold)}
+.bar.navy>i{background:var(--navy)}
+table{width:100%;border-collapse:collapse;font-size:.88rem}
+th,td{padding:8px 6px;border-bottom:1px solid var(--line);text-align:left;vertical-align:middle}
+th{font-size:.75rem;text-transform:uppercase;letter-spacing:.05em;color:var(--mute)}
+td input,td select{padding:6px 8px}
+.seg{display:inline-flex;border:1px solid var(--navy);border-radius:10px;overflow:hidden}
+.seg button{border:0;background:#fff;padding:8px 14px;font:inherit;cursor:pointer;color:var(--navy)}
+.seg button.on{background:var(--navy);color:#fff}
+.funnel .row{display:grid;grid-template-columns:28px 150px 1fr 110px 90px;gap:10px;align-items:center;padding:6px 0}
+.funnel .fb{height:26px;border-radius:6px;background:var(--navy);min-width:4px;transition:width .3s}
+.funnel .row.leak .fb{background:var(--red)}
+.funnel .row.leak{background:#fdecea;border-radius:8px}
+.tile{border-radius:12px;padding:12px;color:#fff;font-size:.85rem}
+.tile b{display:block;font-size:.95rem}
+.st-selling{background:var(--green)}.st-leaking{background:var(--amber)}.st-hidden{background:var(--blue)}.st-absent{background:var(--grey)}
+.note{background:#fff8e3;border-left:4px solid var(--gold);padding:10px 14px;border-radius:8px;font-size:.88rem;margin:10px 0}
+.warn{background:#fdecea;border-left:4px solid var(--red)}
+.trap{border:1px solid var(--line);border-radius:12px;padding:12px;margin-bottom:10px}
+.trap.hit{border-color:var(--red);background:#fff6f5}
+.phase{border-left:4px solid var(--gold);padding:6px 14px;margin:10px 0}
+.stagecard{border:1px solid var(--line);border-radius:12px;padding:12px;cursor:pointer;background:#fffdf7}
+.stagecard.on{border:2px solid var(--gold);background:#fff8e3}
+.ladder{display:flex;gap:4px;flex-wrap:wrap;margin:8px 0}
+.ladder span{flex:1;min-width:80px;text-align:center;padding:8px 4px;border-radius:8px;background:#efe6cc;font-size:.78rem;font-weight:600;color:var(--navy)}
+.ladder span.done{background:var(--navy);color:#fff}
+.ladder span.here{background:var(--gold);color:var(--navy);outline:2px solid var(--navy)}
+footer{font-size:.78rem;color:var(--mute);padding:20px 24px 40px;border-top:1px solid var(--line);background:#fff}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--navy);color:#fff;padding:10px 18px;border-radius:10px;opacity:0;transition:.3s;pointer-events:none;z-index:9}
+.toast.show{opacity:1}
+.flex{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.right{margin-left:auto}
+.small{font-size:.8rem;color:var(--mute)}
+@media(max-width:820px){.wrap{flex-direction:column}nav{width:100%;display:flex;overflow-x:auto;border-right:0;border-bottom:1px solid var(--line);padding:6px}nav button{width:auto;white-space:nowrap}nav .grp,nav .ok{display:none}main{padding:14px}.funnel .row{grid-template-columns:22px 1fr 90px;}.funnel .row .fbw,.funnel .row .hl{display:none}.top .who{margin-left:0}}
+</style>
+</head>
+<body>
+<div class="top">
+  <div class="crest">D</div>
+  <div><div class="t1">DeoCoach</div><div class="t2">Edition for African Coaches · From competencies to cheques</div></div>
+  <div class="who" id="who"></div>
+</div>
+<div class="wrap">
+  <nav id="nav"></nav>
+  <main id="main"></main>
+</div>
+<footer>
+  <b>Beta development tool.</b> DeoCoach is an unvalidated development and planning tool for coaches. It is not a psychological, clinical or selection instrument and must not be used to hire, screen or select people. Niche and market scores are DeoCoach planning estimates, not audited market data. Competency areas are informed by, not copied from, recognised professional coaching frameworks. Independent tool; not affiliated with any coaching association or federation. Your answers stay in this browser on this device.<br><br>
+  Compiled &amp; Designed by Coach David Adeoye Abodunrin · DEO GRATIA — Making Greatness Common
+</footer>
+<div class="toast" id="toast"></div>
+<script>
+/* ---------- data ---------- */
+const CUR={NGN:'₦',GBP:'£',USD:'$'};
+const SIG_ITEMS=[
+ ['I love helping people break through to a bold new level, fast','cat'],
+ ['Clients leave my sessions fired up and ready to act','cat'],
+ ['I bring challenge when someone is playing small','cat'],
+ ['I turn messy goals into clear plans and milestones','str'],
+ ['I track client progress with numbers and evidence','str'],
+ ['I think naturally in systems, strategy and results','str'],
+ ['People tell me things they have never told anyone','lis'],
+ ['I notice what is not being said','lis'],
+ ['I am comfortable with silence and let clients find their own answers','lis'],
+ ['I enjoy teaching tools, frameworks and skills','tea'],
+ ['I draw on my own journey to show people the way','tea'],
+ ['I like building people step by step over a long season','tea']];
+const STYLES={
+ cat:{name:'The Catalyst',fit:'Founders, sales teams, people at a turning point',sell:'Breakthrough intensives, sales & performance coaching, keynotes',blind:'You can push before the client is ready. Pair your energy with deep listening.'},
+ str:{name:'The Strategist',fit:'Managers, executives, SMEs, career changers',sell:'Leadership programmes, career strategy, business growth coaching',blind:'You can over-plan. Leave room for meaning, emotion and identity.'},
+ lis:{name:'The Mirror',fit:'Leaders in transition, executives, faith and life coaching',sell:'Executive 1:1, transition coaching, retreats and reflective programmes',blind:'You can under-sell your results. Make outcomes visible and measurable.'},
+ tea:{name:'The Mentor-Builder',fit:'Graduates, young professionals, emerging leaders, teams',sell:'Cohort programmes, employability, manager development, academies',blind:'You can drift into telling. Keep the client doing the thinking.'}};
+const COMPS=[
+ ['eth','Ethics & boundaries'],['pres','Coaching presence'],['lis','Deep listening'],['q','Powerful questioning'],['goal','Agreements & goal setting'],
+ ['acc','Accountability & progress'],['data','Evidence & measurement'],['biz','Selling & business'],['brand','Brand & visibility'],['ai','Digital & AI tools']];
+const LEVELS=['Not set','L1 Aware','L2 Practising','L3 Competent','L4 Advanced','L5 Master'];
+const NICHES=[
+ {id:'career',n:'Career transition & graduate employability',y:[9,8,7],payer:'Individuals, parents, universities, donor youth programmes',fee:1,st:['tea','str'],need:['goal','acc']},
+ {id:'global',n:'Global careers & relocation',y:[8,8,6],payer:'Individuals, diaspora families (paid in £/$)',fee:2,st:['str','tea'],need:['goal','data']},
+ {id:'mgr',n:'Manager & leadership development',y:[8,9,9],payer:'HR / L&D budgets in banks, telcos, fintech, oil & gas',fee:2,st:['str','tea'],need:['goal','data','biz']},
+ {id:'exec',n:'Executive & C-suite coaching',y:[7,8,9],payer:'CEOs, boards, HR directors',fee:3,st:['lis','str'],need:['pres','q','eth']},
+ {id:'sales',n:'Sales & business development',y:[8,8,8],payer:'Sales leaders, SMEs, distributors',fee:2,st:['cat','str'],need:['acc','biz','data']},
+ {id:'money',n:'Money & financial behaviour',y:[7,8,8],payer:'Individuals, banks & fintechs (staff wellness)',fee:1,st:['str','tea'],need:['acc','data']},
+ {id:'sme',n:'SME founders & business growth',y:[8,8,8],payer:'Founders, accelerators, banks\' SME desks',fee:2,st:['cat','str'],need:['biz','goal']},
+ {id:'faith',n:'Faith & ministry leadership',y:[7,7,7],payer:'Churches, ministries, faith networks',fee:1,st:['lis','tea'],need:['pres','eth']},
+ {id:'youth',n:'Youth & student coaching',y:[6,7,8],payer:'Parents, schools, foundations',fee:1,st:['tea','cat'],need:['eth','goal']},
+ {id:'ai',n:'AI-readiness & future of work',y:[5,8,10],payer:'Corporates, government, professional bodies',fee:3,st:['str','cat'],need:['ai','data']},
+ {id:'gov',n:'Public-sector & government leadership',y:[4,7,9],payer:'State governments, agencies, development partners',fee:3,st:['str','lis'],need:['data','eth','biz']},
+ {id:'family',n:'Family business & succession',y:[5,7,9],payer:'Family business owners, boards',fee:3,st:['lis','str'],need:['q','eth']},
+ {id:'women',n:'Women in leadership',y:[7,8,8],payer:'Corporates, women\'s networks, donors',fee:2,st:['tea','lis'],need:['pres','goal']},
+ {id:'coach',n:'Coach-the-coach (supervision, mentor coaching)',y:[5,7,9],payer:'Coaches, coaching academies, associations',fee:2,st:['lis','tea'],need:['eth','pres','q']},
+ {id:'well',n:'Wellbeing & performance (non-clinical)',y:[7,7,8],payer:'Corporates, insurers, individuals',fee:2,st:['lis','cat'],need:['eth','pres']}];
+const HORIZON=['Year 1','Year 2','Year 5'];
+const CAREER=[
+ ['Calling','Exploring coaching','Nothing yet — build proof with pilot clients','—'],
+ ['Training','Getting certified','Low-cost pilots, group sessions','Friends of your network'],
+ ['First clients','Your first paying clients','1:1 packages, one signature programme','Individuals, parents'],
+ ['Niche & positioning','Choosing who you serve','Niche programmes and cohorts','Defined groups (graduates, founders, pastors)'],
+ ['Practice building','A steady practice','Retainers, corporate pilots, workshops','HR / L&D, SMEs, churches'],
+ ['Authority','Known for something','Keynotes, books, masterminds, premium 1:1','Corporates, conferences, high-net-worth clients'],
+ ['Institution','Beyond your own hours','Associate-delivered programmes, government & donor contracts','Institutions, governments'],
+ ['Legacy','Your method outlives you','Licensing your method, training coaches','Coaches, academies']];
+const FUN=[
+ ['aw','Awareness','People who saw you this month (reach)',null,'Content rhythm, events, podcasts, collaborations'],
+ ['at','Attention','People who stopped: profile visits, clicks',0.05,'Clearer message, stronger hook, niche language'],
+ ['en','Engagement','Likes, comments, replies, shares',0.2,'Ask questions, tell stories, go live'],
+ ['tr','Trust','New followers, subscribers, return visitors',0.2,'Proof posts, testimonials, before/after results'],
+ ['eq','Enquiry','DMs, forms, "how do I work with you?"',0.1,'A clear offer and a clear call to action'],
+ ['ca','Discovery call','Enquiries that booked a call',0.5,'Reply fast, booking link, follow-up rhythm'],
+ ['cv','Conversion','Calls that became paying clients',0.3,'Sales conversation skills, pricing, guarantees'],
+ ['rs','Results','Clients who reached their goal',0.7,'Stronger method, Deo assessments, check-ins'],
+ ['rt','Retention','Clients who renewed or upgraded',0.4,'Follow-on programme, retainers, offer ladder'],
+ ['ad','Advocacy','Referrals, testimonials, invitations',0.3,'Referral system, case studies, alumni community']];
+const BRAND=['Invisible','Visible','Known','Trusted','Preferred','Premium','Iconic'];
+const BRAND_REQ=[[0,1],[2],[3],[4,5,6],[7],[8,9]];
+const CHANNELS=['LinkedIn','Instagram','Facebook','WhatsApp','X (Twitter)','TikTok','YouTube / Podcast','Church & faith network','Corporate HR contacts','Associations & events','Referrals','Diaspora network'];
+const PERCEP=['Clarity of what I do','Credibility','Expertise','Visible client results','Visibility','Premium feel'];
+const DSTAGES=['Lead','Proposal','Agreed','Invoiced','Paid'],DPROB=[.1,.3,.6,.85,1];
+
+/* ---------- state ---------- */
+const KEY='deocoach-africa-v1';
+let S={profile:{cur:'NGN'},sig:{},comp:{},h:0,offer:{},deals:[],stage:null,fun:{},ch:{},per:{self:{},oth:{}},hrs:{}};
+try{const r=localStorage.getItem(KEY);if(r)S=Object.assign(S,JSON.parse(r));}catch(e){}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}}
+function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function num(v){const n=parseFloat(String(v).replace(/,/g,''));return isNaN(n)?0:n;}
+function money(n,c){c=c||S.profile.cur||'NGN';return CUR[c]+Math.round(n).toLocaleString('en-GB');}
+function toast(t){const e=document.getElementById('toast');e.textContent=t;e.classList.add('show');setTimeout(()=>e.classList.remove('show'),1800);}
+function setv(path,val,rerender){const p=path.split('.');let o=S;for(let i=0;i<p.length-1;i++){o[p[i]]=o[p[i]]||{};o=o[p[i]];}o[p[p.length-1]]=val;save();if(rerender)render();else updateChrome();}
+async function copyText(t){try{await navigator.clipboard.writeText(t);toast('Copied');}catch(e){toast('Copy not allowed here — select and copy manually');}}
+
+/* ---------- engines ---------- */
+function signature(){
+  const a=S.sig;const n=Object.keys(a).length;if(n<SIG_ITEMS.length)return null;
+  const sc={cat:0,str:0,lis:0,tea:0};SIG_ITEMS.forEach((it,i)=>sc[it[1]]+=a[i]||0);
+  const order=Object.keys(sc).sort((x,y)=>sc[y]-sc[x]);return{sc,p:order[0],s:order[1]};
+}
+function compAvg(ids){const v=(ids||COMPS.map(c=>c[0])).map(i=>S.comp[i]||0).filter(x=>x>0);return v.length?v.reduce((a,b)=>a+b,0)/v.length:0;}
+function nicheScores(h){
+  const sg=signature();
+  return NICHES.map(n=>{let s=n.y[h]*7;if(sg){if(n.st[0]===sg.p||n.st[1]===sg.p)s+=15;else if(n.st.includes(sg.s))s+=8;}
+    const ca=compAvg(n.need);s+=ca?ca*3:7;return Object.assign({},n,{score:Math.min(100,Math.round(s))});}).sort((a,b)=>b.score-a.score);
+}
+function funnel(){
+  const v=FUN.map(f=>num(S.fun[f[0]]));
+  if(!v[0])return null;
+  const h=FUN.map((f,i)=>{if(i===0)return Math.min(1,v[0]/1000);const prev=i===9?v[7]:v[i-1];if(!prev)return 0;return Math.min(1,(v[i]/prev)/f[3]);});
+  const ratio=FUN.map((f,i)=>{if(i===0)return null;const prev=i===9?v[7]:v[i-1];return prev?v[i]/prev:0;});
+  let lvl=0;for(const g of BRAND_REQ){if(g.every(i=>h[i]>=.7))lvl++;else break;}
+  let leak=null;if(lvl<BRAND_REQ.length){const g=BRAND_REQ[lvl];leak=g.reduce((a,b)=>h[b]<h[a]?b:a,g[0]);}
+  return{v,h,ratio,lvl,leak};
+}
+function channels(){
+  const rows=CHANNELS.map(c=>{const d=S.ch[c]||{};return{c,r:num(d.r),e:num(d.e),k:num(d.k)};});
+  const reaches=rows.filter(x=>x.r>0).map(x=>x.r).sort((a,b)=>a-b);const med=reaches.length?reaches[Math.floor(reaches.length/2)]:0;
+  rows.forEach(x=>{if(!x.r&&!x.k){x.s='absent';x.t='Not active here';}
+    else if(x.k>0&&x.r<med){x.s='hidden';x.t='Hidden gem — converting with little reach. Grow it.';}
+    else if(x.k>0){x.s='selling';x.t='Selling — visible and converting';}
+    else if(x.e>0){x.s='leaking';x.t='Leaking at conversion — enquiries but no clients';}
+    else{x.s='leaking';x.t='Leaking at enquiry — seen but nobody asks';}});
+  return rows;
+}
+function deals(){
+  const by={};S.deals.forEach(d=>{const c=d.cur||S.profile.cur;by[c]=by[c]||{paid:0,pipe:0,fc:0};const a=num(d.amt);const i=DSTAGES.indexOf(d.st);
+    if(d.st==='Paid')by[c].paid+=a;else by[c].pipe+=a;by[c].fc+=a*(DPROB[i]??0);});return by;
+}
+function traps(){
+  const f=funnel(),sg=signature(),hp=num(S.hrs.paid),ht=num(S.hrs.total),rate=num(S.offer.rate);
+  const paidDeals=S.deals.filter(d=>d.st==='Paid'&&(d.cur||S.profile.cur)===S.profile.cur);const tot=paidDeals.reduce((a,d)=>a+num(d.amt),0);
+  const big=paidDeals.reduce((a,d)=>Math.max(a,num(d.amt)),0);
+  const T=[
+   {id:'gen',n:'Generalist trap',why:'"I coach everyone." Buyers cannot see who you are for.',fix:'Pick one niche from Niche Radar and rewrite your bio, offer and content for that group only.',hit:!S.profile.niche||S.profile.niche==='general'},
+   {id:'free',n:'Free-coaching trap',why:'Lots of coaching hours, little income.',fix:'Turn free sessions into a paid pilot offer and use the Price Ladder.',hit:ht>0&&hp/ht<.5},
+   {id:'cert',n:'Certificate trap',why:'Strong coaching skills, weak selling and visibility.',fix:'Pause new courses for 90 days. Run a proof-building sprint: 5 paid pilots, 5 case studies.',hit:compAvg(['lis','q','pres'])>=4&&compAvg(['biz','brand'])>0&&compAvg(['biz','brand'])<=2.5},
+   {id:'vis',n:'Visibility without conversion',why:'People see and like you, but don\'t pay.',fix:'Add one clear offer, a price and a call to action to every channel.',hit:!!f&&f.leak!==null&&f.leak>=4&&f.leak<=6},
+   {id:'invis',n:'Invisible expert',why:'Good coach, but the market does not see you.',fix:'Publish three times a week in one channel, and speak at one event a month.',hit:!!f&&f.leak!==null&&f.leak<=2},
+   {id:'one',n:'One-client dependency',why:'Most of your income comes from one client.',fix:'Build a pipeline of 10 leads across two payer types before that contract ends.',hit:tot>0&&paidDeals.length>1&&big/tot>.5||paidDeals.length===1},
+   {id:'ceil',n:'Price ceiling',why:'Stuck at the same fee level for years.',fix:'Fill your Proof Vault, then launch a premium tier at 3× your current package.',hit:num(S.profile.years)>=3&&rate>0&&!S.deals.some(d=>num(d.amt)>=rate*18)},
+   {id:'neck',n:'Founder bottleneck',why:'You cannot grow beyond your own hours.',fix:'Move to group programmes, associate coaches and licensing.',hit:hp>=80}];
+  return T;
+}
+
+/* ---------- views ---------- */
+const VIEWS=[
+ ['home','Dashboard',''],['profile','My profile','Start'],
+ ['signature','Coach Signature','Discover'],['ladder','Competency Ladder','Develop'],['niches','Niche Radar','Deploy'],
+ ['cheques','Competencies → Cheques','Money'],['brand','Brand Compass','Brand'],['funnel','Brand Funnel','Brand'],['stuck','Stuck & 90-day plan','Brand'],
+ ['toolkit','Client Toolkit','Grow'],['opps','Opportunities & Networks','Grow'],['mentor','Supervisor Desk','Grow']];
+function doneMap(){const f=funnel();return{profile:!!S.profile.name,signature:!!signature(),ladder:compAvg()>0,niches:!!S.profile.niche,cheques:S.deals.length>0,brand:S.stage!==null,funnel:!!f,stuck:num(S.hrs.total)>0};}
+function updateChrome(){
+  const d=doneMap();const cur=(location.hash||'#home').slice(1);
+  let html='',grp='';VIEWS.forEach((v,i)=>{if(v[2]&&v[2]!==grp){grp=v[2];html+=`<div class="grp">${grp}</div>`;}
+    html+=`<button class="${cur===v[0]?'on':''}" onclick="location.hash='${v[0]}'"><span class="num">${i}</span>${v[1]}${d[v[0]]?'<span class="ok">✓</span>':''}</button>`;});
+  document.getElementById('nav').innerHTML=html;
+  document.getElementById('who').textContent=S.profile.name?`${S.profile.name}${S.profile.city?' · '+S.profile.city:''}`:'';
+}
+function render(){
+  const cur=(location.hash||'#home').slice(1);const fn=V[cur]||V.home;
+  document.getElementById('main').innerHTML=fn();updateChrome();window.scrollTo(0,0);
+}
+window.addEventListener('hashchange',render);
+
+const V={};
+V.home=()=>{
+  const sg=signature(),f=funnel(),top=nicheScores(S.h||0)[0],by=deals(),c=S.profile.cur,T=traps().filter(t=>t.hit);
+  const d=doneMap();const pct=Math.round(Object.values(d).filter(Boolean).length/Object.keys(d).length*100);
+  const m=by[c]||{paid:0,pipe:0,fc:0};
+  return `<div class="card"><h1>${S.profile.name?'Welcome, '+esc(S.profile.name.split(' ')[0]):'Welcome, Coach'}</h1>
+  <p class="lead">DeoCoach turns your coaching into a business you can measure: who you are as a coach, what you're good at, which niches pay, where your brand is stuck, and your next 90 days.</p>
+  <div class="flex"><div style="flex:1;min-width:200px"><div class="bar navy"><i style="width:${pct}%"></i></div></div><b>${pct}% set up</b>
+  <button class="btn gold right" onclick="location.hash='${!d.profile?'profile':!d.signature?'signature':!d.ladder?'ladder':!d.funnel?'funnel':'stuck'}'">${pct<100?'Continue setup →':'Open my 90-day plan →'}</button></div></div>
+  <div class="grid g3">
+   <div class="stat"><div class="k">Coach signature</div><div class="v">${sg?STYLES[sg.p].name:'—'}</div><div class="s">${sg?'Secondary: '+STYLES[sg.s].name:'<a href="#signature">Take the 2-minute scan</a>'}</div></div>
+   <div class="stat"><div class="k">Competency level</div><div class="v">${compAvg()?LEVELS[Math.round(compAvg())]:'—'}</div><div class="s">${compAvg()?'Average '+compAvg().toFixed(1)+' of 5':'<a href="#ladder">Place yourself</a>'}</div></div>
+   <div class="stat"><div class="k">Top niche · ${HORIZON[S.h||0]}</div><div class="v" style="font-size:1rem">${top.n}</div><div class="s">Fit ${top.score}/100 · ${esc(top.payer)}</div></div>
+   <div class="stat"><div class="k">Cheques (${c})</div><div class="v">${money(m.paid)}</div><div class="s">Paid · pipeline ${money(m.pipe)} · forecast ${money(m.fc)}</div></div>
+   <div class="stat"><div class="k">Brand level</div><div class="v">${f?BRAND[f.lvl]:'—'}</div><div class="s">${f?(f.leak!==null?'Stuck at: '+FUN[f.leak][1]:'Funnel healthy'):'<a href="#funnel">Enter your funnel numbers</a>'}</div></div>
+   <div class="stat"><div class="k">Career stage</div><div class="v">${S.stage!==null?CAREER[S.stage][0]:'—'}</div><div class="s">${S.stage!==null?'Sell: '+CAREER[S.stage][2]:'<a href="#brand">Choose your stage</a>'}</div></div>
+  </div>
+  <div class="card" style="margin-top:18px"><h2>Main sticking point</h2>${T.length?`<p><b>${T[0].n}.</b> ${T[0].why}</p><p>${T[0].fix}</p><a class="btn sm" href="#stuck" style="text-decoration:none">See full diagnosis & plan</a>`:'<p class="lead">Complete your profile, funnel and hours to get a diagnosis.</p>'}</div>`;
+};
+V.profile=()=>{const p=S.profile;
+ return `<div class="card"><h1>My profile</h1><p class="lead">Tell DeoCoach who you are. Everything stays on this device.</p>
+ <div class="grid g2">
+  <div><label>Full name</label><input value="${esc(p.name)}" oninput="setv('profile.name',this.value)"></div>
+  <div><label>Country</label><input value="${esc(p.country)}" placeholder="e.g. Nigeria" oninput="setv('profile.country',this.value)"></div>
+  <div><label>City / state</label><input value="${esc(p.city)}" placeholder="e.g. Lagos" oninput="setv('profile.city',this.value)"></div>
+  <div><label>Main currency</label><select onchange="setv('profile.cur',this.value,true)">${Object.keys(CUR).map(k=>`<option ${p.cur===k?'selected':''} value="${k}">${CUR[k]} ${k}</option>`).join('')}</select></div>
+  <div><label>Years coaching</label><input type="number" min="0" value="${esc(p.years)}" oninput="setv('profile.years',this.value)"></div>
+  <div><label>Credential</label><select onchange="setv('profile.cred',this.value)">${['None yet','In training','Certified / accredited','Advanced / master level'].map(o=>`<option ${p.cred===o?'selected':''}>${o}</option>`).join('')}</select></div>
+  <div style="grid-column:1/-1"><label>My niche right now</label><select onchange="setv('profile.niche',this.value,true)"><option value="">— choose —</option><option value="general" ${p.niche==='general'?'selected':''}>General — I coach everyone</option>${NICHES.map(n=>`<option value="${n.id}" ${p.niche===n.id?'selected':''}>${n.n}</option>`).join('')}</select></div>
+ </div><div class="flex" style="margin-top:16px"><button class="btn gold" onclick="location.hash='signature'">Next: Coach Signature →</button></div></div>`;};
+V.signature=()=>{const sg=signature();
+ return `<div class="card"><h1>Coach Signature</h1><p class="lead">12 statements, 2 minutes. 1 = not me, 5 = very me.</p>
+ ${SIG_ITEMS.map((it,i)=>`<div class="q"><div style="flex:1;min-width:220px">${i+1}. ${it[0]}</div><div class="likert">${[1,2,3,4,5].map(v=>`<button class="${S.sig[i]===v?'on':''}" onclick="S.sig[${i}]=${v};save();render()">${v}</button>`).join('')}</div></div>`).join('')}</div>
+ ${sg?`<div class="card"><h2>You are ${STYLES[sg.p].name}</h2><p>with a strong second note of <b>${STYLES[sg.s].name}</b>.</p>
+ <div class="grid g3"><div><h3>Best-fit clients</h3><p>${STYLES[sg.p].fit}</p></div><div><h3>What sells for you</h3><p>${STYLES[sg.p].sell}</p></div><div><h3>Watch out</h3><p>${STYLES[sg.p].blind}</p></div></div>
+ ${Object.entries(sg.sc).map(([k,v])=>`<div class="flex small" style="margin-top:6px"><span style="width:150px">${STYLES[k].name}</span><div class="bar" style="flex:1"><i style="width:${v/15*100}%"></i></div><span>${v}/15</span></div>`).join('')}
+ <div class="flex" style="margin-top:14px"><button class="btn gold" onclick="location.hash='ladder'">Next: Competency Ladder →</button></div></div>`:`<p class="small">Answer all 12 to see your signature (${Object.keys(S.sig).length}/12).</p>`}`;};
+V.ladder=()=>{
+ const set=COMPS.filter(c=>S.comp[c[0]]);const gaps=[...set].sort((a,b)=>S.comp[a[0]]-S.comp[b[0]]).slice(0,3);const str=[...set].sort((a,b)=>S.comp[b[0]]-S.comp[a[0]]).slice(0,3);
+ return `<div class="card"><h1>Competency Ladder</h1><p class="lead">Place yourself honestly on each competency. L1 Aware · L2 Practising · L3 Competent · L4 Advanced · L5 Master.</p>
+ ${COMPS.map(c=>`<div class="q"><div style="flex:1;min-width:200px"><b>${c[1]}</b><div class="small">${LEVELS[S.comp[c[0]]||0]}</div></div><div class="likert">${[1,2,3,4,5].map(v=>`<button class="${S.comp[c[0]]===v?'on':''}" onclick="S.comp['${c[0]}']=${v};save();render()">L${v}</button>`).join('')}</div></div>`).join('')}</div>
+ ${set.length>=5?`<div class="grid g2"><div class="card"><h2>Strengths to sell</h2>${str.map(c=>`<p><b>${c[1]}</b> — ${LEVELS[S.comp[c[0]]]}</p>`).join('')}<p class="small">These are the competencies your offers should lead with.</p></div>
+ <div class="card"><h2>Next 3 to develop</h2>${gaps.map(c=>`<p><b>${c[1]}</b> — move from ${LEVELS[S.comp[c[0]]]} to L${Math.min(5,S.comp[c[0]]+1)}</p>`).join('')}<p class="small">Roadmap: one level up per competency every 3–6 months.</p></div></div>`:''}`;};
+V.niches=()=>{const h=S.h||0;const L=nicheScores(h);
+ return `<div class="card"><h1>Niche Radar</h1><p class="lead">Which coaching niches pay, who pays, and how that changes over time. Your fit score blends market outlook with your signature and competencies.</p>
+ <div class="seg">${HORIZON.map((t,i)=>`<button class="${h===i?'on':''}" onclick="S.h=${i};save();render()">${t}</button>`).join('')}</div>
+ <div class="note">Year 1 is mostly paid by individuals, Year 2 by institutions, Year 5 by systems (national programmes, platforms, multi-country contracts). Outlook scores are DeoCoach planning estimates.</div>
+ <table><tr><th>#</th><th>Niche</th><th>Fit</th><th>Who signs the cheque</th><th>Fee level</th><th></th></tr>
+ ${L.map((n,i)=>`<tr><td>${i+1}</td><td><b>${n.n}</b><div class="small">Outlook ${HORIZON.map((t,j)=>t+': '+n.y[j]).join(' · ')}</div></td><td style="width:120px"><div class="bar"><i style="width:${n.score}%"></i></div><span class="small">${n.score}/100</span></td><td class="small">${n.payer}</td><td>${'●'.repeat(n.fee)}${'○'.repeat(3-n.fee)}</td><td><button class="btn sm ${S.profile.niche===n.id?'gold':'ghost'}" onclick="setv('profile.niche','${n.id}',true)">${S.profile.niche===n.id?'My niche':'Choose'}</button></td></tr>`).join('')}</table></div>`;};
+V.cheques=()=>{const o=S.offer,c=S.profile.cur,R=num(o.rate);const n=NICHES.find(x=>x.id===(o.niche||S.profile.niche))||NICHES[0];
+ const comp=COMPS.find(x=>x[0]===o.comp);const by=deals();
+ const offers=R?[
+  ['Entry','Clarity Session (single session)',R,'The person being coached','Lowers the risk of a first yes'],
+  ['Core','6-week Signature Programme',R*6*.9,'Individuals, parents, small business owners','Your main income engine'],
+  ['Group','Cohort of 8–12 (per seat)',R*2,'Groups, associations, churches','Volume; ~10 seats = '+money(R*20,c)],
+  ['Corporate',`${n.n} programme for a team`,R*24,n.payer,'Invoice to the budget holder, not the participant'],
+  ['Premium','3-month 1:1 retainer',R*12*1.2,'Senior leaders, founders','Requires proof in your Proof Vault']]:[];
+ return `<div class="card"><h1>Competencies → Cheques</h1><p class="lead">Competency → Proof → Offer → Buyer → Channel → Price → Cheque → Repeat.</p>
+ <div class="ladder">${['Competency','Proof','Offer','Buyer','Channel','Price','Cheque','Repeat'].map(x=>`<span>${x}</span>`).join('')}</div>
+ <h2 style="margin-top:14px">1 · Offer Forge</h2>
+ <div class="grid g3"><div><label>Lead competency</label><select onchange="setv('offer.comp',this.value,true)"><option value="">— choose —</option>${COMPS.map(x=>`<option value="${x[0]}" ${o.comp===x[0]?'selected':''}>${x[1]}</option>`).join('')}</select></div>
+ <div><label>Niche</label><select onchange="setv('offer.niche',this.value,true)">${NICHES.map(x=>`<option value="${x.id}" ${n.id===x.id?'selected':''}>${x.n}</option>`).join('')}</select></div>
+ <div><label>My current fee per session (${CUR[c]})</label><input type="number" value="${esc(o.rate)}" onchange="setv('offer.rate',this.value,true)"></div></div>
+ ${R?`<table style="margin-top:14px"><tr><th>Tier</th><th>Offer</th><th>Price</th><th>Who pays</th><th>Note</th></tr>${offers.map(x=>`<tr><td><span class="pill">${x[0]}</span></td><td><b>${x[1]}</b>${comp?`<div class="small">Built on your ${comp[1].toLowerCase()}</div>`:''}</td><td><b>${money(x[2],c)}</b></td><td class="small">${esc(x[3])}</td><td class="small">${x[4]}</td></tr>`).join('')}</table>
+ <div class="note">Price ladder logic: core = 6 sessions less 10%, group seat = 2× session, corporate = 24× session, premium retainer = 12 sessions + 20%. Adjust to your market.</div>`:'<p class="small">Enter your fee to generate your offer and price ladder.</p>'}</div>
+ <div class="card"><h2>2 · Proof Vault</h2><p class="lead">Your evidence is what lets you charge more. Note one result per client.</p>
+ <textarea rows="4" placeholder="e.g. Ada — promoted to manager in 4 months; confidence 4→8/10" oninput="setv('proof',this.value)">${esc(S.proof)}</textarea></div>
+ <div class="card"><h2>3 · Cheque Tracker</h2>
+ <div class="grid g4">${Object.keys(by).length?Object.entries(by).map(([k,m])=>`<div class="stat"><div class="k">${k}</div><div class="v">${money(m.paid,k)}</div><div class="s">Pipeline ${money(m.pipe,k)}<br>Weighted forecast ${money(m.fc,k)}</div></div>`).join(''):'<p class="small">No deals yet.</p>'}</div>
+ <table style="margin-top:12px"><tr><th>Client / buyer</th><th>Offer</th><th>Payer type</th><th>Amount</th><th>Cur.</th><th>Stage</th><th></th></tr>
+ ${S.deals.map((d,i)=>`<tr><td><input value="${esc(d.cl)}" onchange="S.deals[${i}].cl=this.value;save()"></td><td><input value="${esc(d.of)}" onchange="S.deals[${i}].of=this.value;save()"></td>
+ <td><select onchange="S.deals[${i}].py=this.value;save()">${['Individual','Parent','HR / L&D','CEO / founder','Church','Government','Donor / foundation','Diaspora'].map(x=>`<option ${d.py===x?'selected':''}>${x}</option>`).join('')}</select></td>
+ <td><input type="number" value="${esc(d.amt)}" onchange="S.deals[${i}].amt=this.value;save();render()"></td>
+ <td><select onchange="S.deals[${i}].cur=this.value;save();render()">${Object.keys(CUR).map(k=>`<option ${(d.cur||c)===k?'selected':''}>${k}</option>`).join('')}</select></td>
+ <td><select onchange="S.deals[${i}].st=this.value;save();render()">${DSTAGES.map(x=>`<option ${d.st===x?'selected':''}>${x}</option>`).join('')}</select></td>
+ <td><button class="btn sm ghost" onclick="S.deals.splice(${i},1);save();render()">✕</button></td></tr>`).join('')}</table>
+ <button class="btn sm" style="margin-top:10px" onclick="S.deals.push({cl:'',of:'',py:'Individual',amt:'',cur:S.profile.cur,st:'Lead'});save();render()">+ Add a deal</button>
+ <p class="small">Forecast weights: Lead 10% · Proposal 30% · Agreed 60% · Invoiced 85% · Paid 100%.</p></div>`;};
+V.brand=()=>{const rows=channels();const per=S.per;
+ return `<div class="card"><h1>Brand Compass</h1><p class="lead">Where you are in your coaching career, where you are and aren't selling, and how the market sees you.</p>
+ <h2>1 · Coaching career stage</h2><p class="small">Pick the stage that is true today. It tells you what to sell and to whom.</p>
+ <div class="grid g4">${CAREER.map((c,i)=>`<div class="stagecard ${S.stage===i?'on':''}" onclick="S.stage=${i};save();render()"><b>${i+1}. ${c[0]}</b><div class="small">${c[1]}</div></div>`).join('')}</div>
+ ${S.stage!==null?`<div class="note"><b>Sell at this stage:</b> ${CAREER[S.stage][2]}<br><b>Main buyer:</b> ${CAREER[S.stage][3]}${S.stage<7?`<br><b>To reach ${CAREER[S.stage+1][0]}:</b> start testing "${CAREER[S.stage+1][2]}".`:''}</div>`:''}</div>
+ <div class="card"><h2>2 · Selling heat map</h2><p class="small">Per channel, last 3 months: monthly reach, total enquiries, paying clients.</p>
+ <table><tr><th>Channel</th><th>Reach / month</th><th>Enquiries</th><th>Clients</th><th>Status</th></tr>
+ ${rows.map(x=>`<tr><td><b>${x.c}</b></td>${['r','e','k'].map(k=>`<td><input type="number" min="0" value="${esc((S.ch[x.c]||{})[k])}" onchange="S.ch['${x.c.replace(/'/g,"\\'")}']=Object.assign(S.ch['${x.c.replace(/'/g,"\\'")}']||{},{${k}:this.value});save();render()"></td>`).join('')}<td><span class="tile st-${x.s}" style="display:inline-block;padding:3px 8px">${x.s}</span></td></tr>`).join('')}</table>
+ <div class="grid g4" style="margin-top:14px">${['selling','leaking','hidden','absent'].map(s=>{const L=rows.filter(r=>r.s===s);return `<div class="tile st-${s}"><b>${{selling:'🟢 Selling',leaking:'🟠 Leaking',hidden:'🔵 Hidden gems',absent:'⚪ Absent'}[s]} (${L.length})</b>${L.map(r=>esc(r.c)).join(', ')||'—'}</div>`}).join('')}</div>
+ ${rows.filter(r=>r.s==='hidden'||r.s==='leaking').map(r=>`<p class="small">• <b>${r.c}:</b> ${r.t}</p>`).join('')}</div>
+ <div class="card"><h2>3 · 360° perception check</h2><p class="small">Rate yourself 1–10, then ask 3–10 clients and peers and enter their average.</p>
+ <table><tr><th>Attribute</th><th>Me</th><th>Others (avg)</th><th>Gap</th></tr>
+ ${PERCEP.map((a,i)=>{const s=num(per.self[i]),o=num(per.oth[i]);const g=s&&o?o-s:null;return `<tr><td>${a}</td><td><input type="number" min="1" max="10" value="${esc(per.self[i])}" onchange="S.per.self[${i}]=this.value;save();render()"></td><td><input type="number" min="1" max="10" value="${esc(per.oth[i])}" onchange="S.per.oth[${i}]=this.value;save();render()"></td><td style="color:${g===null?'inherit':g<-1?'var(--red)':g>1?'var(--green)':'inherit'}"><b>${g===null?'—':(g>0?'+':'')+g}</b></td></tr>`}).join('')}</table>
+ <button class="btn sm ghost" style="margin-top:10px" onclick="copyText(perMsg())">Copy a feedback request to send clients</button></div>`;};
+function perMsg(){return `Hello! I'm improving my coaching practice and would value 2 minutes of honest feedback. On a scale of 1–10, how would you rate me on:\n${PERCEP.map((a,i)=>`${i+1}. ${a}`).join('\n')}\nAnd in one sentence: what do you think I'm best known for? Thank you — ${S.profile.name||''}`;}
+V.funnel=()=>{const f=funnel();const max=f?Math.max(...f.v,1):1;
+ return `<div class="card"><h1>Brand Funnel</h1><p class="lead">Enter last month's numbers. DeoCoach finds the stage where people drop off and tells you which brand level you're stuck at.</p>
+ <div class="funnel">${FUN.map((s,i)=>{const leak=f&&f.leak===i;const v=f?f.v[i]:num(S.fun[s[0]]);
+  return `<div class="row ${leak?'leak':''}"><span class="num" style="width:24px;height:24px;border-radius:50%;background:#efe6cc;display:grid;place-items:center;font-size:.75rem;font-weight:700">${i+1}</span>
+  <div><b>${s[1]}</b><div class="small">${s[2]}</div></div>
+  <div class="fbw"><div class="fb" style="width:${f?Math.max(1,Math.sqrt(v/max)*100):0}%"></div></div>
+  <input type="number" min="0" value="${esc(S.fun[s[0]])}" onchange="setv('fun.${s[0]}',this.value,true)">
+  <div class="hl small">${f&&i>0?Math.round(f.ratio[i]*100)+'%<br>'+(f.h[i]>=.7?'✓ healthy':'⚠ weak'):''}</div></div>`}).join('')}</div>
+ <p class="small">Retention and advocacy are measured against clients who got results. Starting reference ratios are DeoCoach defaults; peer benchmarks by niche and country come as more coaches use the tool.</p></div>
+ ${f?`<div class="card"><h2>Your brand journey</h2><div class="ladder">${BRAND.map((b,i)=>`<span class="${i<f.lvl?'done':i===f.lvl?'here':''}">${b}</span>`).join('')}</div>
+ ${f.leak!==null?`<div class="note warn"><b>You're at ${BRAND[f.lvl]} and stuck before ${BRAND[f.lvl+1]}.</b> Your biggest leak is <b>Stage ${f.leak+1}: ${FUN[f.leak][1]}</b>${f.leak>0?` — only ${Math.round(f.ratio[f.leak]*100)}% get through.`:' — not enough people see you yet.'}<br><b>Fix:</b> ${FUN[f.leak][4]}.</div>`:'<div class="note">Every stage is healthy. Protect retention and advocacy, and raise prices.</div>'}
+ <table><tr><th>To move from…</th><th>Fix these stages</th><th>Status</th></tr>${BRAND_REQ.map((g,i)=>`<tr><td>${BRAND[i]} → ${BRAND[i+1]}</td><td>${g.map(x=>FUN[x][1]).join(', ')}</td><td>${g.every(x=>f.h[x]>=.7)?'✓':'⚠'}</td></tr>`).join('')}</table></div>`:''}`;};
+V.stuck=()=>{const T=traps();const hit=T.filter(t=>t.hit);const f=funnel();const top=nicheScores(S.h||0)[0];const ch=channels();
+ const best=ch.find(c=>c.s==='hidden')||ch.find(c=>c.s==='selling')||ch.find(c=>c.s==='leaking');const nn=NICHES.find(n=>n.id===S.profile.niche)||top;
+ const plan=planText(hit,f,nn,best);
+ return `<div class="card"><h1>Stuck & 90-day plan</h1><p class="lead">DeoCoach checks your data against 8 common traps.</p>
+ <div class="grid g2"><div><label>Coaching hours per month (all)</label><input type="number" value="${esc(S.hrs.total)}" onchange="setv('hrs.total',this.value,true)"></div>
+ <div><label>Paid coaching hours per month</label><input type="number" value="${esc(S.hrs.paid)}" onchange="setv('hrs.paid',this.value,true)"></div></div></div>
+ <div class="card"><h2>Diagnosis</h2>${T.map(t=>`<div class="trap ${t.hit?'hit':''}"><div class="flex"><b>${t.hit?'⚠':'✓'} ${t.n}</b><span class="pill right">${t.hit?'Detected':'Clear'}</span></div>${t.hit?`<p class="small">${t.why}</p><p><b>Way out:</b> ${t.fix}</p>`:''}</div>`).join('')}</div>
+ <div class="card"><h2>My 90-day plan</h2>${plan.html}<button class="btn gold" onclick="copyText(planCopy)">Copy my plan</button></div>`;};
+let planCopy='';
+function planText(hit,f,nn,best){
+ const trap=hit[0];const leak=f&&f.leak!==null?FUN[f.leak]:null;const ch=best?best.c:'one channel you enjoy';
+ const ph=[
+  ['Days 1–30 · Focus',[`Commit to one niche: ${nn.n}.`,trap?`Break the ${trap.n.toLowerCase()}: ${trap.fix}`:'Keep your current focus and document results.',leak?`Fix your leak at ${leak[1]}: ${leak[4]}.`:'Enter your funnel numbers to target your weakest stage.']],
+  ['Days 31–60 · Sell',[`Go deep in ${ch}: post three times a week and invite enquiries with one clear offer.`,`Pitch your core programme to: ${nn.payer}.`,'Add two results to your Proof Vault and ask three clients for the 360° check.']],
+  ['Days 61–90 · Scale',[S.stage!==null&&S.stage<7?`Test one next-stage offer: ${CAREER[S.stage+1][2]}.`:'Test a premium or group offer.','Move three deals forward in your Cheque Tracker.','Re-enter your funnel numbers and compare with day 1.']]];
+ planCopy=`DeoCoach 90-day plan — ${S.profile.name||''}\n`+ph.map(p=>p[0]+'\n'+p[1].map(x=>'• '+x).join('\n')).join('\n\n');
+ return{html:ph.map(p=>`<div class="phase"><h3>${p[0]}</h3><ul>${p[1].map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div>`).join('')};
+}
+V.toolkit=()=>{const apps=[
+ ['DeoLens — The Atlas of Self','Self-awareness, strengths and identity for any client','https://deolenss.vercel.app',['all']],
+ ['DeoCareers','Career discovery, development and job/opportunity search','https://deocareers-app.vercel.app',['career','global','youth','women']],
+ ['DeoWealth — Wealth Mind Suite','Money psychology and financial behaviour','https://deowealthss.vercel.app',['money','sme','family']],
+ ['DeoProphetics','Prophetic archetype assessment for faith and ministry coaching','https://deoprophetss.vercel.app',['faith']],
+ ['DeoSales — The Selling Mind','Sales psychology and performance (coming soon)','',['sales','sme']],
+ ['DeoCreative','Creativity profile for creative professionals (coming soon)','',['women','youth']]];
+ const nn=S.profile.niche;
+ return `<div class="card"><h1>Client Toolkit</h1><p class="lead">Send your clients Deo assessments to add data to your coaching. Recommended tools for your niche are marked ★.</p>
+ <div class="grid g2">${apps.map(a=>`<div class="card" style="margin:0"><div class="flex"><h3>${a[0]}</h3>${a[3].includes('all')||a[3].includes(nn)?'<span class="pill right">★ For your niche</span>':''}</div><p class="small">${a[1]}</p>${a[2]?`<a href="${a[2]}" target="_blank" rel="noopener">Open ${a[2].replace('https://','')}</a>`:'<span class="small">Coming soon</span>'}</div>`).join('')}</div>
+ <div class="note">Always get your client's consent before they take an assessment, and explain that results support development and are not a diagnosis or a selection decision.</div></div>`;};
+V.opps=()=>{const ev=[['23 Nov 2026','Africa Coaching Week 2026 — opening press conference & media parley','Alliance Française, Ikoyi, Lagos · 4pm'],['29 Nov 2026','Africa Coaching Week 2026 — closing gala','Radisson Blu VI, Lagos · 5pm · live-stream tickets available']];
+ const src=[['Individuals & parents','Graduate and career programmes, school holidays, January resolutions'],['HR / L&D','Annual training budgets (often set in Q4–Q1), manager development, leadership pipelines'],['Churches & ministries','Leadership retreats, workers\' training, marriage and family seasons'],['Government & agencies','Public-service reform, youth employment, capacity-building tenders'],['Donors & foundations','Youth employability, women\'s leadership, SME growth programmes'],['Diaspora','Global careers, relocation, family business — paid in £/$'],['Other coaches','Supervision, mentor coaching, credential preparation']];
+ return `<div class="card"><h1>Opportunities & Networks</h1><p class="lead">Where your next cheques can come from, and where to show up.</p>
+ <h2>Coming up</h2>${ev.map(e=>`<div class="trap"><b>${e[0]}</b> — ${e[1]}<div class="small">${e[2]}</div></div>`).join('')}
+ <h2 style="margin-top:16px">Opportunity sources by payer</h2><table><tr><th>Payer</th><th>Where the money shows up</th><th>Tracking?</th></tr>${src.map((s,i)=>`<tr><td><b>${s[0]}</b></td><td class="small">${s[1]}</td><td><input type="checkbox" style="width:auto" ${S.src&&S.src[i]?'checked':''} onchange="S.src=S.src||{};S.src[${i}]=this.checked;save()"></td></tr>`).join('')}</table>
+ <h2 style="margin-top:16px">My network goals this month</h2><div class="grid g3">${[['n1','New peer coaches met'],['n2','Referral partners'],['n3','Decision-makers contacted']].map(x=>`<div><label>${x[1]}</label><input type="number" value="${esc((S.net||{})[x[0]])}" onchange="setv('net.${x[0]}',this.value)"></div>`).join('')}</div></div>`;};
+V.mentor=()=>`<div class="card"><h1>Supervisor Desk</h1><p class="lead">Reflective practice for coaches. Your DeoMentor "Supervisor" council (Spark, Circle, Chamber and Summit plans) is coming soon; until then, use these prompts after difficult sessions.</p>
+ <h2>Reflection prompts</h2><ol>${['What did the client actually want from today — and did I serve that or my own agenda?','Where did I talk when I should have asked?','What pattern am I seeing across this client\'s sessions?','What am I avoiding saying to this client, and why?','What evidence will show this coaching worked?'].map(x=>`<li>${x}</li>`).join('')}</ol>
+ <textarea rows="4" placeholder="My reflection (stays on this device)" oninput="setv('refl',this.value)">${esc(S.refl)}</textarea></div>
+ <div class="card"><h2>Referral boundary — "refer, don't coach"</h2><p>Coaching is not therapy. Pause coaching and refer the client to a qualified health professional when you notice:</p>
+ <ul><li>Risk of harm to themselves or others — seek urgent help immediately</li><li>Signs of a mental-health condition (persistent low mood, anxiety that stops daily life, confused thinking)</li><li>Unresolved trauma coming up repeatedly</li><li>Alcohol or drug dependence</li><li>Problems that are getting worse despite coaching</li></ul>
+ <div class="note">Agree your referral process in your coaching contract before you need it, and keep a list of local professionals you trust.</div></div>`;
+
+render();
+</script>
+</body>
+</html>

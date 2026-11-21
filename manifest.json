@@ -1,0 +1,13 @@
+{
+ "name": "DeoCoach · Edition for African Coaches",
+ "short_name": "DeoCoach",
+ "start_url": "/",
+ "display": "standalone",
+ "background_color": "#0D1B4B",
+ "theme_color": "#0D1B4B",
+ "icons": [
+  {"src": "/icon-192.png","sizes": "192x192","type": "image/png"},
+  {"src": "/icon-512.png","sizes": "512x512","type": "image/png"},
+  {"src": "/icon-maskable-512.png","sizes": "512x512","type": "image/png","purpose": "maskable"}
+ ]
+}
