@@ -4,7 +4,7 @@ The site works fully without these; each service switches on when its variables 
 
 | Service | What it powers | Variables |
 |---|---|---|
-| Live AI | City Analyst, Ask the Supervisor, "Deepen with live AI" briefings | `ANTHROPIC_API_KEY`. Optional: `ANTHROPIC_MODEL`, `AI_HOURLY_LIMIT` |
+| Live AI | City Analyst, Ask the Supervisor, "Deepen with live AI" briefings, and **full-page translation into the 24 pan-African languages** (menus and key questions are built in already) | `ANTHROPIC_API_KEY`. Optional: `ANTHROPIC_MODEL`, `AI_HOURLY_LIMIT` |
 | Opportunity search | World Bank procurement notices (on by default, public API) | none |
 | ReliefWeb jobs & consultancies | Adds NGO/UN jobs to the Opportunity Desk | `RELIEFWEB_APPNAME` (request an approved appname from ReliefWeb) |
 | South Africa jobs | Adzuna jobs | `ADZUNA_APP_ID`, `ADZUNA_APP_KEY` |
