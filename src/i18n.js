@@ -34,8 +34,30 @@ function langNote(show){let el=document.getElementById("langnote");if(!show){if(
  el.innerHTML=`<b>${esc(langName(S.lang))}:</b> ${CHROME[S.lang]?"the menu is translated (beta).":"translation is being prepared."} Full-page translation into all 24 pan-African languages switches on when DeoCoach's AI translator is connected on its own site. <a href="javascript:langNote(false)">Close</a>`;document.body.appendChild(el);}
 function setLang(c){S.lang=c;save();TR_STATE.fail=false;TR_STATE.pending.clear();langNote(false);document.getElementById("langmenu").classList.remove("open");render();}
 function langMenu(){const m=document.getElementById("langmenu");if(!m)return;const L=S.lang||"en";let g="";
- m.innerHTML=LANGS.map(l=>{const h=l[3]!==g?(g=l[3],`<div class="small lg">${l[3]}</div>`):"";return h+`<button class="${l[0]===L?"on":""}" onclick="setLang('${l[0]}')"><b>${l[1]}</b><span class="small">${l[2]}${l[0]==="en"?"":" · beta"}</span></button>`;}).join("")+`<p class="small" style="padding:6px 8px">Translations are beta. Native speakers: tell us what to improve.</p>`;
+ m.innerHTML=LANGS.map(l=>{const h=l[3]!==g?(g=l[3],`<div class="small lg">${l[3]}</div>`):"";return h+`<button class="${l[0]===L?"on":""}" onclick="setLang('${l[0]}')"><b>${l[1]}</b><span class="small">${l[2]}${l[0]==="en"?"":" · beta"}</span></button>`;}).join("")+`<div style="padding:8px;border-top:1px solid var(--line);margin-top:6px"><p class="small">Translations are beta. Speak one of these languages? Help us get it right.</p><button class="btn sm" onclick="toggleSuggest()">${SUGGEST?"✓ Stop suggesting":"✎ Suggest a better translation"}</button>${(S.trSug||[]).length?` <button class="btn sm ghost" onclick="copySuggestions()">Copy my ${(S.trSug||[]).length} suggestion${(S.trSug||[]).length>1?"s":""}</button>`:""}</div>`;
  const b=document.getElementById("langbtn");if(b)b.textContent="🌐 "+(LANGS.find(x=>x[0]===L)||LANGS[0])[1];}
 // re-translate whenever the page changes (debounced)
 (function(){const mo=new MutationObserver(()=>{if(!S.lang||S.lang==="en")return;clearTimeout(TR_STATE.timer);TR_STATE.timer=setTimeout(translatePage,250);});
  window.addEventListener("load",()=>{const m=document.getElementById("main");if(m)mo.observe(m,{childList:true,subtree:true});});})();
+
+// ===== Suggest a better translation (native-speaker corrections) =====
+// Turn on "Improve translation", click any translated text, type a better version. It applies on this device at once and is sent for review (/api/suggest) when Deo Cloud is connected.
+let SUGGEST=false;
+function trOverride(L,s){return S.trOv&&S.trOv[L]&&S.trOv[L][s];}
+const _trLookupBase=trLookup;trLookup=function(s){const L=S.lang;return trOverride(L,s)||_trLookupBase(s);};
+function toggleSuggest(){SUGGEST=!SUGGEST;document.body.classList.toggle("suggesting",SUGGEST);document.getElementById("langmenu").classList.remove("open");langMenu();
+ toast(SUGGEST?"Click any translated text to improve it":"Translation suggestions off");}
+document.addEventListener("click",e=>{if(!SUGGEST||!S.lang||S.lang==="en")return;if(e.target.closest("#trbox,#langmenu,#langbtn,.lookmenu"))return;
+ let el=e.target,node=null;for(const n of el.childNodes){if(n.nodeType===3&&n.__en!==undefined&&n.__en.trim()){node=n;break;}}
+ if(!node){const w=document.createTreeWalker(el,NodeFilter.SHOW_TEXT);let n;while(n=w.nextNode()){if(n.__en!==undefined&&n.__en.trim()){node=n;break;}}}
+ if(!node)return;e.preventDefault();e.stopPropagation();openSuggest(node.__en.trim(),node.nodeValue.trim());},true);
+function openSuggest(src,cur){let b=document.getElementById("trbox");if(b)b.remove();b=document.createElement("div");b.id="trbox";b.setAttribute("data-notr","1");b.className="trbox";
+ b.innerHTML=`<h3>Improve this translation · ${esc(langName(S.lang))}</h3><label>English</label><div class="trsrc">${esc(src)}</div><label>Current</label><div class="trsrc">${esc(cur)}</div>
+ <label>Your better translation</label><textarea id="trnew" rows="2">${esc(cur)}</textarea><label>Note (optional)</label><input id="trnote" placeholder="e.g. more natural in Lagos; formal register">
+ <div class="flex" style="margin-top:10px"><button class="btn sm" onclick="sendSuggest()">Save suggestion</button><button class="btn sm ghost" onclick="document.getElementById('trbox').remove()">Cancel</button><span class="small right">Thank you for improving DeoCoach</span></div>`;
+ b.dataset.src=src;b.dataset.cur=cur;document.body.appendChild(b);document.getElementById("trnew").focus();}
+async function sendSuggest(){const b=document.getElementById("trbox");const src=b.dataset.src,cur=b.dataset.cur,nv=document.getElementById("trnew").value.trim(),note=document.getElementById("trnote").value.trim();if(!nv||nv===cur){b.remove();return;}
+ S.trOv=S.trOv||{};(S.trOv[S.lang]=S.trOv[S.lang]||{})[src]=nv;S.trSug=S.trSug||[];S.trSug.push({lang:S.lang,src,cur,nv,note,d:new Date().toISOString()});save();b.remove();render();
+ try{const r=await fetch("/api/suggest",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({lang:S.lang,source:src,current:cur,suggestion:nv,note})});if(!r.ok)throw 0;toast("Thank you — sent for review");}
+ catch(e){toast("Saved on this device — it will be sent when review is switched on");}}
+function copySuggestions(){const L=S.trSug||[];copyText(L.map(x=>`[${x.lang}] ${x.src}\n  was: ${x.cur}\n  better: ${x.nv}${x.note?"\n  note: "+x.note:""}`).join("\n\n")||"No suggestions yet");}
