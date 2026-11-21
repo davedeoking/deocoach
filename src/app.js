@@ -20,11 +20,11 @@ function compAvg(ids){const v=(ids||COMPS.map(c=>c[0])).map(i=>S.comp[i]||0).fil
 // outlook of a niche in year t (1–10), interpolated from years 1,2,5,10
 function curve(n,t){const X=[1,2,5,10],Y=n.y;if(t<=1)return Y[0];for(let i=1;i<4;i++)if(t<=X[i])return Y[i-1]+(Y[i]-Y[i-1])*(t-X[i-1])/(X[i]-X[i-1]);return Y[3];}
 function nicheScores(t){const sg=signature();return NICHES.map(n=>{let s=curve(n,t)*7;if(sg){if(n.st[0]===sg.p||n.st[1]===sg.p)s+=15;else if(n.st.includes(sg.s))s+=8;}const ca=compAvg(n.need);s+=ca?ca*3:7;return Object.assign({},n,{score:Math.min(100,Math.round(s))});}).sort((a,b)=>b.score-a.score);}
-// Sonar: opportunity for a niche in a city in year t
+// Horizon Atlas: opportunity for a niche in a city in year t
 function cityScore(c,nid,t){
   if(nid==="all"){const v=c.top.slice(0,4).map(id=>cityScore(c,id,t));return Math.round(v.reduce((a,b)=>a+b,0)/v.length);}
   const n=nicheById(nid);const rank=c.top.indexOf(nid);const fit=rank<0?3:Math.max(8,22-rank*3);
-  return Math.max(5,Math.min(100,Math.round(curve(n,t)*5+fit+c.m*(1+t*0.55))));}
+  return Math.max(5,Math.min(100,Math.round(curve(n,t)*5+fit+c.m*(1+t*0.55)+(typeof learnBonus==='function'?learnBonus(c,nid):0))));}
 function cityRank(t,nid){return CITIES.map(c=>({c,s:cityScore(c,nid,t),g:cityScore(c,nid,t)-cityScore(c,nid,1)})).sort((a,b)=>b.s-a.s);}
 function funnel(){const v=FUN.map(f=>num(S.fun[f[0]]));if(!v[0])return null;
   const h=FUN.map((f,i)=>{if(i===0)return Math.min(1,v[0]/1000);const prev=i===9?v[7]:v[i-1];if(!prev)return 0;return Math.min(1,(v[i]/prev)/f[3]);});
@@ -66,7 +66,7 @@ function briefing(mode){
    <div class="brief"><h3>Evidence</h3><p>${ev.s} <span class="small">— <a href="${ev.url}" target="_blank" rel="noopener">${ev.src}</a></span></p></div>
    <div class="brief"><h3>Data to watch</h3><p><a href="${feed.u}" target="_blank" rel="noopener">${feed.n}</a> — ${feed.w}.</p></div>`,
    text:`DeoCoach daily briefing — ${dateStr()}\nSignal (${n.n}): ${sig[0]}. ${sig[1]}. Today's move: ${sig[2]}.\nCity pulse (${city.n}): ${city.mind}. Say: ${city.say}.\nEvidence: ${ev.s} (${ev.src})`};
-  const acts=[`Monday: ${SIGNALS[n.id][0][2]}.`,`Tuesday: publish one proof post aimed at ${n.payer.split(",")[0].toLowerCase()}.`,`Wednesday: ${city.prep.split(";")[0]}.`,`Thursday: book three discovery calls; log them in Cheque Tracker.`,`Friday: enter this week's funnel numbers and check your leak.`];
+  const acts=[`Monday: ${SIGNALS[n.id][0][2]}.`,`Tuesday: publish one proof post aimed at ${n.payer.split(",")[0].toLowerCase()}.`,`Wednesday: ${city.prep.split(";")[0]}.`,`Thursday: book three discovery calls; log them in Income Tracker.`,`Friday: enter this week's funnel numbers and check your leak.`];
   return{n,city,html:`
    <div class="brief"><h3>This week in ${esc(n.n)}</h3>${SIGNALS[n.id].map(s=>`<p><b>${s[0]}.</b> ${s[1]}. <span class="small">→ ${s[2]}.</span></p>`).join("")}</div>
    <div class="brief"><h3>Where it's rising fastest (to Year 5)</h3>${rising.map(r=>`<p><b>${r.c.n}, ${r.c.c}</b> — score ${cityScore(r.c,n.id,1)} → ${cityScore(r.c,n.id,5)}. Mind: ${r.c.mind}.</p>`).join("")}</div>
@@ -96,7 +96,7 @@ function plan(months){
     const yr=Math.ceil(q/4),th=themes[(q-1)%4],st=Math.min(7,base+Math.floor((q-1)/4));const leak=FUN[leakOrder[(q-1)%leakOrder.length]];
     const topY=nicheScores(Math.min(10,yr+1))[0];const a=[];
     if(th==="Focus"){a.push(q===1?`Commit to ${nn.n}.`:`Review: is ${nn.n} still your best niche for Year ${yr}?`);if(q===1&&T[0])a.push(`Break the ${T[0].n.toLowerCase()}: ${T[0].fix}`);a.push(`Fix funnel stage "${leak[1]}": ${leak[4]}.`);}
-    if(th==="Sell"){a.push(`Go deep in ${best}: three posts a week, one clear offer.`);a.push(`Pitch your core programme to ${nn.payer.split(",")[0].toLowerCase()}.`);a.push("Hold 12 discovery calls; log every deal in Cheque Tracker.");}
+    if(th==="Sell"){a.push(`Go deep in ${best}: three posts a week, one clear offer.`);a.push(`Pitch your core programme to ${nn.payer.split(",")[0].toLowerCase()}.`);a.push("Hold 12 discovery calls; log every deal in Income Tracker.");}
     if(th==="Proof"){a.push("Add five client results to your Proof Vault.");a.push("Run the 360° perception check with clients and peers.");a.push("Publish two case studies with numbers.");}
     if(th==="Scale"){a.push(`Test a ${CAREER[Math.min(7,st+1)][0]}-stage offer: ${CAREER[Math.min(7,st+1)][2]}.`);a.push("Launch or grow a group cohort.");a.push("Raise your entry price by 10–20% for new clients.");}
     if(topY.id!==nn.id&&q%4===0)a.push(`Futures watch: ${topY.n} rises in Year ${Math.min(10,yr+1)} — test a pilot offer.`);
@@ -106,17 +106,17 @@ function plan(months){
 /* ---------- navigation ---------- */
 const VIEWS=[
  ["home","✦","Command Centre",""],
- ["sonar","◎","Sonar · future sensing","Futures"],["briefing","☼","Daily & weekly briefing","Futures"],["minds","◉","City Minds","Futures"],["evidence","▤","Evidence & insight feeds","Futures"],
+ ["atlas","◉","Horizon Atlas","Futures & opportunities"],["briefing","☼","Daily & weekly briefing","Futures & opportunities"],["minds","❖","City Minds & Culture","Futures & opportunities"],["opps","✉","Opportunity Desk","Futures & opportunities"],["evidence","▤","Evidence & insight feeds","Futures & opportunities"],
  ["profile","☺","My profile","Me"],["signature","✧","Coach Signature","Me"],["ladder","▲","Competency Ladder","Me"],
- ["niches","⌁","Niche Radar · 10 years","Money"],["cheques","₦","Competencies → Cheques","Money"],
+ ["niches","⌁","Niche Radar · 10 years","Money"],["income","₦","Capability to Income","Money"],
  ["brand","◈","Brand Compass","Brand"],["funnel","▽","Brand Funnel","Brand"],["stuck","➚","Stuck & growth plan","Brand"],
- ["toolkit","⚙","Client Toolkit","Grow"],["opps","✉","Opportunities & Networks","Grow"],["mentor","☯","Supervisor Desk","Grow"]];
-const NEW=["sonar","briefing","minds","evidence"];
-function doneMap(){return{profile:!!S.profile.name,signature:!!signature(),ladder:compAvg()>0,niches:!!S.profile.niche,cheques:S.deals.length>0,brand:S.stage!==null,funnel:!!funnel(),stuck:num(S.hrs.total)>0};}
+ ["toolkit","⚙","Client Toolkit","Grow"],["mentor","☯","Supervisor Desk","Grow"]];
+const NEW=["atlas","briefing","minds","evidence","opps"];
+function doneMap(){return{profile:!!S.profile.name,signature:!!signature(),ladder:compAvg()>0,niches:!!S.profile.niche,income:S.deals.length>0,brand:S.stage!==null,funnel:!!funnel(),stuck:num(S.hrs.total)>0};}
 function updateChrome(){const d=doneMap();const cur=(location.hash||"#home").slice(1);let h="",grp="";
   VIEWS.forEach(v=>{if(v[3]&&v[3]!==grp){grp=v[3];h+=`<div class="grp">${grp}</div>`;}h+=`<button class="${cur===v[0]?"on":""}" onclick="location.hash='${v[0]}'"><span class="ic">${v[1]}</span>${v[2]}${d[v[0]]?'<span class="ok">✓</span>':NEW.includes(v[0])?'<span class="new">NEW</span>':""}</button>`;});
   document.getElementById("nav").innerHTML=h;document.getElementById("who").textContent=S.profile.name?`${S.profile.name}${S.profile.cityId&&cityById(S.profile.cityId)?" · "+cityById(S.profile.cityId).n:""}`:"";}
-function render(){stopGlobes();const cur=(location.hash||"#home").slice(1);const fn=V[cur]||V.home;document.getElementById("main").innerHTML=fn();updateChrome();if(AFTER[cur])AFTER[cur]();}
+function render(){stopGlobes();const cur=(location.hash||"#home").slice(1);const fn=V[cur]||V[{sonar:"atlas",cheques:"income"}[cur]]||V.home;document.getElementById("main").innerHTML=fn();updateChrome();if(AFTER[cur])AFTER[cur]();}
 window.addEventListener("hashchange",()=>{render();window.scrollTo(0,0);});
 const V={},AFTER={};
 
@@ -126,14 +126,14 @@ V.home=()=>{const sg=signature(),f=funnel(),top=nicheScores(S.yr)[0],by=deals(),
  const lead=cityRank(5,"all")[0];
  return `<div class="card"><div class="hero"><div><div class="tag">DATA-DRIVEN COACHING ACROSS AFRICA</div>
  <h1>${S.profile.name?"Welcome, "+esc(S.profile.name.split(" ")[0])+".":"See where coaching is going — and get there first."}</h1>
- <p class="lead">Sense where opportunities are rising across African cities, know what people there care about, and turn your competencies into cheques with a plan from 90 days to 5 years.</p>
- <div class="flex"><a class="btn" href="#sonar">Open Sonar</a><a class="btn ghost" href="#briefing">Today's briefing</a><a class="btn ghost" href="#${!d.profile?"profile":!d.signature?"signature":!d.funnel?"funnel":"stuck"}">${pct<100?"Continue setup ("+pct+"%)":"My growth plan"}</a></div>
+ <p class="lead">Sense where opportunities are rising across African cities, know what people there care about, read the culture, find live tenders and jobs, and turn your capabilities into income with a plan from 90 days to 5 years.</p>
+ <div class="flex"><a class="btn" href="#atlas">Open Horizon Atlas</a><a class="btn ghost" href="#opps">Opportunities</a><a class="btn ghost" href="#briefing">Today's briefing</a><a class="btn ghost" href="#${!d.profile?"profile":!d.signature?"signature":!d.funnel?"funnel":"stuck"}">${pct<100?"Continue setup ("+pct+"%)":"My growth plan"}</a></div>
  <p class="small" style="margin-top:12px">Strongest signal by Year 5: <b style="color:var(--teal)">${lead.c.n}</b> (${lead.s}/100 across its top niches).</p></div>
- <div class="globe-wrap"><div class="globe-hud">◎ Sonar · Year 5 · all niches</div><canvas id="heroGlobe" height="420"></canvas></div></div></div>
+ <div class="globe-wrap"><div class="globe-hud">◉ Horizon scan · Year 5 · all niches</div><canvas id="heroGlobe" height="420"></canvas></div></div></div>
  <div class="grid g3">
   <div class="stat"><div class="k">Coach signature</div><div class="v">${sg?STYLES[sg.p].name:"—"}</div><div class="s">${sg?"Secondary: "+STYLES[sg.s].name:'<a href="#signature">Take the 2-minute scan</a>'}</div></div>
   <div class="stat"><div class="k">Top niche · Year ${S.yr}</div><div class="v" style="font-size:1rem">${top.n}</div><div class="s">Fit ${top.score}/100</div></div>
-  <div class="stat"><div class="k">Cheques (${c})</div><div class="v">${money(m.paid)}</div><div class="s">Pipeline ${money(m.pipe)} · forecast ${money(m.fc)}</div></div>
+  <div class="stat"><div class="k">Income (${c})</div><div class="v">${money(m.paid)}</div><div class="s">Pipeline ${money(m.pipe)} · forecast ${money(m.fc)}</div></div>
   <div class="stat"><div class="k">Brand level</div><div class="v">${f?BRAND[f.lvl]:"—"}</div><div class="s">${f?(f.leak!==null?"Stuck at: "+FUN[f.leak][1]:"Funnel healthy"):'<a href="#funnel">Enter funnel numbers</a>'}</div></div>
   <div class="stat"><div class="k">Career stage</div><div class="v">${S.stage!==null?CAREER[S.stage][0]:"—"}</div><div class="s">${S.stage!==null?"Sell: "+CAREER[S.stage][2]:'<a href="#brand">Choose your stage</a>'}</div></div>
   <div class="stat"><div class="k">Main sticking point</div><div class="v" style="font-size:1rem">${T[0]?T[0].n:"—"}</div><div class="s">${T[0]?T[0].fix:"Complete your data for a diagnosis"}</div></div>
@@ -141,17 +141,21 @@ V.home=()=>{const sg=signature(),f=funnel(),top=nicheScores(S.yr)[0],by=deals(),
  <div class="card" style="margin-top:18px"><div class="flex"><h2 style="margin:0">Today · ${dateStr()}</h2><a class="btn sm ghost right" href="#briefing">Full briefing</a></div>${b.html}</div>`;};
 AFTER.home=()=>startGlobe("heroGlobe",{yr:5,niche:"all",labels:6});
 
-/* ---------- Sonar ---------- */
-V.sonar=()=>{const s=S.sonar;const R=cityRank(s.yr,s.niche);const sel=s.city?cityById(s.city):R[0].c;
- const nsel=s.niche==="all"?null:nicheById(s.niche);
- return `<div class="card"><h1>Sonar · future sensing</h1><p class="lead">A panoramic scan of where coaching opportunity is likely to rise across African cities over the next 10 years. Move the years, pick a niche, tap a city.</p>
+
+/* ---------- Horizon Atlas ---------- */
+V.atlas=()=>{const s=S.sonar;const R=cityRank(s.yr,s.niche);const sel=s.city?cityById(s.city):null;const nsel=s.niche==="all"?null:nicheById(s.niche);
+ return `<div class="card"><h1>Horizon Atlas</h1><p class="lead">A panoramic view of where coaching opportunity is likely to rise across Africa over 10 years. Drag to turn the globe, scroll or use + and − to zoom, and tap a city: the engine flies in and deploys a plan for you.</p>
  <div class="grid g2"><div><label>Year ahead</label><div class="yearbar"><span class="yv">Year ${s.yr}</span><input type="range" min="1" max="10" value="${s.yr}" oninput="S.sonar.yr=+this.value;save();render()"></div></div>
  <div><label>Niche</label><select onchange="S.sonar.niche=this.value;save();render()"><option value="all">All niches (each city's strongest)</option>${NICHES.map(n=>`<option value="${n.id}" ${s.niche===n.id?"selected":""}>${n.n}</option>`).join("")}</select></div></div></div>
- <div class="sonar-layout"><div class="card" style="padding:10px"><div class="globe-wrap"><div class="globe-hud">◎ Scanning · Year ${s.yr} · ${nsel?esc(nsel.n):"all niches"}</div><canvas id="sonarGlobe" height="560"></canvas></div>
-  <p class="small" style="padding:0 10px">Ring size = opportunity score. Gold = strongest; teal = fastest rising since Year 1. Scores are DeoCoach scenario estimates.</p></div>
- <div class="card"><h2>Opportunity ranking · Year ${s.yr}</h2>${R.slice(0,12).map((r,i)=>`<div class="rank ${sel.id===r.c.id?"on":""}" onclick="S.sonar.city='${r.c.id}';save();render()"><span class="small">${i+1}</span><span><b>${r.c.n}</b> <span class="small">${r.c.c}</span></span><div class="bar ${r.g>=Math.max(...R.map(x=>x.g))*0.75?"teal":""}"><i style="width:${r.s}%"></i></div><span class="small">${r.s}${r.g>0?" ↑"+r.g:""}</span></div>`).join("")}</div></div>
- ${cityPanel(sel,s.yr)}`;};
-AFTER.sonar=()=>startGlobe("sonarGlobe",{yr:S.sonar.yr,niche:S.sonar.niche,labels:10,sel:S.sonar.city,click:id=>{S.sonar.city=id;save();render();}});
+ <div class="sonar-layout"><div class="card" style="padding:10px"><div class="globe-wrap"><div class="globe-hud">◉ Horizon scan · Year ${s.yr} · ${nsel?esc(nsel.n):"all niches"}${sel?" · "+sel.n:""}</div>
+  <div class="zoombar"><button onclick="zoomAtlas(1.4)" title="Zoom in">+</button><button onclick="zoomAtlas(1/1.4)" title="Zoom out">−</button><button onclick="zoomAtlas(0);S.sonar.city=null;save();render()" title="Whole continent">⟲</button></div>
+  <canvas id="atlasGlobe" height="580"></canvas></div>
+  <p class="small" style="padding:0 10px">Ring size = opportunity score. Gold = strongest; teal = fastest rising. Scores are DeoCoach scenario estimates, sharpened by your field intelligence.</p></div>
+ <div class="card"><h2>Opportunity ranking · Year ${s.yr}</h2><input placeholder="Find a city…" oninput="filterRank(this.value)" style="margin-bottom:8px">${R.map((r,i)=>`<div class="rank ${sel&&sel.id===r.c.id?"on":""}" data-n="${r.c.n.toLowerCase()} ${r.c.c.toLowerCase()}" onclick="pickCity('${r.c.id}')"><span class="small">${i+1}</span><span><b>${r.c.n}</b> <span class="small">${r.c.c}</span></span><div class="bar ${r.g>=Math.max(...R.map(x=>x.g))*0.75?"teal":""}"><i style="width:${r.s}%"></i></div><span class="small">${r.s}${r.g>0?" ↑"+r.g:""}</span></div>`).join("")}</div></div>
+ ${sel?deployView(sel,s.yr)+cityPanel(sel,s.yr)+cultureView(sel)+fieldView(sel):`<div class="card"><h2>Choose a city</h2><p class="lead">Tap a city on the globe or in the ranking. The engine will scan its signals, match them to your profile, read the culture and deploy a 90-day plan.</p></div>`}`;};
+function pickCity(id){S.sonar.city=id;S.sonar.fly=true;save();render();setTimeout(()=>{const d=document.querySelector(".deploy");if(d)d.scrollIntoView({behavior:"smooth",block:"start"});},1300);}
+function filterRank(q){q=q.toLowerCase();document.querySelectorAll(".rank").forEach(e=>e.style.display=e.dataset.n.includes(q)?"":"none");}
+AFTER.atlas=()=>{const fly=S.sonar.fly&&S.sonar.city;S.sonar.fly=false;save();startGlobe("atlasGlobe",{interactive:true,yr:S.sonar.yr,niche:S.sonar.niche,labels:10,sel:S.sonar.city,flyTo:fly?S.sonar.city:null,flyK:3.6,click:id=>pickCity(id)});if(S.sonar.city)loadCommunity(S.sonar.city);};
 function cityPanel(c,yr){const ns=NICHES.map(n=>({n,s:cityScore(c,n.id,yr),s1:cityScore(c,n.id,1),s10:cityScore(c,n.id,10)})).sort((a,b)=>b.s-a.s).slice(0,6);
  const inSub=S.sub.cities.includes(c.id);
  return `<div class="card"><div class="flex"><h2 style="margin:0">${c.n}, ${c.c}</h2><span class="pill teal">${c.hub}</span><button class="btn sm ${inSub?"":"ghost"} right" onclick="toggleSub('cities','${c.id}')">${inSub?"✓ In my briefing":"+ Add to my briefing"}</button></div>
@@ -177,12 +181,13 @@ V.briefing=()=>{const b=briefing(S.sub.cad);
 
 /* ---------- City Minds ---------- */
 V.minds=()=>{const fc=S.mindC||"";const countries=[...new Set(CITIES.map(c=>c.c))].sort();const L=CITIES.filter(c=>!fc||c.c===fc);const n=S.sonar.niche!=="all"?S.sonar.niche:null;
- return `<div class="card"><h1>City Minds</h1><p class="lead">What will run the coaching landscape city by city: the issues, the one factor most on people's minds, how to speak to it, and how to prepare now.</p>
+ return `<div class="card"><h1>City Minds & Culture</h1><p class="lead">What will run the coaching landscape city by city — and how to work with its culture: the issues, the one factor most on people's minds, how to speak to it, and how to prepare now.</p>
  <div style="max-width:320px"><label>Country</label><select onchange="S.mindC=this.value;save();render()"><option value="">All countries</option>${countries.map(c=>`<option ${fc===c?"selected":""}>${c}</option>`).join("")}</select></div></div>
  <div class="grid g2">${L.map(c=>`<div class="citycard"><div class="flex"><h3 style="margin:0">${c.n}</h3><span class="small">${c.c}</span><span class="pill right">Y5 ${cityScore(c,"all",5)}</span></div><p class="small">${c.hub}</p>
  <div class="mind"><b>On their minds:</b> ${c.mind}</div><p class="small"><b style="color:var(--ink)">Issues:</b> ${c.issues.join(" · ")}</p><p class="small"><b style="color:var(--ink)">Say:</b> ${c.say}</p><p class="small"><b style="color:var(--ink)">Prepare now:</b> ${c.prep}</p>
+ <p class="small"><b style="color:var(--ink)">Culture:</b> ${esc((CULTURE[c.c]||{}).trust||"")} <i>Avoid:</i> ${esc((CULTURE[c.c]||{}).avoid||"")}</p>
  <p class="small"><b style="color:var(--ink)">Strong niches:</b> ${c.top.map(id=>nicheById(id).n).join(", ")}</p>
- <div class="flex"><button class="btn sm ghost" onclick="S.sonar.city='${c.id}';save();location.hash='sonar'">View on Sonar</button><button class="btn sm ${S.sub.cities.includes(c.id)?"":"ghost"}" onclick="toggleSub('cities','${c.id}')">${S.sub.cities.includes(c.id)?"✓ In briefing":"+ Briefing"}</button></div></div>`).join("")}</div>`;};
+ <div class="flex"><button class="btn sm ghost" onclick="S.sonar.city='${c.id}';S.sonar.fly=true;save();location.hash='atlas'">View on Horizon Atlas</button><button class="btn sm ${S.sub.cities.includes(c.id)?"":"ghost"}" onclick="toggleSub('cities','${c.id}')">${S.sub.cities.includes(c.id)?"✓ In briefing":"+ Briefing"}</button></div></div>`).join("")}</div>`;};
 
 /* ---------- Evidence ---------- */
 V.evidence=()=>`<div class="card"><h1>Evidence & insight feeds</h1><p class="lead">Verified numbers you can quote, with their sources — and the official data feeds to follow for your niche.</p>
@@ -194,7 +199,8 @@ V.evidence=()=>`<div class="card"><h1>Evidence & insight feeds</h1><p class="lea
 V.profile=()=>{const p=S.profile;
  return `<div class="card"><h1>My profile</h1><p class="lead">Tell DeoCoach who you are. Everything stays on this device.</p><div class="grid g2">
  <div><label>Full name</label><input value="${esc(p.name)}" oninput="setv('profile.name',this.value)"></div>
- <div><label>My city (for Sonar and briefings)</label><select onchange="setv('profile.cityId',this.value,true)"><option value="">— choose —</option>${CITIES.map(c=>`<option value="${c.id}" ${p.cityId===c.id?"selected":""}>${c.n}, ${c.c}</option>`).join("")}<option value="other" ${p.cityId==="other"?"selected":""}>Other / outside Africa</option></select></div>
+ <div><label>My city (for the Atlas and briefings)</label><select onchange="setv('profile.cityId',this.value,true)"><option value="">— choose —</option>${CITIES.map(c=>`<option value="${c.id}" ${p.cityId===c.id?"selected":""}>${c.n}, ${c.c}</option>`).join("")}<option value="other" ${p.cityId==="other"?"selected":""}>Other / outside Africa</option></select></div>
+ <div><label>I am a</label><select onchange="setv('profile.role',this.value,true)">${["Coach","Leader","Mentor","Trainer / facilitator","Organisation"].map(o=>`<option ${(p.role||"Coach")===o?"selected":""}>${o}</option>`).join("")}</select></div>
  <div><label>Main currency</label><select onchange="setv('profile.cur',this.value,true)">${Object.keys(CUR).map(k=>`<option ${p.cur===k?"selected":""} value="${k}">${CUR[k]} ${k}</option>`).join("")}</select></div>
  <div><label>Years coaching</label><input type="number" min="0" value="${esc(p.years)}" oninput="setv('profile.years',this.value)"></div>
  <div><label>Credential</label><select onchange="setv('profile.cred',this.value)">${["None yet","In training","Certified / accredited","Advanced / master level"].map(o=>`<option ${p.cred===o?"selected":""}>${o}</option>`).join("")}</select></div>
@@ -225,19 +231,19 @@ V.niches=()=>{const t=S.yr;const L=nicheScores(t);const top6=L.slice(0,6);
  <div class="note">Year 1–2 is mostly paid by individuals, Years 3–5 increasingly by institutions, Years 6–10 by systems: national programmes, platforms and multi-country contracts. Outlooks are DeoCoach planning estimates.</div></div>
  <div class="card"><h2>Panorama heat map — market outlook by year</h2><div style="overflow-x:auto"><table class="heat"><tr><th style="min-width:220px">Niche</th>${[1,2,3,4,5,6,7,8,9,10].map(x=>`<th style="text-align:center;${x===t?"color:#fff":""}">Y${x}</th>`).join("")}</tr>
  ${NICHES.map(n=>`<tr><td style="padding:4px 6px;font-size:.8rem;text-align:left">${n.n}</td>${[1,2,3,4,5,6,7,8,9,10].map(x=>{const v=curve(n,x);return `<td style="background:${heat(v)};${x===t?"outline:2px solid #ecd593":""}">${v.toFixed(0)}</td>`}).join("")}</tr>`).join("")}</table></div></div>
- <div class="card"><h2>Your fit · Year ${t}</h2><table><tr><th>#</th><th>Niche</th><th>Fit</th><th>Who signs the cheque</th><th>Fee</th><th></th></tr>
+ <div class="card"><h2>Your fit · Year ${t}</h2><table><tr><th>#</th><th>Niche</th><th>Fit</th><th>Who pays</th><th>Fee</th><th></th></tr>
  ${L.map((n,i)=>`<tr><td>${i+1}</td><td><b>${n.n}</b></td><td style="width:120px"><div class="bar"><i style="width:${n.score}%"></i></div><span class="small">${n.score}/100</span></td><td class="small">${n.payer}</td><td>${"●".repeat(n.fee)}${"○".repeat(3-n.fee)}</td><td><button class="btn sm ${S.profile.niche===n.id?"":"ghost"}" onclick="setv('profile.niche','${n.id}',true)">${S.profile.niche===n.id?"My niche":"Choose"}</button></td></tr>`).join("")}</table></div>`;};
 
-/* ---------- Cheques ---------- */
-V.cheques=()=>{const o=S.offer,c=S.profile.cur,R=num(o.rate);const n=nicheById(o.niche||S.profile.niche)||NICHES[0];const comp=COMPS.find(x=>x[0]===o.comp);const by=deals();
+/* ---------- Capability to Income ---------- */
+V.income=()=>{const o=S.offer,c=S.profile.cur,R=num(o.rate);const n=nicheById(o.niche||S.profile.niche)||NICHES[0];const comp=COMPS.find(x=>x[0]===o.comp);const by=deals();
  const offers=R?[["Entry","Clarity Session (single session)",R,"The person being coached","Lowers the risk of a first yes"],["Core","6-week Signature Programme",R*6*.9,"Individuals, parents, small business owners","Your main income engine"],["Group","Cohort of 8–12 (per seat)",R*2,"Groups, associations, churches","~10 seats = "+money(R*20,c)],["Corporate",n.n+" programme for a team",R*24,n.payer,"Invoice the budget holder, not the participant"],["Premium","3-month 1:1 retainer",R*12*1.2,"Senior leaders, founders","Needs proof in your Proof Vault"]]:[];
- return `<div class="card"><h1>Competencies → Cheques</h1><div class="ladder">${["Competency","Proof","Offer","Buyer","Channel","Price","Cheque","Repeat"].map(x=>`<span>${x}</span>`).join("")}</div>
+ return `<div class="card"><h1>Capability to Income</h1><div class="ladder">${["Capability","Proof","Offer","Buyer","Channel","Price","Income","Repeat"].map(x=>`<span>${x}</span>`).join("")}</div>
  <h2 style="margin-top:14px">1 · Offer Forge</h2><div class="grid g3"><div><label>Lead competency</label><select onchange="setv('offer.comp',this.value,true)"><option value="">— choose —</option>${COMPS.map(x=>`<option value="${x[0]}" ${o.comp===x[0]?"selected":""}>${x[1]}</option>`).join("")}</select></div>
  <div><label>Niche</label><select onchange="setv('offer.niche',this.value,true)">${NICHES.map(x=>`<option value="${x.id}" ${n.id===x.id?"selected":""}>${x.n}</option>`).join("")}</select></div>
  <div><label>My fee per session (${CUR[c]})</label><input type="number" value="${esc(o.rate)}" onchange="setv('offer.rate',this.value,true)"></div></div>
  ${R?`<table style="margin-top:14px"><tr><th>Tier</th><th>Offer</th><th>Price</th><th>Who pays</th><th>Note</th></tr>${offers.map(x=>`<tr><td><span class="pill">${x[0]}</span></td><td><b>${esc(x[1])}</b>${comp?`<div class="small">Built on your ${comp[1].toLowerCase()}</div>`:""}</td><td><b>${money(x[2],c)}</b></td><td class="small">${esc(x[3])}</td><td class="small">${x[4]}</td></tr>`).join("")}</table><div class="note">Core = 6 sessions less 10% · group seat = 2× session · corporate = 24× session · premium = 12 sessions + 20%. Adjust to your market.</div>`:'<p class="small">Enter your fee to generate your offers and price ladder.</p>'}</div>
  <div class="card"><h2>2 · Proof Vault</h2><textarea rows="4" placeholder="e.g. Ada — promoted to manager in 4 months; confidence 4→8/10" oninput="setv('proof',this.value)">${esc(S.proof)}</textarea></div>
- <div class="card"><h2>3 · Cheque Tracker</h2><div class="grid g4">${Object.keys(by).length?Object.entries(by).map(([k,m])=>`<div class="stat"><div class="k">${k}</div><div class="v">${money(m.paid,k)}</div><div class="s">Pipeline ${money(m.pipe,k)}<br>Forecast ${money(m.fc,k)}</div></div>`).join(""):'<p class="small">No deals yet.</p>'}</div>
+ <div class="card"><h2>3 · Income Tracker</h2><div class="grid g4">${Object.keys(by).length?Object.entries(by).map(([k,m])=>`<div class="stat"><div class="k">${k}</div><div class="v">${money(m.paid,k)}</div><div class="s">Pipeline ${money(m.pipe,k)}<br>Forecast ${money(m.fc,k)}</div></div>`).join(""):'<p class="small">No deals yet.</p>'}</div>
  <table style="margin-top:12px"><tr><th>Client / buyer</th><th>Offer</th><th>Payer</th><th>Amount</th><th>Cur.</th><th>Stage</th><th></th></tr>
  ${S.deals.map((d,i)=>`<tr><td><input value="${esc(d.cl)}" onchange="S.deals[${i}].cl=this.value;save()"></td><td><input value="${esc(d.of)}" onchange="S.deals[${i}].of=this.value;save()"></td><td><select onchange="S.deals[${i}].py=this.value;save()">${["Individual","Parent","HR / L&D","CEO / founder","Church","Government","Donor / foundation","Diaspora"].map(x=>`<option ${d.py===x?"selected":""}>${x}</option>`).join("")}</select></td><td><input type="number" value="${esc(d.amt)}" onchange="S.deals[${i}].amt=this.value;save();render()"></td><td><select onchange="S.deals[${i}].cur=this.value;save();render()">${Object.keys(CUR).map(k=>`<option ${(d.cur||c)===k?"selected":""}>${k}</option>`).join("")}</select></td><td><select onchange="S.deals[${i}].st=this.value;save();render()">${DSTAGES.map(x=>`<option ${d.st===x?"selected":""}>${x}</option>`).join("")}</select></td><td><button class="btn sm ghost" onclick="S.deals.splice(${i},1);save();render()">✕</button></td></tr>`).join("")}</table>
  <button class="btn sm" style="margin-top:10px" onclick="S.deals.push({cl:'',of:'',py:'Individual',amt:'',cur:S.profile.cur,st:'Lead'});save();render()">+ Add a deal</button><p class="small">Forecast weights: Lead 10% · Proposal 30% · Agreed 60% · Invoiced 85% · Paid 100%.</p></div>`;};
@@ -281,11 +287,28 @@ V.stuck=()=>{const T=traps();const P=plan(S.pm);const c=P.cur;
 V.toolkit=()=>{const apps=[["DeoLens — The Atlas of Self","Self-awareness, strengths and identity for any client","https://deolenss.vercel.app",["all"]],["DeoCareers","Career discovery, development and opportunity search","https://deocareers-app.vercel.app",["career","global","youth","women"]],["DeoEngineers","Career intelligence for young African engineers","https://deoengineers-app.vercel.app",["career","youth","ai","green"]],["DeoWealth — Wealth Mind Suite","Money psychology and financial behaviour","https://deowealthss.vercel.app",["money","sme","family"]],["DeoProphetics","Prophetic archetype assessment for faith and ministry coaching","https://deoprophetss.vercel.app",["faith"]],["DeoSales — The Selling Mind","Sales psychology and performance (coming soon)","",["sales","sme"]],["DeoCreative","Creativity profile for creative professionals (coming soon)","",["creative"]]];const nn=S.profile.niche;
  return `<div class="card"><h1>Client Toolkit</h1><p class="lead">Add data to your coaching with Deo assessments. ★ marks tools for your niche.</p><div class="grid g2">${apps.map(a=>`<div class="citycard"><div class="flex"><h3 style="margin:0">${a[0]}</h3>${a[3].includes("all")||a[3].includes(nn)?'<span class="pill right">★ Your niche</span>':""}</div><p class="small">${a[1]}</p>${a[2]?`<a href="${a[2]}" target="_blank" rel="noopener">Open ${a[2].replace("https://","")}</a>`:'<span class="small">Coming soon</span>'}</div>`).join("")}</div>
  <div class="note">Get your client's consent first, and explain that results support development — they are not a diagnosis or a selection decision.</div></div>`;};
-V.opps=()=>{const ev=[["23 Nov 2026","Africa Coaching Week 2026 — opening press conference & media parley","Alliance Française, Ikoyi, Lagos · 4pm"],["29 Nov 2026","Africa Coaching Week 2026 — closing gala","Radisson Blu VI, Lagos · 5pm · live-stream tickets available"]];
- const src=[["Individuals & parents","Graduate and career programmes, school holidays, January resolutions"],["HR / L&D","Annual training budgets, manager development, leadership pipelines"],["Churches & ministries","Leadership retreats, workers' training, family seasons"],["Government & agencies","Public-service reform, youth employment, capacity-building tenders"],["Donors & foundations","Youth employability, women's leadership, SME growth programmes"],["Diaspora","Global careers, relocation, family business — paid in £/$"],["Other coaches","Supervision, mentor coaching, credential preparation"]];
- return `<div class="card"><h1>Opportunities & Networks</h1><h2>Coming up</h2>${ev.map(e=>`<div class="trap"><b>${e[0]}</b> — ${e[1]}<div class="small">${e[2]}</div></div>`).join("")}
- <h2 style="margin-top:16px">Opportunity sources by payer</h2><table><tr><th>Payer</th><th>Where the money shows up</th><th>Tracking?</th></tr>${src.map((s,i)=>`<tr><td><b>${s[0]}</b></td><td class="small">${s[1]}</td><td><input type="checkbox" ${S.src&&S.src[i]?"checked":""} onchange="S.src=S.src||{};S.src[${i}]=this.checked;save()"></td></tr>`).join("")}</table>
- <h2 style="margin-top:16px">My network goals this month</h2><div class="grid g3">${[["n1","New peer coaches met"],["n2","Referral partners"],["n3","Decision-makers contacted"]].map(x=>`<div><label>${x[1]}</label><input type="number" value="${esc((S.net||{})[x[0]])}" onchange="setv('net.${x[0]}',this.value)"></div>`).join("")}</div></div>`;};
+V.opps=()=>{const ctry=S.oppC||(cityById(S.profile.cityId)||{}).c||"Nigeria";const countries=Object.keys(CULTURE).sort();const P=[...(PORTALS[ctry]||[]),...PORTALS._multi];const al=S.alerts||{};
+ const ev=[["23 Nov 2026","Africa Coaching Week 2026 — opening press conference & media parley","Alliance Française, Ikoyi, Lagos · 4pm"],["29 Nov 2026","Africa Coaching Week 2026 — closing gala","Radisson Blu VI, Lagos · 5pm · live-stream tickets available"]];
+ return `<div class="card"><h1>Opportunity Desk</h1><p class="lead">Coaching jobs, government bids, invitations to tender, expressions of interest, consultancies and projects — gathered for you by country and keyword.</p>
+ <div class="grid g3"><div><label>Country</label><select onchange="S.oppC=this.value;save();render()">${countries.map(c=>`<option ${c===ctry?"selected":""}>${c}</option>`).join("")}</select></div>
+ <div><label>Keywords</label><input id="okw" value="${esc(S.oppKw||"training leadership coaching")}" onchange="S.oppKw=this.value;save()"></div>
+ <div style="align-self:end"><button class="btn" onclick="loadOpps()">⟳ Search live opportunities</button></div></div>
+ <div id="oppList" style="margin-top:14px"><p class="small">Press search to pull the latest notices.</p></div></div>
+ <div class="grid g2"><div class="card"><h2>Daily opportunity alerts</h2><p class="small">Get new tenders, EOIs and jobs that match you, by email.</p>
+ <label>Email</label><input id="aem" type="email" value="${esc(al.email||"")}"><div class="grid g2" style="margin-top:8px"><div><label>Countries (up to 5)</label><select id="acs" multiple size="5">${countries.map(c=>`<option ${(al.countries||[ctry]).includes(c)?"selected":""}>${c}</option>`).join("")}</select></div>
+ <div><label>Keywords</label><input id="akw" value="${esc(al.kw||"coaching leadership training")}"><label style="margin-top:8px">How often</label><select id="acd"><option value="daily" ${al.cadence!=="weekly"?"selected":""}>Daily</option><option value="weekly" ${al.cadence==="weekly"?"selected":""}>Weekly (Mondays)</option></select></div></div>
+ <label class="flex small" style="text-transform:none;margin-top:10px"><input type="checkbox" id="aok"> I agree to receive opportunity emails from DeoCoach and can unsubscribe at any time.</label>
+ <button class="btn" style="margin-top:8px" onclick="subscribeAlerts()">Switch on alerts</button><div id="amsg" class="small" style="margin-top:8px"></div></div>
+ <div class="card"><h2>Where to look in ${esc(ctry)}</h2><table><tr><th>Portal</th><th>What you'll find</th></tr>${P.map(x=>`<tr><td><a href="${x[1]}" target="_blank" rel="noopener">${x[0]}</a></td><td class="small">${x[2]}</td></tr>`).join("")}</table>
+ <h2 style="margin-top:16px">Coming up</h2>${ev.map(e=>`<div class="trap"><b>${e[0]}</b> — ${e[1]}<div class="small">${e[2]}</div></div>`).join("")}</div></div>`;};
+async function loadOpps(){const el=document.getElementById("oppList");const c=S.oppC||(cityById(S.profile.cityId)||{}).c||"Nigeria";const kw=document.getElementById("okw").value;S.oppKw=kw;save();el.innerHTML='<div class="engine-steps"><span>Searching World Bank, ReliefWeb and job sources…</span></div>';
+ try{const r=await fetch(`/api/opps?country=${encodeURIComponent(c)}&kw=${encodeURIComponent(kw)}`);const j=await r.json();if(!r.ok)throw 0;
+  el.innerHTML=(j.items||[]).length?`<table><tr><th>Opportunity</th><th>Type</th><th>Deadline</th><th>Source</th></tr>${j.items.map(x=>`<tr><td><a href="${esc(x.url)}" target="_blank" rel="noopener">${esc(x.title)}</a><div class="small">${esc(x.org)} · ${esc(x.country)}</div></td><td><span class="pill">${esc(x.type)}</span></td><td class="small">${esc(String(x.deadline||"").slice(0,10))||"—"}</td><td class="small">${esc(x.src)}</td></tr>`).join("")}</table><p class="small">Always confirm details and deadlines on the original notice.</p>`:'<p class="small">No matching notices right now. Try broader keywords, or check the portals on this page.</p>';}
+ catch(e){el.innerHTML='<div class="note">Live opportunity search switches on when DeoCoach runs on its own site. Meanwhile, use the portals listed on this page — they are the official sources.</div>';}}
+async function subscribeAlerts(){const em=document.getElementById("aem").value.trim(),cs=[...document.getElementById("acs").selectedOptions].map(o=>o.value).slice(0,5),kw=document.getElementById("akw").value,cad=document.getElementById("acd").value,ok=document.getElementById("aok").checked,m=document.getElementById("amsg");
+ if(!ok){m.textContent="Please tick the consent box.";return;}S.alerts={email:em,countries:cs,kw,cadence:cad};save();
+ try{const r=await fetch("/api/subscribe",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({email:em,countries:cs,kw,cadence:cad,consent:true})});if(!r.ok)throw 0;m.textContent="✓ Alerts switched on. Look out for your first email.";}
+ catch(e){m.textContent="Saved on this device. Email delivery switches on when DeoCoach runs on its own site.";}}
 V.mentor=()=>`<div class="card"><h1>Supervisor Desk</h1><p class="lead">Reflective practice for coaches. Ask the live AI supervisor, or use the prompts after a difficult session.</p>
  <textarea id="supQ" rows="3" placeholder="Describe a coaching situation (no client names)…"></textarea><div class="flex" style="margin-top:8px"><button class="btn" onclick="askAI('Act as a coaching supervisor for an African coach. Help me reflect; do not diagnose; flag if referral to a health professional may be needed. Situation: '+document.getElementById('supQ').value,'supOut')">✦ Ask the Supervisor</button></div><div id="supOut" class="ai-out" style="display:none"></div>
  <h2 style="margin-top:16px">Reflection prompts</h2><ol>${["What did the client actually want today — and did I serve that or my own agenda?","Where did I talk when I should have asked?","What pattern am I seeing across this client's sessions?","What am I avoiding saying to this client, and why?","What evidence will show this coaching worked?"].map(x=>`<li>${x}</li>`).join("")}</ol>

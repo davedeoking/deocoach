@@ -1,11 +1,29 @@
 # DeoCoach: switching on the live services
 
-The site works fully without these. Add the variables in **Vercel → deocoach-app → Settings → Environment Variables** and redeploy.
+The site works fully without these; each service switches on when its variables are added in **Vercel → deocoach-app → Settings → Environment Variables** and the project is redeployed.
 
 | Service | What it powers | Variables |
 |---|---|---|
-| Live AI | "Deepen with live AI" on briefings, and Ask the Supervisor | `ANTHROPIC_API_KEY`. Optional: `ANTHROPIC_MODEL` (default `claude-sonnet-5-5`), `AI_HOURLY_LIMIT` (default 40 per visitor per hour) |
+| Live AI | City Analyst, Ask the Supervisor, "Deepen with live AI" briefings | `ANTHROPIC_API_KEY`. Optional: `ANTHROPIC_MODEL`, `AI_HOURLY_LIMIT` |
+| Opportunity search | World Bank procurement notices (on by default, public API) | none |
+| ReliefWeb jobs & consultancies | Adds NGO/UN jobs to the Opportunity Desk | `RELIEFWEB_APPNAME` (request an approved appname from ReliefWeb) |
+| South Africa jobs | Adzuna jobs | `ADZUNA_APP_ID`, `ADZUNA_APP_KEY` |
+| Opportunity alerts by email + shared field notes | Daily/weekly emails (cron at 06:00 UTC), coaches teaching each other | `SUPABASE_URL`, `SUPABASE_SERVICE_KEY` (Deo Cloud), `RESEND_API_KEY`, `DIGEST_FROM` (e.g. `DeoCoach <alerts@yourdomain>`), `CRON_SECRET` |
 
-Coming next: Deo Cloud accounts (email/WhatsApp delivery of briefings), opt-in anonymised coach map for association dashboards.
+## Supabase tables (run once in the Deo Cloud SQL editor)
+```sql
+create table if not exists public.deocoach_alerts (
+  email text primary key, countries text[], kw text, cadence text, token text, updated_at timestamptz default now());
+create table if not exists public.deocoach_signals (
+  id bigint generated always as identity primary key, city text, kind text, niche text, note text, strength int, created_at timestamptz default now());
+alter table public.deocoach_alerts enable row level security;
+alter table public.deocoach_signals enable row level security;
+-- No public policies: only the server functions (service key) read and write.
+```
+
+## Privacy
+- Alerts store only email, chosen countries, keywords, cadence and an unsubscribe token; every email has a one-click unsubscribe.
+- Shared field notes are anonymous (no names, emails or IPs) and opt-in per note. Moderate them before a public launch.
+- Before launch: publish a privacy notice and check it against the Nigeria Data Protection Act 2023, Kenya's Data Protection Act 2019, POPIA and UK/EU GDPR as relevant.
 
 Rebuild after editing anything in `src/`: `python3 src/build.py`
