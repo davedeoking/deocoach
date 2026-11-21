@@ -34,6 +34,7 @@ function startGlobe(id,o){
       for(let w=0;w<3;w++){const ph=((t*.35+w/3)%1);ctx.beginPath();ctx.arc(p[0],p[1],base*(.4+ph*1.4),0,Math.PI*2);ctx.strokeStyle=`rgba(${C.quake},${(1-ph)*.45})`;ctx.lineWidth=2;ctx.stroke();}
       const gr=ctx.createRadialGradient(p[0],p[1],0,p[0],p[1],base);gr.addColorStop(0,`rgba(${C.quake},${.28+(k.mag-5)*.06})`);gr.addColorStop(1,`rgba(${C.quake},0)`);ctx.beginPath();ctx.arc(p[0],p[1],base,0,Math.PI*2);ctx.fillStyle=gr;ctx.fill();
       if(ci<4){ctx.font="700 11px Inter,sans-serif";ctx.fillStyle=`rgba(${C.quake2},.95)`;ctx.fillText("M"+k.mag+" · "+k.name,p[0]-base*.4,p[1]-base*.55-4);}});}
+    if(o.traces){const hm=cityById(S.profile.cityId)||cityById("lagos");const tg=R.filter(r=>r.c.id!==hm.id).slice(0,6);ctx.setLineDash([5,7]);ctx.lineDashOffset=-t*18;tg.forEach((r,i)=>{if(d3g.geoDistance([r.c.lon,r.c.lat],centre)>=Math.PI/2&&d3g.geoDistance([hm.lon,hm.lat],centre)>=Math.PI/2)return;ctx.beginPath();path({type:"LineString",coordinates:[[hm.lon,hm.lat],[r.c.lon,r.c.lat]]});ctx.strokeStyle=`rgba(${C.acc},${.55-i*.06})`;ctx.lineWidth=1.3;ctx.stroke();});ctx.setLineDash([]);}
     pts=[];
     R.forEach(r=>{if(d3g.geoDistance([r.c.lon,r.c.lat],centre)>=Math.PI/2)return;const p=proj([r.c.lon,r.c.lat]);if(!p)return;const x=p[0],y=p[1];if(x<-20||y<-20||x>W+20||y>H+20)return;pts.push({...r,x,y});
       const rise=r.g>=gmax*.75,col=rise?"61,214,198":"236,213,147";const r0=(2.5+r.s/14)*Math.min(2,Math.sqrt(st.k));const ph=(hashStr(r.c.id)%100)/100;

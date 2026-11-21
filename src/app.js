@@ -121,7 +121,7 @@ function doneMap(){return{profile:!!S.profile.name,signature:!!signature(),ladde
 function updateChrome(){const d=doneMap();const cur=(location.hash||"#home").slice(1);let h="",grp="";
   VIEWS.forEach(v=>{if(v[3]&&v[3]!==grp){grp=v[3];h+=`<div class="grp">${grp}</div>`;}h+=`<button class="${cur===v[0]?"on":""}" onclick="location.hash='${v[0]}'"><span class="ic">${v[1]}</span>${v[2]}${d[v[0]]?'<span class="ok">✓</span>':NEW.includes(v[0])?'<span class="new">NEW</span>':""}</button>`;});
   document.getElementById("nav").innerHTML=h;document.getElementById("who").textContent=S.profile.name?`${S.profile.name}${S.profile.cityId&&cityById(S.profile.cityId)?" · "+cityById(S.profile.cityId).n:""}`:"";}
-function render(){stopGlobes();applyLook();langMenu();const cur=(location.hash||"#home").slice(1);const fn=V[cur]||V[{sonar:"atlas",cheques:"income"}[cur]]||V.home;const mn=document.getElementById("main");mn.innerHTML=fn();mn.querySelectorAll("svg *").forEach(el=>["fill","stroke"].forEach(a=>{const v=el.getAttribute(a);if(v&&v.includes("var("))el.style[a]=v;}));updateChrome();if(AFTER[cur])AFTER[cur]();translatePage();}
+function render(){stopGlobes();applyLook();langMenu();const cur=(location.hash||"#home").slice(1);const fn=V[cur]||V[{sonar:"atlas",cheques:"income"}[cur]]||V.home;const mn=document.getElementById("main");mn.innerHTML=fn();mn.querySelectorAll("svg *").forEach(el=>["fill","stroke"].forEach(a=>{const v=el.getAttribute(a);if(v&&v.includes("var("))el.style[a]=v;}));updateChrome();if(AFTER[cur])AFTER[cur]();if(window.POLISH_READY)polishAfter();translatePage();}
 window.addEventListener("hashchange",()=>{render();window.scrollTo(0,0);});
 const V={},AFTER={};
 
@@ -163,7 +163,7 @@ V.atlas=()=>{const s=S.sonar;const R=cityRank(s.yr,s.niche);const sel=s.city?cit
 let PLAY=null;function playYears(){if(PLAY){clearInterval(PLAY);PLAY=null;toast("Paused");return;}S.sonar.power=true;S.sonar.yr=1;save();render();PLAY=setInterval(()=>{if((location.hash||"").slice(1)!=="atlas"||S.sonar.yr>=10){clearInterval(PLAY);PLAY=null;return;}S.sonar.yr++;save();render();},1600);}
 function pickCity(id){S.sonar.city=id;S.sonar.fly=true;save();render();setTimeout(()=>{const d=document.querySelector(".deploy");if(d)d.scrollIntoView({behavior:"smooth",block:"start"});},1300);}
 function filterRank(q){q=q.toLowerCase();document.querySelectorAll(".rank").forEach(e=>e.style.display=e.dataset.n.includes(q)?"":"none");}
-AFTER.atlas=()=>{const fly=S.sonar.fly&&S.sonar.city;S.sonar.fly=false;save();startGlobe("atlasGlobe",{interactive:true,power:!!S.sonar.power,yr:S.sonar.yr,niche:S.sonar.niche,labels:10,sel:S.sonar.city,flyTo:fly?S.sonar.city:null,flyK:3.6,click:id=>pickCity(id)});if(S.sonar.city)loadCommunity(S.sonar.city);};
+AFTER.atlas=()=>{const fly=S.sonar.fly&&S.sonar.city;S.sonar.fly=false;save();startGlobe("atlasGlobe",{interactive:true,power:!!S.sonar.power,yr:S.sonar.yr,niche:S.sonar.niche,labels:10,traces:true,sel:S.sonar.city,flyTo:fly?S.sonar.city:null,flyK:3.6,click:id=>pickCity(id)});if(S.sonar.city)loadCommunity(S.sonar.city);};
 function cityPanel(c,yr){const ns=NICHES.map(n=>({n,s:cityScore(c,n.id,yr),s1:cityScore(c,n.id,1),s10:cityScore(c,n.id,10)})).sort((a,b)=>b.s-a.s).slice(0,6);
  const inSub=S.sub.cities.includes(c.id);
  return `<div class="card"><div class="flex"><h2 style="margin:0">${c.n}, ${c.c}</h2><span class="pill teal">${c.hub}</span><button class="btn sm ${inSub?"":"ghost"} right" onclick="toggleSub('cities','${c.id}')">${inSub?"✓ In my briefing":"+ Add to my briefing"}</button></div>
