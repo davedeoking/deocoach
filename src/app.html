@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DeoCoach — Edition for African Coaches</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#070d24;--bg2:#0D1B4B;--panel:rgba(20,34,84,.55);--panel2:rgba(255,255,255,.04);--line:rgba(201,168,76,.22);--gold:#C9A84C;--gold2:#ecd593;--ink:#eef0f7;--mute:#a7aec6;--teal:#3dd6c6;--green:#45c486;--amber:#f0a73a;--blue:#5b9bff;--grey:#6b7390;--red:#ff6b5e}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{font-family:Inter,system-ui,sans-serif;color:var(--ink);font-size:15px;line-height:1.55;background:radial-gradient(1200px 700px at 75% -10%,#1b2e74 0%,transparent 60%),radial-gradient(900px 600px at -10% 110%,#2a1f4d 0%,transparent 55%),var(--bg);background-attachment:fixed;min-height:100vh}
+h1,h2,h3{margin:0 0 .45em;color:#fff}
+h1{font-family:Cinzel,Georgia,serif;font-size:1.75rem;letter-spacing:.02em}
+h2{font-family:Cinzel,Georgia,serif;font-size:1.2rem;color:var(--gold2)}
+h3{font-size:1rem}
+a{color:var(--gold2)}
+.top{position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:14px;padding:12px 22px;background:rgba(7,13,36,.75);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+.crest{width:40px;height:40px;border-radius:50%;background:conic-gradient(from 210deg,var(--gold),var(--gold2),var(--gold));display:grid;place-items:center;font-family:Cinzel;color:var(--bg2);font-weight:700;box-shadow:0 0 24px rgba(201,168,76,.45)}
+.brand1{font-family:Cinzel;font-size:1.2rem;color:var(--gold2);letter-spacing:.06em}
+.brand2{font-size:.76rem;color:var(--mute)}
+.who{margin-left:auto;font-size:.84rem;color:var(--mute)}
+.wrap{display:flex}
+nav{position:sticky;top:65px;height:calc(100vh - 65px);overflow:auto;width:250px;flex-shrink:0;padding:10px 10px 40px;border-right:1px solid var(--line)}
+nav .grp{font-size:.68rem;text-transform:uppercase;letter-spacing:.14em;color:var(--gold);padding:14px 12px 4px;opacity:.85}
+nav button{display:flex;align-items:center;gap:10px;width:100%;text-align:left;border:0;background:none;padding:8px 12px;border-radius:10px;font:inherit;font-size:.9rem;color:var(--ink);cursor:pointer;transition:.15s}
+nav button:hover{background:var(--panel2)}
+nav button.on{background:linear-gradient(90deg,rgba(201,168,76,.25),rgba(201,168,76,.05));box-shadow:inset 3px 0 0 var(--gold)}
+nav .ic{width:22px;text-align:center}
+nav .ok{margin-left:auto;color:var(--green);font-size:.8rem}
+nav .new{margin-left:auto;font-size:.62rem;background:var(--teal);color:#032;padding:1px 6px;border-radius:99px;font-weight:700}
+main{flex:1;min-width:0;padding:26px 28px 40px;max-width:1240px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:22px;margin-bottom:18px;backdrop-filter:blur(8px)}
+.lead{color:var(--mute);margin:.1em 0 1em;max-width:780px}
+.grid{display:grid;gap:14px}
+.g2{grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}
+.g3{grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
+.g4{grid-template-columns:repeat(auto-fit,minmax(170px,1fr))}
+label{font-size:.78rem;font-weight:600;color:var(--mute);display:block;margin-bottom:4px;text-transform:uppercase;letter-spacing:.05em}
+input,select,textarea{width:100%;padding:9px 11px;border:1px solid rgba(255,255,255,.14);border-radius:10px;font:inherit;background:rgba(0,0,0,.25);color:var(--ink)}
+select option{background:#0D1B4B}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--gold);border-color:transparent}
+input[type=range]{padding:0;accent-color:var(--gold);background:none;border:0}
+input[type=checkbox]{width:auto;accent-color:var(--gold)}
+.btn{display:inline-block;background:linear-gradient(135deg,var(--gold2),var(--gold));color:#111a3d;border:0;border-radius:11px;padding:10px 16px;font:inherit;font-weight:700;cursor:pointer;text-decoration:none;box-shadow:0 6px 20px rgba(201,168,76,.25)}
+.btn.ghost{background:none;color:var(--gold2);border:1px solid var(--gold);box-shadow:none}
+.btn.sm{padding:6px 11px;font-size:.82rem}
+.stat{background:linear-gradient(160deg,rgba(201,168,76,.14),rgba(255,255,255,.02));border:1px solid var(--line);border-radius:16px;padding:16px}
+.stat .k{font-size:.7rem;text-transform:uppercase;letter-spacing:.1em;color:var(--gold)}
+.stat .v{font-family:Cinzel;font-size:1.25rem;margin:4px 0;color:#fff}
+.stat .s{font-size:.8rem;color:var(--mute)}
+.pill{display:inline-block;padding:2px 10px;border-radius:99px;font-size:.72rem;font-weight:700;background:rgba(201,168,76,.18);color:var(--gold2)}
+.pill.teal{background:rgba(61,214,198,.15);color:var(--teal)}
+.likert{display:flex;gap:6px;flex-wrap:wrap}
+.likert button{min-width:40px;height:34px;border:1px solid rgba(255,255,255,.15);border-radius:9px;background:rgba(0,0,0,.2);color:var(--ink);cursor:pointer;font:inherit}
+.likert button.on{background:var(--gold);border-color:var(--gold);color:#111a3d;font-weight:700}
+.q{padding:10px 0;border-bottom:1px dashed rgba(255,255,255,.1);display:flex;gap:12px;justify-content:space-between;align-items:center;flex-wrap:wrap}
+.bar{height:9px;background:rgba(255,255,255,.08);border-radius:99px;overflow:hidden}
+.bar>i{display:block;height:100%;background:linear-gradient(90deg,var(--gold),var(--gold2))}
+.bar.teal>i{background:linear-gradient(90deg,#1aa79a,var(--teal))}
+table{width:100%;border-collapse:collapse;font-size:.88rem}
+th,td{padding:8px 6px;border-bottom:1px solid rgba(255,255,255,.08);text-align:left;vertical-align:middle}
+th{font-size:.7rem;text-transform:uppercase;letter-spacing:.08em;color:var(--gold)}
+td input,td select{padding:6px 8px}
+.seg{display:inline-flex;border:1px solid var(--gold);border-radius:11px;overflow:hidden;flex-wrap:wrap}
+.seg button{border:0;background:none;padding:8px 14px;font:inherit;cursor:pointer;color:var(--gold2)}
+.seg button.on{background:var(--gold);color:#111a3d;font-weight:700}
+.funnel .row{display:grid;grid-template-columns:28px 170px 1fr 110px 90px;gap:10px;align-items:center;padding:6px 4px}
+.funnel .fb{height:24px;border-radius:6px;background:linear-gradient(90deg,var(--gold),var(--gold2));min-width:3px;transition:width .4s}
+.funnel .row.leak{background:rgba(255,107,94,.12);border-radius:10px}
+.funnel .row.leak .fb{background:linear-gradient(90deg,#c2382d,var(--red))}
+.dot{width:24px;height:24px;border-radius:50%;background:rgba(201,168,76,.2);display:grid;place-items:center;font-size:.72rem;font-weight:700;color:var(--gold2)}
+.tile{border-radius:12px;padding:12px;font-size:.85rem;color:#fff}
+.tile b{display:block}
+.st-selling{background:rgba(69,196,134,.3)}.st-leaking{background:rgba(240,167,58,.3)}.st-hidden{background:rgba(91,155,255,.3)}.st-absent{background:rgba(107,115,144,.3)}
+.note{background:rgba(201,168,76,.1);border-left:3px solid var(--gold);padding:10px 14px;border-radius:10px;font-size:.88rem;margin:12px 0}
+.note.warn{background:rgba(255,107,94,.1);border-color:var(--red)}
+.trap{border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:12px;margin-bottom:10px}
+.trap.hit{border-color:var(--red);background:rgba(255,107,94,.07)}
+.stagecard{border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:12px;cursor:pointer;background:rgba(0,0,0,.15)}
+.stagecard.on{border:2px solid var(--gold);background:rgba(201,168,76,.12)}
+.ladder{display:flex;gap:4px;flex-wrap:wrap;margin:8px 0}
+.ladder span{flex:1;min-width:84px;text-align:center;padding:8px 4px;border-radius:9px;background:rgba(255,255,255,.06);font-size:.76rem;font-weight:600}
+.ladder span.done{background:rgba(201,168,76,.35)}
+.ladder span.here{background:var(--gold);color:#111a3d}
+.flex{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.right{margin-left:auto}
+.small{font-size:.8rem;color:var(--mute)}
+.hero{display:grid;grid-template-columns:1.1fr 1fr;gap:20px;align-items:center}
+.hero h1{font-size:2.2rem;line-height:1.15}
+.hero .tag{color:var(--gold2);font-family:Cinzel;letter-spacing:.2em;font-size:.75rem}
+.globe-wrap{position:relative;border-radius:20px;overflow:hidden;background:radial-gradient(circle at 50% 50%,rgba(61,214,198,.08),transparent 60%)}
+.globe-wrap canvas{display:block;width:100%;cursor:crosshair}
+.globe-hud{position:absolute;left:14px;top:12px;font-size:.72rem;letter-spacing:.14em;color:var(--teal);text-transform:uppercase}
+.sonar-layout{display:grid;grid-template-columns:1.35fr 1fr;gap:18px}
+.rank{display:grid;grid-template-columns:22px 1fr 110px 64px;gap:8px;align-items:center;padding:6px 4px;border-radius:8px;cursor:pointer}
+.rank:hover,.rank.on{background:rgba(201,168,76,.12)}
+.yearbar{display:flex;align-items:center;gap:12px}
+.yearbar .yv{font-family:Cinzel;font-size:1.4rem;color:var(--gold2);min-width:96px}
+.brief{border-left:3px solid var(--teal);padding:4px 0 4px 16px;margin:14px 0}
+.brief h3{color:var(--teal);font-size:.78rem;letter-spacing:.12em;text-transform:uppercase}
+.timeline{display:flex;gap:12px;overflow-x:auto;padding:6px 2px 14px;scroll-snap-type:x mandatory}
+.qcard{flex:0 0 270px;scroll-snap-align:start;background:rgba(0,0,0,.2);border:1px solid var(--line);border-radius:14px;padding:14px}
+.qcard .qh{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.qcard ul{margin:6px 0 0;padding-left:18px;font-size:.86rem}
+.qcard .theme{font-family:Cinzel;color:var(--gold2)}
+.mind{background:linear-gradient(160deg,rgba(61,214,198,.12),rgba(255,255,255,.02));border:1px solid rgba(61,214,198,.25);border-radius:14px;padding:12px;margin:8px 0}
+.mind b{color:var(--teal)}
+.citycard{background:rgba(0,0,0,.18);border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:16px}
+.heat td{padding:0;height:24px;border:1px solid rgba(7,13,36,.6);text-align:center;font-size:.7rem}
+.heat th{font-size:.62rem}
+footer{font-size:.76rem;color:var(--mute);padding:22px 28px 40px;border-top:1px solid var(--line)}
+.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:var(--gold);color:#111a3d;font-weight:700;padding:10px 18px;border-radius:10px;opacity:0;transition:.3s;pointer-events:none;z-index:9}
+.toast.show{opacity:1}
+.ai-out{white-space:pre-wrap;background:rgba(0,0,0,.25);border-radius:12px;padding:14px;font-size:.9rem;margin-top:10px}
+@media(max-width:900px){.hero,.sonar-layout{grid-template-columns:1fr}}
+@media(max-width:820px){.wrap{flex-direction:column}nav{position:static;height:auto;width:100%;display:flex;overflow-x:auto;border-right:0;border-bottom:1px solid var(--line);padding:6px}nav button{width:auto;white-space:nowrap}nav .grp,nav .ok,nav .new{display:none}main{padding:16px}.funnel .row{grid-template-columns:24px 1fr 90px}.funnel .fbw,.funnel .hl{display:none}.who{display:none}.hero h1{font-size:1.6rem}}
+</style>
+</head>
+<body>
+<div class="top"><div class="crest">D</div><div><div class="brand1">DEOCOACH</div><div class="brand2">Edition for African Coaches · From competencies to cheques · Sensing the future</div></div><div class="who" id="who"></div></div>
+<div class="wrap"><nav id="nav"></nav><main id="main"></main></div>
+<footer><b>Beta development tool.</b> DeoCoach is an unvalidated development and planning tool for coaches. It is not a psychological, clinical or selection instrument and must not be used to hire, screen or select people. Sonar, Niche Radar and City Minds are scenario-based foresight — DeoCoach planning estimates to explore and test, not guarantees or audited market data. Statistics in the Evidence Bank are cited to their sources; check the latest figures before quoting them. Competency areas are informed by, not copied from, recognised coaching frameworks. Independent tool; not affiliated with any coaching association or federation. Your answers stay in this browser on this device.<br><br>Compiled &amp; Designed by Coach David Adeoye Abodunrin · DEO GRATIA — Making Greatness Common</footer>
+<div class="toast" id="toast"></div>
+<script>__D3GEO__</script>
+<script>
+const WORLD=__WORLD__;
+__DATA__
+__APP__
+</script>
+</body>
+</html>

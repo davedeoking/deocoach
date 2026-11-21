@@ -1,6 +1,8 @@
-# DeoCoach — Edition for African Coaches (v0.1)
+# DeoCoach — Edition for African Coaches (v0.2)
 
-From competencies to cheques. A single-page app (no build step) for coaches:
+From competencies to cheques. Single-page app built from `src/` with `python3 src/build.py`. v0.2 adds Sonar (10-year future-sensing globe of 30 African cities), daily/weekly briefings with insight feeds, City Minds, Evidence Bank, a 10-year Niche Radar panorama and growth plans from 90 days to 5 years in 3-month steps.
+
+Modules:
 
 1. My profile · 2. Coach Signature · 3. Competency Ladder (L1–L5) · 4. Niche Radar (Year 1 / 2 / 5)
 5. Competencies → Cheques (Offer Forge, Proof Vault, Cheque Tracker)
