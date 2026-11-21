@@ -2,7 +2,7 @@
 const KEY="deocoach-africa-v1";
 let S={profile:{cur:"NGN"},sig:{},comp:{},yr:1,offer:{},deals:[],stage:null,fun:{},ch:{},per:{self:{},oth:{}},hrs:{},pm:3,sub:{niches:[],cities:[],cad:"daily"},sonar:{yr:3,niche:"all",city:null},plan:{}};
 try{const r=localStorage.getItem(KEY);if(r){const o=JSON.parse(r);S=Object.assign(S,o);if(typeof S.yr!=="number"||S.yr<1)S.yr=1;}}catch(e){}
-S.sub=Object.assign({niches:[],cities:[],cad:"daily"},S.sub);S.sonar=Object.assign({yr:3,niche:"all",city:null},S.sonar);S.plan=S.plan||{};
+S.sub=Object.assign({niches:[],cities:[],cad:"daily"},S.sub);S.sonar=Object.assign({yr:3,niche:"all",city:null,power:true},S.sonar);S.plan=S.plan||{};
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}}
 function esc(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
 function num(v){const n=parseFloat(String(v??"").replace(/,/g,""));return isNaN(n)?0:n;}
@@ -148,14 +148,16 @@ V.atlas=()=>{const s=S.sonar;const R=cityRank(s.yr,s.niche);const sel=s.city?cit
  <div class="grid g2"><div><label>Year ahead</label><div class="yearbar"><span class="yv">Year ${s.yr}</span><input type="range" min="1" max="10" value="${s.yr}" oninput="S.sonar.yr=+this.value;save();render()"></div></div>
  <div><label>Niche</label><select onchange="S.sonar.niche=this.value;save();render()"><option value="all">All niches (each city's strongest)</option>${NICHES.map(n=>`<option value="${n.id}" ${s.niche===n.id?"selected":""}>${n.n}</option>`).join("")}</select></div></div></div>
  <div class="sonar-layout"><div class="card" style="padding:10px"><div class="globe-wrap"><div class="globe-hud">◉ Horizon · Year ${s.yr} · ${nsel?esc(nsel.n):"all niches"}${sel?" · "+sel.n:""}</div>
-  <div class="zoombar"><button onclick="zoomAtlas(1.4)" title="Zoom in">+</button><button onclick="zoomAtlas(1/1.4)" title="Zoom out">−</button><button onclick="zoomAtlas(0);S.sonar.city=null;save();render()" title="Whole continent">⟲</button></div>
+  <div class="zoombar"><button onclick="S.sonar.power=!S.sonar.power;save();render()" title="Power Centres on/off" style="${s.power?"background:#ff7a5a;color:#111a3d":""}">⚡</button><button onclick="playYears()" title="Play years 1–10">▶</button><button onclick="zoomAtlas(1.4)" title="Zoom in">+</button><button onclick="zoomAtlas(1/1.4)" title="Zoom out">−</button><button onclick="zoomAtlas(0);S.sonar.city=null;save();render()" title="Whole continent">⟲</button></div>
   <canvas id="atlasGlobe" height="580"></canvas></div>
-  <p class="small" style="padding:0 10px">Ring size = opportunity score. Gold = strongest; teal = fastest rising. Scores are DeoCoach scenario estimates, sharpened by your field intelligence.</p></div>
+  <p class="small" style="padding:0 10px">${s.power?"⚡ Power Centres on: red shockwaves mark clusters where <b>your</b> capabilities are worth most; magnitude grows with power. ":""}Ring size = opportunity score. Gold = strongest; teal = fastest rising. Scores are DeoCoach scenario estimates, sharpened by your field intelligence.</p></div>
  <div class="card"><h2>Opportunity ranking · Year ${s.yr}</h2><input placeholder="Find a city…" oninput="filterRank(this.value)" style="margin-bottom:8px">${R.map((r,i)=>`<div class="rank ${sel&&sel.id===r.c.id?"on":""}" data-n="${r.c.n.toLowerCase()} ${r.c.c.toLowerCase()}" onclick="pickCity('${r.c.id}')"><span class="small">${i+1}</span><span><b>${r.c.n}</b> <span class="small">${r.c.c}</span></span><div class="bar ${r.g>=Math.max(...R.map(x=>x.g))*0.75?"teal":""}"><i style="width:${r.s}%"></i></div><span class="small">${r.s}${r.g>0?" ↑"+r.g:""}</span></div>`).join("")}</div></div>
+ ${s.power?powerView(s.yr):""}
  ${sel?deployView(sel,s.yr)+cityPanel(sel,s.yr)+cultureView(sel)+fieldView(sel):`<div class="card"><h2>Choose a city</h2><p class="lead">Tap a city on the globe or in the ranking. The engine will scan its signals, match them to your profile, read the culture and deploy a 90-day plan.</p></div>`}`;};
+let PLAY=null;function playYears(){if(PLAY){clearInterval(PLAY);PLAY=null;toast("Paused");return;}S.sonar.power=true;S.sonar.yr=1;save();render();PLAY=setInterval(()=>{if((location.hash||"").slice(1)!=="atlas"||S.sonar.yr>=10){clearInterval(PLAY);PLAY=null;return;}S.sonar.yr++;save();render();},1600);}
 function pickCity(id){S.sonar.city=id;S.sonar.fly=true;save();render();setTimeout(()=>{const d=document.querySelector(".deploy");if(d)d.scrollIntoView({behavior:"smooth",block:"start"});},1300);}
 function filterRank(q){q=q.toLowerCase();document.querySelectorAll(".rank").forEach(e=>e.style.display=e.dataset.n.includes(q)?"":"none");}
-AFTER.atlas=()=>{const fly=S.sonar.fly&&S.sonar.city;S.sonar.fly=false;save();startGlobe("atlasGlobe",{interactive:true,yr:S.sonar.yr,niche:S.sonar.niche,labels:10,sel:S.sonar.city,flyTo:fly?S.sonar.city:null,flyK:3.6,click:id=>pickCity(id)});if(S.sonar.city)loadCommunity(S.sonar.city);};
+AFTER.atlas=()=>{const fly=S.sonar.fly&&S.sonar.city;S.sonar.fly=false;save();startGlobe("atlasGlobe",{interactive:true,power:!!S.sonar.power,yr:S.sonar.yr,niche:S.sonar.niche,labels:10,sel:S.sonar.city,flyTo:fly?S.sonar.city:null,flyK:3.6,click:id=>pickCity(id)});if(S.sonar.city)loadCommunity(S.sonar.city);};
 function cityPanel(c,yr){const ns=NICHES.map(n=>({n,s:cityScore(c,n.id,yr),s1:cityScore(c,n.id,1),s10:cityScore(c,n.id,10)})).sort((a,b)=>b.s-a.s).slice(0,6);
  const inSub=S.sub.cities.includes(c.id);
  return `<div class="card"><div class="flex"><h2 style="margin:0">${c.n}, ${c.c}</h2><span class="pill teal">${c.hub}</span><button class="btn sm ${inSub?"":"ghost"} right" onclick="toggleSub('cities','${c.id}')">${inSub?"✓ In my briefing":"+ Add to my briefing"}</button></div>

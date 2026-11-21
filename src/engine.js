@@ -59,3 +59,31 @@ async function cityAsk(cid){const c=cityById(cid),q=document.getElementById("cq"
  let ans;try{const r=await fetch("/api/ai",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({messages:[{role:"user",content:ctx+"\n\nAnswer as DeoCoach's City Analyst. Be specific and practical; describe trends qualitatively unless you can name a source; label forecasts as scenarios."},{role:"assistant",content:"Understood."},...h.slice(-8)]})});const j=await r.json();if(!r.ok)throw 0;ans=j.text;}
  catch(e){const cu=CULTURE[c.c]||{};ans=`(Offline answer — live AI switches on when DeoCoach runs on its own site.)\nIn ${c.n}, the top factor on people's minds is: ${c.mind}. The issues shaping the landscape: ${c.issues.join("; ")}. Speak to it like this: ${c.say}. Trust is built through ${(cu.trust||"relationships and results").toLowerCase()}. Start now: ${c.prep}.`;}
  h.push({role:"assistant",content:ans});save();if((location.hash||"").includes("atlas"))render();}
+
+// ===== Power Centres: where the coach's own capabilities are most valuable, year by year =====
+function capWeights(){const sg=signature();const has=!!sg||compAvg()>0;
+  const w=NICHES.map(n=>{let f=0;if(sg){f+=n.st[0]===sg.p?3:n.st[1]===sg.p?2:n.st.includes(sg.s)?1:0;}const ca=compAvg(n.need);f+=ca?ca:2.5;return{n,f};}).sort((a,b)=>b.f-a.f).slice(0,5);
+  const tot=w.reduce((a,b)=>a+b.f,0);return{has,w:w.map(x=>({n:x.n,w:x.f/tot}))};}
+function powerScore(c,t,CW){CW=CW||capWeights();return Math.round(CW.w.reduce((a,x)=>a+x.w*cityScore(c,x.n.id,t),0));}
+function powerClusters(t){
+  const CW=capWeights();const P=CITIES.map(c=>({c,p:powerScore(c,t,CW)})).sort((a,b)=>b.p-a.p);
+  const cut=P[Math.floor(P.length*.35)].p;const hot=P.filter(x=>x.p>=cut);const km=(a,b)=>d3g.geoDistance([a.lon,a.lat],[b.lon,b.lat])*6371;
+  const groups=[];hot.forEach(h=>{const g=groups.find(G=>G.some(m=>km(m.c,h.c)<1300));if(g)g.push(h);else groups.push([h]);});
+  // merge groups that touch
+  for(let i=0;i<groups.length;i++)for(let j=groups.length-1;j>i;j--)if(groups[i].some(a=>groups[j].some(b=>km(a.c,b.c)<1300))){groups[i]=groups[i].concat(groups[j]);groups.splice(j,1);}
+  return{CW,all:P,clusters:groups.map(g=>{const mag=g.reduce((a,b)=>a+b.p,0)/g.length;const lon=g.reduce((a,b)=>a+b.c.lon,0)/g.length,lat=g.reduce((a,b)=>a+b.c.lat,0)/g.length;
+    const name=g.length>1?g.slice().sort((a,b)=>b.p-a.p).slice(0,3).map(x=>x.c.n).join("–")+" corridor":g[0].c.n+" hub";return{name,members:g.sort((a,b)=>b.p-a.p),mag:+(mag/10).toFixed(1),lon,lat,size:g.length};}).sort((a,b)=>b.mag*Math.sqrt(b.size)-a.mag*Math.sqrt(a.size))};}
+const MEANP={};function meanPower(t,CW){const k=t+"|"+CW.w.map(x=>x.n.id).join();if(MEANP[k]==null)MEANP[k]=CITIES.reduce((a,c)=>a+powerScore(c,t,CW),0)/CITIES.length;return MEANP[k];}
+// peak = the year a city stands furthest above the rest of Africa for this coach
+function peakYear(c,CW){let best=1,bv=-1e9;for(let t=1;t<=10;t++){const v=powerScore(c,t,CW)-meanPower(t,CW);if(v>bv+0.25){bv=v;best=t;}}return{t:best,v:Math.round(bv)};}
+function powerView(t){const PC=powerClusters(t);const CW=PC.CW;const top=PC.clusters[0];
+  const drivers=[...new Set(CW.w.flatMap(x=>x.n.need))].slice(0,4).map(id=>(COMPS.find(c=>c[0]===id)||[,id])[1]);
+  const strip=[1,2,3,4,5,6,7,8,9,10].map(y=>{const c=powerClusters(y).clusters[0];return{y,c};});
+  const peaks=PC.all.slice(0,12).map(x=>({...x,pk:peakYear(x.c,CW)}));
+  return `<div class="card power"><div class="flex"><h2 style="margin:0">⚡ Power Centres · Year ${t}</h2><span class="pill teal right">Built from your capabilities</span></div>
+  ${CW.has?"":'<div class="note">Complete Coach Signature and the Competency Ladder to make this personal. Until then it uses a balanced default profile.</div>'}
+  <p class="small">Where your capabilities are worth most, grouped into clusters of nearby cities. Magnitude (M) is the cluster's average power ÷ 10. Your strongest drivers: <b style="color:var(--gold2)">${drivers.join(", ")}</b>, through ${CW.w.slice(0,3).map(x=>x.n.n).join(", ")}.</p>
+  <h3>Seismic timeline — the strongest cluster each year</h3><div class="quake">${strip.map(s=>`<div class="qk ${s.y===t?"on":""}" onclick="S.sonar.yr=${s.y};save();render()" title="${esc(s.c.name)}"><i style="height:${Math.max(8,(s.c.mag-4)*22)}px"></i><span>Y${s.y}</span><b>M${s.c.mag}</b></div>`).join("")}</div>
+  <div class="grid g2" style="margin-top:12px"><div><h3>Clusters in Year ${t}</h3><p class="small">Ranked by magnitude and reach (how many cities the cluster spans).</p>${PC.clusters.slice(0,6).map((k,i)=>`<div class="cluster ${i===0?"lead1":""}"><div class="flex"><b>${esc(k.name)}</b><span class="pill right">M${k.mag}</span></div><div class="small">${k.members.map(m=>`<a href="javascript:pickCity('${m.c.id}')">${m.c.n}</a> ${m.p}`).join(" · ")}</div></div>`).join("")}</div>
+  <div><h3>When each city peaks for you</h3><p class="small">Peak = the year a city stands furthest above the rest of Africa for your capabilities.</p><table><tr><th>City</th><th>Power (Y${t})</th><th>Peak year · edge</th></tr>${peaks.map(x=>`<tr><td><a href="javascript:pickCity('${x.c.id}')">${x.c.n}</a></td><td>${x.p}</td><td><span class="pill ${x.pk.t<=3?"":"teal"}">Y${x.pk.t} · +${x.pk.v}</span></td></tr>`).join("")}</table></div></div>
+  ${top?`<div class="note"><b>Year ${t} read-out:</b> your capabilities carry the most weight in the <b>${esc(top.name)}</b> (M${top.mag}). Build presence there now${top.members[0]?`, starting with ${top.members[0].c.n}`:""}.</div>`:""}</div>`;}
