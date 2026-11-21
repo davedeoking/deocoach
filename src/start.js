@@ -92,7 +92,7 @@ V.start=()=>{const X=xray(),A=activation();const q=S.q||"";
   <h3>Lift these first</h3>${A.D.slice().sort((a,b)=>a[1]-b[1]).slice(0,4).map(d=>`<p>• <b>${d[0]}</b> (${d[1]}) — <a href="#${d[2]}">${d[3]}</a></p>`).join("")}</div></div>`;};
 
 function answer(q){const X=xray(),A=activation();const nn=nicheById(S.profile.niche)||nicheScores(1)[0];const head=QUESTIONS.find(x=>x[0]===q);
- const wrap=b=>`<div class="card answer"><div class="tag">YOUR ANSWER</div><h2 class="display" style="font-size:1.6rem">${head[2]}</h2>${b}</div>`;
+ const wrap=b=>`<div class="card answer"><div class="tag">YOUR ANSWER</div><h2 class="display" style="font-size:1.6rem">${head[2]}</h2>${b}<div class="dmrow"><span class="small">Still unsure? A council of advisers can work through it with you.</span>${dmForQuestion(q)}</div></div>`;
  if(q==="begin"){const st=S.stage??(S.profile.cred==="None yet"?0:2);const firsts=A.D.slice().sort((a,b)=>a[1]-b[1]).slice(0,3);
   return wrap(`<p>You are at the <b>${CAREER[st][0]}</b> stage. At this stage you sell: <b>${CAREER[st][2]}</b> to <b>${CAREER[st][3]}</b>.</p>
   <div class="grid g3">${[["Days 1–30 · Know yourself",["Take Coach Signature and the Coach X-Ray","Place yourself on the Competency Ladder",`Choose one niche — today's best fit is ${nn.n}`]],["Days 31–60 · Make an offer",["Set your session fee and build your offer ladder","Write one message for one group",`Run three paid pilots with ${nn.payer.split(",")[0]}`]],["Days 61–90 · Get seen and paid",["Log your funnel numbers weekly","Fix your biggest leak",`Pick your Power Centre city and switch on opportunity alerts`]]].map(p=>`<div class="phase"><b>${p[0]}</b><ul class="small">${p[1].map(a=>`<li>${a}</li>`).join("")}</ul></div>`).join("")}</div>
