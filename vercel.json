@@ -1,1 +1,1 @@
-{ "crons": [ { "path": "/api/digest", "schedule": "0 6 * * *" } ] }
+{ "crons": [ { "path": "/api/digest", "schedule": "0 6 * * *" } ], "functions": { "api/events.js": { "maxDuration": 60 } } }
