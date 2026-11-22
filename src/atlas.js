@@ -1,14 +1,14 @@
 function themeColors(){const g=n=>getComputedStyle(document.documentElement).getPropertyValue('--'+n).trim().replace(/\s+/g,',');return{tint:g('tint'),acc:g('acc'),acc2:g('acc2'),hi:g('hi'),quake:g('quake'),quake2:g('quake2'),deep:g('globe1'),void:g('globe2'),ink:g('inkR')};}
 // ===== Horizon Atlas globe: zoom, drag, fly-to-city, scanning beam and pulsing opportunity signals =====
 const AFRICA=new Set(["Algeria","Angola","Benin","Botswana","Burkina Faso","Burundi","Cameroon","Central African Rep.","Chad","Congo","Dem. Rep. Congo","Côte d'Ivoire","Djibouti","Egypt","Eq. Guinea","Eritrea","eSwatini","Ethiopia","Gabon","Gambia","Ghana","Guinea","Guinea-Bissau","Kenya","Lesotho","Liberia","Libya","Madagascar","Malawi","Mali","Mauritania","Morocco","Mozambique","Namibia","Niger","Nigeria","Rwanda","Senegal","Sierra Leone","Somalia","Somaliland","South Africa","S. Sudan","Sudan","Tanzania","Togo","Tunisia","Uganda","W. Sahara","Zambia","Zimbabwe"]);
-const WORLDNAME={"DR Congo":"Dem. Rep. Congo"};
-let GLOBES=[];const VIEWSTATE={rot:[-18,-2],k:1,last:null};
+const WORLDNAME={"DR Congo":"Dem. Rep. Congo","United States":"United States of America"};
+let GLOBES=[];const edRot=()=>S.ed==="global"?[-12,-24]:[-18,-2];const VIEWSTATE={rot:edRot(),k:1,last:null};
 function stopGlobes(){GLOBES.forEach(g=>g.stop=true);GLOBES=[];}
 function startGlobe(id,o){
   const cv=document.getElementById(id);if(!cv||!window.d3g)return;const g={stop:false};GLOBES.push(g);
   const dpr=window.devicePixelRatio||1;const W=cv.clientWidth||600,H=+cv.getAttribute("height");cv.width=W*dpr;cv.height=H*dpr;cv.style.height=H+"px";
   const ctx=cv.getContext("2d");ctx.setTransform(dpr,0,0,dpr,0,0);const C=themeColors();
-  const st=o.interactive?VIEWSTATE:{rot:[-18,-2],k:1};const S0=Math.min(W,H)*0.78;
+  const st=o.interactive?VIEWSTATE:{rot:edRot(),k:S.ed==="global"?.92:1};const S0=Math.min(W,H)*0.78;
   const proj=d3g.geoOrthographic().translate([W/2,H/2]).clipAngle(90);const path=d3g.geoPath(proj,ctx);const grat=d3g.geoGraticule10();
   const R=cityRank(o.yr,o.niche);const gmax=Math.max(1,...R.map(r=>r.g));const top=new Set(R.slice(0,o.labels||8).map(r=>r.c.id));
   const selC=o.sel?cityById(o.sel):null;const selCountry=selC?(WORLDNAME[selC.c]||selC.c):null;
@@ -23,7 +23,7 @@ function startGlobe(id,o){
     const sg=ctx.createRadialGradient(W/2,H/2,10,W/2,H/2,S0*st.k);sg.addColorStop(0,`rgb(${C.deep})`);sg.addColorStop(1,`rgb(${C.void})`);
     ctx.beginPath();path({type:"Sphere"});ctx.fillStyle=sg;ctx.fill();
     ctx.beginPath();path(grat);ctx.strokeStyle=`rgba(${C.hi},.08)`;ctx.lineWidth=.6;ctx.stroke();
-    WORLD.features.forEach(f=>{const n=f.properties.n;const af=AFRICA.has(n),sel=n===selCountry;ctx.beginPath();path(f);
+    WORLD.features.forEach(f=>{const n=f.properties.n;const af=edCountry(n),sel=n===selCountry;ctx.beginPath();path(f);
       ctx.fillStyle=sel?`rgba(${C.hi},.22)`:af?`rgba(${C.acc},.13)`:`rgba(${C.tint},.035)`;ctx.fill();
       ctx.strokeStyle=sel?`rgba(${C.hi},.9)`:af?`rgba(${C.acc2},.55)`:`rgba(${C.tint},.09)`;ctx.lineWidth=sel?1.4:af?.7:.5;ctx.stroke();});
     ctx.beginPath();path({type:"Sphere"});ctx.strokeStyle=`rgba(${C.hi},.35)`;ctx.lineWidth=1.2;ctx.stroke();

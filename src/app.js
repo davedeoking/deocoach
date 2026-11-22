@@ -119,9 +119,9 @@ const VIEWS=[
 const NEW=["academies","industry","events","bodies","bizdev","fas","clients","backcast","power","scenarios","game","cocreate","caplib","methods","templates","governance","start","atlas","briefing","minds","evidence","opps"];
 function doneMap(){return{profile:!!S.profile.name,signature:!!signature(),ladder:compAvg()>0,niches:!!S.profile.niche,income:S.deals.length>0,brand:S.stage!==null,funnel:!!funnel(),stuck:num(S.hrs.total)>0};}
 function updateChrome(){const d=doneMap();const cur=(location.hash||"#home").slice(1);let h="",grp="";
-  VIEWS.forEach(v=>{if(v[3]&&v[3]!==grp){grp=v[3];h+=`<div class="grp">${grp}</div>`;}h+=`<button class="${cur===v[0]?"on":""}" onclick="location.hash='${v[0]}'"><span class="ic">${v[1]}</span>${v[2]}${d[v[0]]?'<span class="ok">✓</span>':NEW.includes(v[0])?'<span class="new">NEW</span>':""}</button>`;});
+  VIEWS.forEach(v=>{if(v[3]&&v[3]!==grp){grp=v[3];h+=`<div class="grp">${grp}</div>`;}h+=`<button class="${cur===v[0]?"on":""}" onclick="location.hash='${v[0]}'"><span class="ic">${v[1]}</span>${typeof pwT==="function"?pwT(v[2]):v[2]}${d[v[0]]?'<span class="ok">✓</span>':NEW.includes(v[0])?'<span class="new">NEW</span>':""}</button>`;});
   document.getElementById("nav").innerHTML=h;document.getElementById("who").textContent=S.profile.name?`${S.profile.name}${S.profile.cityId&&cityById(S.profile.cityId)?" · "+cityById(S.profile.cityId).n:""}`:"";}
-function render(){stopGlobes();applyLook();langMenu();const cur=(location.hash||"#home").slice(1);const fn=V[cur]||V[{sonar:"atlas",cheques:"income"}[cur]]||V.home;const mn=document.getElementById("main");mn.innerHTML=fn();mn.querySelectorAll("svg *").forEach(el=>["fill","stroke"].forEach(a=>{const v=el.getAttribute(a);if(v&&v.includes("var("))el.style[a]=v;}));updateChrome();if(AFTER[cur])AFTER[cur]();if(window.POLISH_READY)polishAfter();translatePage();}
+function render(){stopGlobes();{const b2=document.getElementById("brand2");if(b2&&typeof ED==="function")b2.textContent=(S.ed==="africa"?"Edition for African Coaches":"Global Edition · Coaches · Trainers · Facilitators · Mentors · Speakers")+" · Capability to income · Horizon foresight · Cultural intelligence";}applyLook();langMenu();const cur=(location.hash||"#home").slice(1);const fn=V[cur]||V[{sonar:"atlas",cheques:"income"}[cur]]||V.home;const mn=document.getElementById("main");mn.innerHTML=fn();mn.querySelectorAll("svg *").forEach(el=>["fill","stroke"].forEach(a=>{const v=el.getAttribute(a);if(v&&v.includes("var("))el.style[a]=v;}));updateChrome();if(AFTER[cur])AFTER[cur]();if(window.POLISH_READY)polishAfter();translatePage();}
 window.addEventListener("hashchange",()=>{render();window.scrollTo(0,0);});
 const V={},AFTER={};
 
@@ -129,9 +129,9 @@ const V={},AFTER={};
 V.home=()=>{const sg=signature(),f=funnel(),top=nicheScores(S.yr)[0],by=deals(),c=S.profile.cur,T=traps().filter(t=>t.hit);const d=doneMap();
  const pct=Math.round(Object.values(d).filter(Boolean).length/Object.keys(d).length*100);const m=by[c]||{paid:0,pipe:0,fc:0};const b=briefing("daily");
  const lead=cityRank(5,"all")[0];
- return `<div class="card"><div class="hero"><div><div class="tag">DATA-DRIVEN COACHING ACROSS AFRICA</div>
+ return `<div class="card"><div class="hero"><div><div class="tag">${ED().tag}</div>
  <h1>${S.profile.name?"Welcome, "+esc(S.profile.name.split(" ")[0])+".":(LOOKS[S.look]||LOOKS.royal).head}</h1>
- <p class="lead">Sense where opportunities are rising across African cities, know what people there care about, read the culture, find live tenders and jobs, and turn your capabilities into income with a plan from 90 days to 5 years.</p>
+ <p class="lead">For ${esc(proLine())}: sense where opportunities are rising across ${ED().cities}, know what people there care about, read the culture, find live tenders, conferences and jobs, and turn your capabilities into income with a plan from 90 days to 5 years.</p>
  <div class="flex"><a class="btn" href="#start">Where do I start?</a><a class="btn ghost" href="#atlas">Horizon Atlas</a><a class="btn ghost" href="#opps">Opportunities</a><a class="btn ghost" href="#briefing">Today's briefing</a><a class="btn ghost" href="#${!d.profile?"profile":!d.signature?"signature":!d.funnel?"funnel":"stuck"}">${pct<100?"Continue setup ("+pct+"%)":"My growth plan"}</a></div>
  <p class="small" style="margin-top:12px">Strongest signal by Year 5: <b style="color:var(--teal)">${lead.c.n}</b> (${lead.s}/100 across its top niches).</p></div>
  <div class="globe-wrap"><div class="globe-hud">◉ Horizon · Year 5 · all niches</div><canvas id="heroGlobe" height="420"></canvas></div></div></div>
@@ -150,7 +150,7 @@ AFTER.home=()=>startGlobe("heroGlobe",{yr:5,niche:"all",labels:6});
 
 /* ---------- Horizon Atlas ---------- */
 V.atlas=()=>{const s=S.sonar;const R=cityRank(s.yr,s.niche);const sel=s.city?cityById(s.city):null;const nsel=s.niche==="all"?null:nicheById(s.niche);
- return `<div class="card"><h1>Horizon Atlas</h1><p class="lead">A panoramic view of where coaching opportunity is likely to rise across Africa over 10 years. Drag to turn the globe, scroll or use + and − to zoom, and tap a city: the engine flies in and deploys a plan for you.</p>
+ return `<div class="card"><h1>Horizon Atlas</h1><p class="lead">A panoramic view of where opportunity for ${esc(PRO().many)} is likely to rise across ${ED().region} over 10 years. Drag to turn the globe, scroll or use + and − to zoom, and tap a city: the engine flies in and deploys a plan for you.</p>
  <div class="grid g2"><div><label>Year ahead</label><div class="yearbar"><span class="yv">Year ${s.yr}</span><input type="range" min="1" max="10" value="${s.yr}" oninput="S.sonar.yr=+this.value;save();render()"></div></div>
  <div><label>Niche</label><select onchange="S.sonar.niche=this.value;save();render()"><option value="all">All niches (each city's strongest)</option>${NICHES.map(n=>`<option value="${n.id}" ${s.niche===n.id?"selected":""}>${n.n}</option>`).join("")}</select></div></div></div>
  <div class="sonar-layout"><div class="card" style="padding:10px"><div class="globe-wrap"><div class="globe-hud">◉ Horizon · Year ${s.yr} · ${nsel?esc(nsel.n):"all niches"}${sel?" · "+sel.n:""}</div>
@@ -205,9 +205,9 @@ V.evidence=()=>`<div class="card"><h1>Evidence & insight feeds</h1><p class="lea
 
 /* ---------- Me ---------- */
 V.profile=()=>{const p=S.profile;
- return `<div class="card"><h1>My profile</h1><p class="lead">Tell DeoCoach who you are. Everything stays on this device.</p><div class="grid g2">
+ return `<div class="card"><h1>My profile</h1><p class="lead">Tell DeoCoach who you are. Everything stays on this device.</p></div>${proCard()}<div class="card"><div class="grid g2">
  <div><label>Full name</label><input value="${esc(p.name)}" oninput="setv('profile.name',this.value)"></div>
- <div><label>My city (for the Atlas and briefings)</label><select onchange="setv('profile.cityId',this.value,true)"><option value="">— choose —</option>${CITIES.map(c=>`<option value="${c.id}" ${p.cityId===c.id?"selected":""}>${c.n}, ${c.c}</option>`).join("")}<option value="other" ${p.cityId==="other"?"selected":""}>Other / outside Africa</option></select></div>
+ <div><label>My city (for the Atlas and briefings)</label><select onchange="setv('profile.cityId',this.value,true)"><option value="">— choose —</option>${CITIES.map(c=>`<option value="${c.id}" ${p.cityId===c.id?"selected":""}>${c.n}, ${c.c}</option>`).join("")}<option value="other" ${p.cityId==="other"?"selected":""}>${S.ed==="africa"?"Other / outside Africa":"Other city"}</option></select></div>
  <div><label>I am a</label><select onchange="setv('profile.role',this.value,true)">${["Coach","Leader","Mentor","Trainer / facilitator","Organisation"].map(o=>`<option ${(p.role||"Coach")===o?"selected":""}>${o}</option>`).join("")}</select></div>
  <div><label>Main currency</label><select onchange="setv('profile.cur',this.value,true)">${Object.keys(CUR).map(k=>`<option ${p.cur===k?"selected":""} value="${k}">${CUR[k]} ${k}</option>`).join("")}</select></div>
  <div><label>Years coaching</label><input type="number" min="0" value="${esc(p.years)}" oninput="setv('profile.years',this.value)"></div>
@@ -297,9 +297,9 @@ V.toolkit=()=>{const apps=[["DeoLens — The Atlas of Self","Self-awareness, str
  <div class="note">Get your client's consent first, and explain that results support development — they are not a diagnosis or a selection decision.</div></div>`;};
 V.opps=()=>{const ctry=S.oppC||(cityById(S.profile.cityId)||{}).c||"Nigeria";const countries=Object.keys(CULTURE).sort();const P=[...(PORTALS[ctry]||[]),...PORTALS._multi];const al=S.alerts||{};
  const ev=[["23 Nov 2026","Africa Coaching Week 2026 — opening press conference & media parley","Alliance Française, Ikoyi, Lagos · 4pm"],["29 Nov 2026","Africa Coaching Week 2026 — closing gala","Radisson Blu VI, Lagos · 5pm · live-stream tickets available"]];
- return `<div class="card"><h1>Opportunity Desk</h1><p class="lead">Coaching jobs, government bids, invitations to tender, expressions of interest, consultancies and projects — gathered for you by country and keyword.</p>
+ return `<div class="card"><h1>Opportunity Desk</h1><p class="lead">${esc(PRO().act[0].toUpperCase()+PRO().act.slice(1))} jobs, calls for speakers, government bids, invitations to tender, expressions of interest, consultancies and projects — gathered for you by country and keyword.</p>
  <div class="grid g3"><div><label>Country</label><select onchange="S.oppC=this.value;save();render()">${countries.map(c=>`<option ${c===ctry?"selected":""}>${c}</option>`).join("")}</select></div>
- <div><label>Keywords</label><input id="okw" value="${esc(S.oppKw||"training leadership coaching")}" onchange="S.oppKw=this.value;save()"></div>
+ <div><label>Keywords</label><input id="okw" value="${esc(S.oppKw||({coach:"coaching leadership training",trainer:"training workshop capacity building",facilitator:"facilitation workshop strategy retreat",mentor:"mentoring programme accelerator",speaker:"keynote speaker conference",consultant:"consultancy advisory leadership"})[PRO().k])}" onchange="S.oppKw=this.value;save()"></div>
  <div style="align-self:end"><button class="btn" onclick="loadOpps()">⟳ Search live opportunities</button></div></div>
  <div id="oppList" style="margin-top:14px"><p class="small">Press search to pull the latest notices.</p></div></div>
  <div class="grid g2"><div class="card"><h2>Daily opportunity alerts</h2><p class="small">Get new tenders, EOIs and jobs that match you, by email.</p>

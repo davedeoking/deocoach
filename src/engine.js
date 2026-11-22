@@ -74,7 +74,7 @@ function powerClusters(t){
   return{CW,all:P,clusters:groups.map(g=>{const mag=g.reduce((a,b)=>a+b.p,0)/g.length;const lon=g.reduce((a,b)=>a+b.c.lon,0)/g.length,lat=g.reduce((a,b)=>a+b.c.lat,0)/g.length;
     const name=g.length>1?g.slice().sort((a,b)=>b.p-a.p).slice(0,3).map(x=>x.c.n).join("–")+" corridor":g[0].c.n+" hub";return{name,members:g.sort((a,b)=>b.p-a.p),mag:+(mag/10).toFixed(1),lon,lat,size:g.length};}).sort((a,b)=>b.mag*Math.sqrt(b.size)-a.mag*Math.sqrt(a.size))};}
 const MEANP={};function meanPower(t,CW){const k=t+"|"+CW.w.map(x=>x.n.id).join();if(MEANP[k]==null)MEANP[k]=CITIES.reduce((a,c)=>a+powerScore(c,t,CW),0)/CITIES.length;return MEANP[k];}
-// peak = the year a city stands furthest above the rest of Africa for this coach
+// peak = the year a city stands furthest above the rest of ${ED().region==="Africa"?"Africa":"the map"} for this coach
 function peakYear(c,CW){let best=1,bv=-1e9;for(let t=1;t<=10;t++){const v=powerScore(c,t,CW)-meanPower(t,CW);if(v>bv+0.25){bv=v;best=t;}}return{t:best,v:Math.round(bv)};}
 function powerView(t){const PC=powerClusters(t);const CW=PC.CW;const top=PC.clusters[0];
   const drivers=[...new Set(CW.w.flatMap(x=>x.n.need))].slice(0,4).map(id=>(COMPS.find(c=>c[0]===id)||[,id])[1]);
