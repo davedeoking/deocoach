@@ -17,7 +17,7 @@ async function claude(prompt) {
     const r = await fetch("https://api.anthropic.com/v1/messages", { method: "POST", signal: ctl.signal, headers: { "x-api-key": process.env.ANTHROPIC_API_KEY, "anthropic-version": "2023-06-01", "content-type": "application/json" },
       body: JSON.stringify({ model: process.env.EVENTS_MODEL || process.env.ANTHROPIC_MODEL || "claude-sonnet-5-5", max_tokens: 3000, tools: [{ type: "web_search_20250305", name: "web_search", max_uses: 5 }], messages: [{ role: "user", content: prompt }] }) });
     const j = await r.json(); if (!r.ok) throw new Error("upstream");
-    const t = (j.content || []).filter((c) => c.type === "text").map((c) => c.text).join("\n"); const m = t.match(/[\[{][\s\S]*[\]}]/); return m ? JSON.parse(m[0]) : null;
+    const t = (j.content || []).filter((c) => c.type === "text").map((c) => c.text).join(""); const m = t.match(/[\[{][\s\S]*[\]}]/); return m ? JSON.parse(m[0]) : null;
   } finally { clearTimeout(tm); }
 }
 module.exports = async (req, res) => {

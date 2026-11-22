@@ -23,7 +23,7 @@ Reply with ONLY a JSON array, no prose, each item: {"name":"","start":"YYYY-MM-D
         messages: [{ role: "user", content: prompt }] }) });
     clearTimeout(tm);
     const j = await r.json(); if (!r.ok) return res.status(502).json({ error: "upstream", detail: j.error && (j.error.type + ": " + String(j.error.message || "").slice(0, 160)) });
-    const text = (j.content || []).filter((c) => c.type === "text").map((c) => c.text).join("\n");
+    const text = (j.content || []).filter((c) => c.type === "text").map((c) => c.text).join("");
     const m = text.match(/\[[\s\S]*\]/); let events = [];
     try { events = m ? JSON.parse(m[0]) : []; } catch (e) { events = []; }
     events = (Array.isArray(events) ? events : []).filter((e) => e && e.name && /^\d{4}-\d{2}(-\d{2})?$/.test(String(e.start || "")) && String(e.end || e.start) >= today.slice(0, String(e.end || e.start).length))
