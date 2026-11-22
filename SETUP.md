@@ -20,7 +20,7 @@ create table if not exists public.deocoach_signals (
 create table if not exists public.deocoach_translations (
   id bigint generated always as identity primary key, lang text, source text, current_text text, suggestion text, note text, status text default 'pending', created_at timestamptz default now());
 create table if not exists public.deocoach_intel (
-  id bigint generated always as identity primary key, key text unique, kind text, ref text, city text, niches text[], name text,
+  id bigint generated always as identity primary key, key text unique, kind text, ref text, city text, niches text[], industries text[] default '{}', name text,
   start_date text, end_date text, venue text, url text, audience text, mag int default 5, confidence text,
   score int default 1, seen int default 1, votes jsonb default '{}'::jsonb, status text default 'active',
   first_seen timestamptz default now(), last_seen timestamptz default now());
@@ -42,7 +42,8 @@ Rebuild after editing anything in `src/`: `python3 src/build.py`
 
 
 ## Living intelligence (self-updating event database)
-- `api/intel.js` runs every 6 hours (vercel.json cron). Odd runs harvest one African city (30 in rotation, ~every 15 days each) with Claude + web search; even runs re-check the dates of one curated "check timing" event or professional body.
+- `api/intel.js` runs every 6 hours (vercel.json cron), rotating three jobs: harvest one African city (30 in rotation), harvest one industry across Africa and the world (18 industries), and re-check the dates of one curated "check timing" event, professional body or global industry flagship (38 in rotation). All use Claude + web search.
+- If you created deocoach_intel before the industries column existed: `alter table public.deocoach_intel add column if not exists industries text[] default '{}';`
 - Every re-sighting raises an item's `seen` and `score`; coaches' votes (confirm +2, attended +2, useful +1, wrong −3) move the score; items at −3 or below are hidden; ended items are retired.
 - Confirmed date updates automatically replace the curated "expected" dates in the Events Radar and the Professional Bodies Map.
 - Needs SUPABASE_URL, SUPABASE_SERVICE_KEY, ANTHROPIC_API_KEY; set CRON_SECRET to protect the harvester.
