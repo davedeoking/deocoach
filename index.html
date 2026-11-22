@@ -32,6 +32,20 @@ a{color:var(--gold2)}
 .crest{width:46px;height:46px;object-fit:contain;filter:drop-shadow(0 0 14px rgba(var(--acc),.45))}
 .brand1{font-family:var(--fontM);font-size:1.2rem;color:var(--gold2);letter-spacing:.06em}
 .brand2{font-size:.76rem;color:var(--mute)}
+#intro .gwrap,.whoov .gwrap{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:18px;opacity:0;transition:opacity 1s;pointer-events:none;overflow:auto}
+#intro.gated .gwrap{opacity:1;pointer-events:auto}#intro.gated canvas{opacity:.25;transition:opacity 1.2s}#intro.gated .ititle{opacity:0!important}#intro.gated{cursor:default}
+.gcard{display:flex;gap:30px;align-items:center;max-width:900px;width:100%;background:linear-gradient(160deg,rgba(var(--deep),.94),rgba(var(--void),.96));border:1px solid rgba(var(--acc),.5);border-radius:26px;padding:30px;box-shadow:0 30px 90px rgba(0,0,0,.6),0 0 70px rgba(var(--acc),.2);animation:gIn 1s cubic-bezier(.2,.8,.2,1) both}
+@keyframes gIn{from{opacity:0;transform:translateY(24px) scale(.97)}to{opacity:1;transform:none}}
+.gport{margin:0;flex:0 0 250px;text-align:center}.gport img{width:250px;height:312px;object-fit:cover;object-position:top;border-radius:22px;box-shadow:0 0 0 2px rgba(var(--acc),.55),0 18px 50px rgba(0,0,0,.5),0 0 60px rgba(var(--acc),.25);animation:gPort 1.4s ease both .2s}
+@keyframes gPort{from{opacity:0;filter:blur(8px) brightness(1.4);transform:scale(1.05)}to{opacity:1;filter:none;transform:none}}
+.gport figcaption{margin-top:10px;font-family:Cinzel,serif;font-size:.72rem;letter-spacing:.22em;color:var(--gold)}
+.gbody{flex:1;min-width:0}.gbody h2{font-family:'Cormorant Garamond',serif;font-size:2.3rem;line-height:1.1;margin:.25rem 0 .5rem;color:var(--gold2)}.gp{color:var(--ink);opacity:.9;margin:0 0 14px;line-height:1.55}
+.gk{font-size:.7rem;letter-spacing:.3em;color:var(--gold);margin-bottom:4px}.genter{font-size:1.05rem;padding:13px 28px}.gsnd{color:var(--mute)}.gsnd a{color:var(--gold)}
+.whoov{position:fixed;inset:0;z-index:120;background:rgba(0,0,0,.62);backdrop-filter:blur(6px);transition:opacity .5s}.whoov.out{opacity:0}.whoov .gwrap{opacity:1;pointer-events:auto}
+.whobtn{border-color:var(--gold)!important;color:var(--gold2)!important}.top .lookbtn{white-space:nowrap}
+#intro .gport img,.whoov .gport img{width:250px;height:312px;filter:none}#intro .gcard img{display:block;margin:0 auto}
+@media(max-width:720px){#intro .gport img,.whoov .gport img{width:110px;height:130px}.gcard{flex-direction:column;padding:18px;gap:10px;text-align:left}.gport{flex:none}.gport img{width:120px;height:140px}.gport figcaption{display:none}.gbody h2{font-size:1.6rem}.gp{font-size:.9rem}.pchip{padding:7px 11px;font-size:.84rem}.top .whobtn{font-size:.78rem!important;width:auto!important;height:auto!important;padding:7px 10px!important}.top .whobtn::before{content:none!important}}
+
 .propick{display:flex;flex-wrap:wrap;gap:8px;margin:.6rem 0}.pchip{display:inline-flex;align-items:center;gap:6px;padding:9px 14px;border-radius:999px;border:1px solid rgba(var(--acc),.35);background:rgba(var(--tint),.04);color:var(--ink);font:600 .9rem Inter,sans-serif;cursor:pointer;transition:all .2s}.pchip span{color:var(--gold)}.pchip:hover{border-color:var(--gold)}.pchip.on{background:linear-gradient(135deg,rgba(var(--acc),.32),rgba(var(--acc),.14));border-color:var(--gold);color:var(--gold2)}.pchip.pri{box-shadow:0 0 0 2px rgba(var(--acc),.35)}.pchip i{font-style:normal;font-size:.7rem;padding:2px 7px;border-radius:999px;background:var(--gold);color:#1a1200;margin-left:2px}.procard{border-color:rgba(var(--acc),.45)}.edseg button{white-space:nowrap}
 
 .who{margin-left:auto;font-size:.84rem;color:var(--mute)}
@@ -366,7 +380,7 @@ body.presenting main{animation:pmIn 1.2s ease-out}
 </style>
 </head>
 <body>
-<div class="top"><img class="crest" src="brand/crest.png" alt="Crest of Coach David Adeoye Abodunrin"><div><div class="brand1">DEOCOACH</div><div class="brand2" id="brand2">Edition for African Coaches · Capability to income · Horizon foresight · Cultural intelligence</div></div><div class="who" id="who"></div><div class="looks"><button class="lookbtn" id="langbtn" onclick="document.getElementById('langmenu').classList.toggle('open')">🌐 English</button><div id="langmenu" class="lookmenu langm"></div></div><div class="looks"><button class="lookbtn" onclick="document.getElementById('lookmenu').classList.toggle('open')">✦ Experience</button><div id="lookmenu" class="lookmenu"></div></div></div>
+<div class="top"><img class="crest" src="brand/crest.png" alt="Crest of Coach David Adeoye Abodunrin"><div><div class="brand1">DEOCOACH</div><div class="brand2" id="brand2">Edition for African Coaches · Capability to income · Horizon foresight · Cultural intelligence</div></div><div class="who" id="who"></div><div class="looks"><button class="lookbtn whobtn" id="whobtn" onclick="openWho()" title="Who are you? Choose your profession and edition">✦ Who are you?</button></div><div class="looks"><button class="lookbtn" id="langbtn" onclick="document.getElementById('langmenu').classList.toggle('open')">🌐 English</button><div id="langmenu" class="lookmenu langm"></div></div><div class="looks"><button class="lookbtn" onclick="document.getElementById('lookmenu').classList.toggle('open')">✦ Experience</button><div id="lookmenu" class="lookmenu"></div></div></div>
 <div class="wrap"><nav id="nav"></nav><main id="main"></main></div>
 <footer><b>Beta development tool.</b> DeoCoach is an unvalidated development and planning tool for coaches. It is not a psychological, clinical or selection instrument and must not be used to hire, screen or select people. Horizon Atlas, Niche Radar, City Minds and the deployment engine are scenario-based foresight; cultural notes are a starting guide to test locally, not stereotypes; opportunity listings come from their original publishers — always check the original notice — DeoCoach planning estimates to explore and test, not guarantees or audited market data. Statistics in the Evidence Bank are cited to their sources; check the latest figures before quoting them. Competency areas are informed by, not copied from, recognised coaching frameworks. Independent tool; not affiliated with any coaching association or federation. Your answers stay in this browser on this device.<div class="credit"><img src="david/p-headshot.webp" alt="Coach David Adeoye Abodunrin"><div>Compiled &amp; Designed by <b style="color:var(--ink)">Coach David Adeoye Abodunrin</b><br>DEO GRATIA — Making Greatness Common</div></div></footer>
 <div class="toast" id="toast"></div>
@@ -722,7 +736,7 @@ function doneMap(){return{profile:!!S.profile.name,signature:!!signature(),ladde
 function updateChrome(){const d=doneMap();const cur=(location.hash||"#home").slice(1);let h="",grp="";
   VIEWS.forEach(v=>{if(v[3]&&v[3]!==grp){grp=v[3];h+=`<div class="grp">${grp}</div>`;}h+=`<button class="${cur===v[0]?"on":""}" onclick="location.hash='${v[0]}'"><span class="ic">${v[1]}</span>${typeof pwT==="function"?pwT(v[2]):v[2]}${d[v[0]]?'<span class="ok">✓</span>':NEW.includes(v[0])?'<span class="new">NEW</span>':""}</button>`;});
   document.getElementById("nav").innerHTML=h;document.getElementById("who").textContent=S.profile.name?`${S.profile.name}${S.profile.cityId&&cityById(S.profile.cityId)?" · "+cityById(S.profile.cityId).n:""}`:"";}
-function render(){stopGlobes();{const b2=document.getElementById("brand2");if(b2&&typeof ED==="function")b2.textContent=(S.ed==="africa"?"Edition for African Coaches":"Global Edition · Coaches · Trainers · Facilitators · Mentors · Speakers")+" · Capability to income · Horizon foresight · Cultural intelligence";}applyLook();langMenu();const cur=(location.hash||"#home").slice(1);const fn=V[cur]||V[{sonar:"atlas",cheques:"income"}[cur]]||V.home;const mn=document.getElementById("main");mn.innerHTML=fn();mn.querySelectorAll("svg *").forEach(el=>["fill","stroke"].forEach(a=>{const v=el.getAttribute(a);if(v&&v.includes("var("))el.style[a]=v;}));updateChrome();if(AFTER[cur])AFTER[cur]();if(window.POLISH_READY)polishAfter();translatePage();}
+function render(){stopGlobes();if(typeof whoLabel==="function")whoLabel();{const b2=document.getElementById("brand2");if(b2&&typeof ED==="function")b2.textContent=S.ed==="africa"?"Edition for African Coaches · Capability to income · Horizon foresight · Cultural intelligence":"Global Edition · for Coaches, Trainers, Facilitators, Mentors & Speakers";}applyLook();langMenu();const cur=(location.hash||"#home").slice(1);const fn=V[cur]||V[{sonar:"atlas",cheques:"income"}[cur]]||V.home;const mn=document.getElementById("main");mn.innerHTML=fn();mn.querySelectorAll("svg *").forEach(el=>["fill","stroke"].forEach(a=>{const v=el.getAttribute(a);if(v&&v.includes("var("))el.style[a]=v;}));updateChrome();if(AFTER[cur])AFTER[cur]();if(window.POLISH_READY)polishAfter();translatePage();}
 window.addEventListener("hashchange",()=>{render();window.scrollTo(0,0);});
 const V={},AFTER={};
 
@@ -939,7 +953,7 @@ if(!Array.isArray(S.pros)||!S.pros.length)S.pros=["coach"];
 function PRO(){return proBy(S.pros[0]);}
 function proList(){return S.pros.map(proBy);}
 function proLine(){const L=proList().map(p=>p.many);return L.length>1?L.slice(0,-1).join(", ")+" and "+L[L.length-1]:L[0];}
-function proToggle(k){const i=S.pros.indexOf(k);if(i>=0){if(S.pros.length>1)S.pros.splice(i,1);}else S.pros.push(k);save();render();}
+function proToggle(k){proTap(k);render();}
 function proPrimary(k){S.pros=[k,...S.pros.filter(x=>x!==k)];save();render();}
 
 // ---- editions ----
@@ -1031,11 +1045,26 @@ PORTALS._multi.push(["Sessionize — open calls for speakers","https://sessioniz
 // ---- picker UI (used on Start, Profile and the header) ----
 function proPicker(compact){return `<div class="propick ${compact?"cmp":""}">${PROS.map(p=>{const on=S.pros.includes(p.k),pri=S.pros[0]===p.k;return `<button class="pchip ${on?"on":""} ${pri?"pri":""}" onclick="proToggle('${p.k}')" title="${esc(p.d)}"><span>${p.ic}</span> ${p.n}${pri&&S.pros.length>1?' <i>main</i>':""}</button>`;}).join("")}</div>${!compact&&S.pros.length>1?`<p class="small">Main focus: <select onchange="proPrimary(this.value)">${proList().map(p=>`<option value="${p.k}">${p.n}</option>`).join("")}</select> — shapes wording, bodies and opportunity searches.</p>`:""}`;}
 function edSwitch(){return `<div class="seg edseg">${["global","africa"].map(k=>`<button class="${S.ed===k?"on":""}" onclick="setEd('${k}')">${k==="global"?"🌍 Global":"🌍 Africa Edition"}</button>`).join("")}</div>`;}
-function proCard(){return `<div class="card procard"><div class="kicker">WHO DEOCOACH IS WORKING FOR</div><h2 style="margin:.2rem 0">I am a…</h2><p class="small">Pick every hat you wear. DeoCoach adapts its bodies, opportunities and wording to your work as a ${esc(proLine())}.</p>${proPicker()}<div class="flex" style="gap:10px;align-items:center;margin-top:.6rem;flex-wrap:wrap"><span class="small"><b>Edition:</b></span>${edSwitch()}<span class="small muted">${S.ed==="africa"?"African cities, bodies and events — the ACW partnership edition.":"Africa plus world hubs: London, New York, Toronto, Dubai, Riyadh, Mumbai, Singapore and more."}</span></div></div>`;}
+function proCard(){return `<div class="card procard"><div class="kicker">WHO DEOCOACH IS WORKING FOR</div><h2 style="margin:.2rem 0">I am a…</h2><p class="small">Pick every hat you wear — your first pick is your main focus. DeoCoach adapts its bodies, opportunities and wording to your work as a ${esc(proLine())}.</p>${proPicker()}<div class="flex" style="gap:10px;align-items:center;margin-top:.6rem;flex-wrap:wrap"><span class="small"><b>Edition:</b></span>${edSwitch()}<span class="small muted">${S.ed==="africa"?"African cities, bodies and events — the ACW partnership edition.":"Africa plus world hubs: London, New York, Toronto, Dubai, Riyadh, Mumbai, Singapore and more."}</span></div></div>`;}
 // profession-aware words for the X-Ray and other templates
 function pw(s){const p=PRO();if(p.k==="coach")return s;return s.replace(/\bcoaching\b/g,p.act).replace(/\bCoaching\b/g,p.act[0].toUpperCase()+p.act.slice(1)).replace(/\bcoaches\b/g,p.many).replace(/\bprofessional coach\b/g,"professional "+p.n.toLowerCase()).replace(/\bI coach\b/g,p.k==="speaker"?"I speak":p.k==="trainer"?"I train":p.k==="facilitator"?"I facilitate":p.k==="mentor"?"I mentor":"I consult").replace(/\bcoach\b/g,p.n.toLowerCase());}
 // title-case variant for menu labels ("Coach Signature" -> "Speaker Signature"); leaves DeoCoach and names alone
 function pwT(s){const p=PRO();if(p.k==="coach")return s;return pw(s).replace(/^Coach\b/,p.n).replace(/\bCoaching Academies\b/,"Academies & Training Institutes");}
+
+// ---- the welcome gate: David welcomes you, you say who you are, you enter (with the welcome score) ----
+function gateHTML(intro){const P=S.pros;return `<div class="gcard" onclick="event.stopPropagation()"><figure class="gport"><img src="david/p-headshot.webp" alt="Coach David Adeoye Abodunrin"><figcaption>Coach David Adeoye Abodunrin</figcaption></figure><div class="gbody">
+ <div class="gk">${intro?"WELCOME TO DEOCOACH · ACTIVATING THE FUTURE":"WHO ARE YOU?"}</div><h2>${intro?"You're welcome. Who are you?":"Who are you?"}</h2>
+ <p class="gp">${intro?"I'm Coach David Adeoye Abodunrin. Tell me the work you do, and DeoCoach will shape itself around you — your cities, your professional bodies, your opportunities.":"Pick every hat you wear. Your first pick is your main focus; tap a picked one to make it main, tap the main one to remove it."}</p>
+ <div class="gk">I AM A…</div><div class="propick">${PROS.map(p=>`<button class="pchip ${P.includes(p.k)?"on":""} ${P[0]===p.k?"pri":""}" onclick="gatePick('${p.k}')" title="${esc(p.d)}"><span>${p.ic}</span> ${p.n}${P[0]===p.k&&P.length>1?' <i>main</i>':""}</button>`).join("")}</div>
+ <div class="gk" style="margin-top:12px">EDITION</div><div class="seg edseg">${["global","africa"].map(k=>`<button class="${S.ed===k?"on":""}" onclick="gateEd('${k}')">${k==="global"?"🌍 Global":"🌍 Africa Edition"}</button>`).join("")}</div>
+ <div class="flex" style="gap:12px;align-items:center;margin-top:18px;flex-wrap:wrap"><button class="btn genter" onclick="gateEnter()">${intro?"Enter DeoCoach ▸":"Done ▸"}</button>${intro?`<span class="small gsnd">🔊 enters with sound · <a href="javascript:void 0" onclick="gateEnter(true)">enter quietly</a></span>`:""}</div></div></div>`;}
+function gateRefresh(){document.querySelectorAll(".gwrap").forEach(w=>w.innerHTML=gateHTML(w.dataset.intro==="1"));}
+function proTap(k){const P=S.pros,i=P.indexOf(k);if(i<0)P.unshift(k);else if(i>0){P.splice(i,1);P.unshift(k);}else if(P.length>1)P.shift();save();}
+function gatePick(k){proTap(k);gateRefresh();}
+function gateEd(k){if(!EDS[k])return;S.ed=k;applyEdition();if(typeof VIEWSTATE!=="undefined"){VIEWSTATE.rot=edRot();VIEWSTATE.k=1;}if(S.sonar)S.sonar.city=null;save();gateRefresh();}
+function gateEnter(quiet){if(!quiet&&typeof PSND!=="undefined"&&!PSND.muted)PSND.welcome();const ov=document.getElementById("whoov");if(ov){ov.classList.add("out");setTimeout(()=>ov.remove(),500);}if(window._introEnd)window._introEnd();render();}
+function openWho(){if(document.getElementById("whoov"))return;const o=document.createElement("div");o.id="whoov";o.className="whoov";o.innerHTML=`<div class="gwrap" data-intro="0"></div>`;o.onclick=()=>gateEnter(true);document.body.appendChild(o);gateRefresh();}
+function whoLabel(){const b=document.getElementById("whobtn");if(b)b.innerHTML=`${PRO().ic} ${PRO().n} · ${S.ed==="africa"?"Africa":"Global"}`;b.title=`I am a ${proLine()} · ${ED().name} — tap to change`;}
 
 // ===== Pan-African languages: 26 interface languages =====
 // Tier 1: built-in menu translations (French, Arabic, Portuguese, Swahili) — beta, for native-speaker review.
@@ -2367,11 +2396,11 @@ if("serviceWorker" in navigator)window.addEventListener("load",()=>navigator.ser
 
 /* ---------- 8. Cinematic opening ---------- */
 function playIntro(force){if(!force&&(RM||sessionStorage.getItem("dc-intro")||/[?&]nointro/.test(location.search)||navigator.webdriver))return;try{sessionStorage.setItem("dc-intro","1");}catch(e){}
- const o=document.createElement("div");o.id="intro";o.innerHTML=`<canvas id="introc"></canvas><div class="ititle"><img src="brand/crest.png" alt=""><div class="i1">DEOCOACH</div><div class="i2">${S.ed==="africa"?"Edition for African Coaches":"Global Edition · with the Edition for African Coaches"}</div><div class="i3">Activating the Future</div></div><button class="iskip">Skip ›</button>`;document.body.appendChild(o);
+ const o=document.createElement("div");o.id="intro";o.innerHTML=`<canvas id="introc"></canvas><div class="ititle"><img src="brand/crest.png" alt=""><div class="i1">DEOCOACH</div><div class="i2">${S.ed==="africa"?"Edition for African Coaches":"Global Edition · with the Edition for African Coaches"}</div><div class="i3">Activating the Future</div></div><div class="gwrap" data-intro="1"></div><button class="iskip">Skip ›</button>`;document.body.appendChild(o);
  const cv=o.querySelector("canvas"),dpr=window.devicePixelRatio||1,W=innerWidth,H=innerHeight;cv.width=W*dpr;cv.height=H*dpr;const ctx=cv.getContext("2d");ctx.setTransform(dpr,0,0,dpr,0,0);const C=lookRGB();
  const proj=d3g.geoOrthographic().translate([W/2,H*.40]).clipAngle(90),path=d3g.geoPath(proj,ctx),grat=d3g.geoGraticule10();const R0=Math.min(W,H*.82)*.34;
  const home=cityById(S.profile.cityId)||cityById("lagos");const order=CITIES.slice().sort((a,b)=>km(home,a)-km(home,b));const stars=Array.from({length:160},()=>[Math.random()*W,Math.random()*H,Math.random()*1.3+.2,Math.random()]);
- let done=false;const t0=performance.now(),T=6400;const end=()=>{if(done)return;done=true;o.classList.add("out");setTimeout(()=>o.remove(),700);};
+ let done=false,gated=false;const t0=performance.now(),T=60000;const end=()=>{if(done)return;done=true;window._introEnd=null;o.classList.add("out");setTimeout(()=>o.remove(),700);};window._introEnd=end;
  o.querySelector(".iskip").onclick=end;o.onclick=e=>{if(e.target===cv)end();};
  function fr(n){if(done)return;const t=n-t0,p=Math.min(1,t/2600),e=1-Math.pow(1-p,3);ctx.clearRect(0,0,W,H);
   stars.forEach(s=>{ctx.globalAlpha=.35+.65*Math.abs(Math.sin(n/900+s[3]*6));ctx.fillStyle=`rgb(${C.acc2})`;ctx.fillRect(s[0],s[1],s[2],s[2]);});ctx.globalAlpha=1;
@@ -2386,7 +2415,7 @@ function playIntro(force){if(!force&&(RM||sessionStorage.getItem("dc-intro")||/[
    if(i>0&&i<14){ctx.beginPath();path({type:"LineString",coordinates:[[home.lon,home.lat],[c.lon,c.lat]]});ctx.strokeStyle=`rgba(${C.acc},${Math.min(.5,age*.08)})`;ctx.lineWidth=1;ctx.stroke();}
    const fl=Math.max(0,1-age/3);ctx.beginPath();ctx.arc(p[0],p[1],3+fl*16,0,7);ctx.strokeStyle=`rgba(${C.acc2},${fl*.8})`;ctx.lineWidth=1.4;ctx.stroke();
    const gg=ctx.createRadialGradient(p[0],p[1],0,p[0],p[1],9);gg.addColorStop(0,`rgba(${C.acc2},.95)`);gg.addColorStop(1,`rgba(${C.acc},0)`);ctx.beginPath();ctx.arc(p[0],p[1],9,0,7);ctx.fillStyle=gg;ctx.fill();});
-  if(t>3500)o.classList.add("titled");if(t>T)return end();requestAnimationFrame(fr);}
+  if(t>3500)o.classList.add("titled");if(t>5200&&!gated){gated=true;gateRefresh();o.classList.add("gated");}if(t>T)return end();requestAnimationFrame(fr);}
  requestAnimationFrame(fr);}
 
 /* ---------- 9. Presenter mode for the press parley and gala ---------- */
@@ -2479,6 +2508,10 @@ const PSND={ctx:null,master:null,timer:null,step:0,muted:false,next:0,
  duck(t,len){if(this.mode!=="mp3"||!this.tg)return;const g=this.tg.gain;g.cancelScheduledValues(t-.5);g.setValueAtTime(1,t-.5);g.linearRampToValueAtTime(.2,t);g.setValueAtTime(.2,t+len-.4);g.linearRampToValueAtTime(1,t+len);},
  start(){try{this.init();if(!this.ctx)return;this.ctx.resume();const ch=this.pick();this.name=ch.name;this.mode=ch.t;if(ch.t==="mp3"){this.v=this.VARIANTS[0];this.playMp3(this.MUSIC[ch.i]);}else this.v=this.VARIANTS[ch.i];this.step=0;this.cut=0;this.next=this.ctx.currentTime+.15;this.impact(this.ctx.currentTime+.05);this.next+=1.4;const g=this.master.gain;g.cancelScheduledValues(this.ctx.currentTime);g.setValueAtTime(this.muted?0:.75,this.ctx.currentTime);clearInterval(this.timer);this.timer=setInterval(()=>this.schedule(),90);this.schedule();}catch(e){}},
  stop(){if(!this.ctx)return;const g=this.master.gain,t=this.ctx.currentTime;g.cancelScheduledValues(t);g.setValueAtTime(g.value,t);g.linearRampToValueAtTime(0,t+1.5);setTimeout(()=>{clearInterval(this.timer);this.timer=null;if(this.el){try{this.el.pause();}catch(e){}this.el=null;}},1600);},
+ welcome(){try{this.init();if(!this.ctx)return;this.ctx.resume();if(this.timer)return;this.v=this.v||this.VARIANTS[0];const c=this.ctx,t=c.currentTime+.06,g=this.master.gain;g.cancelScheduledValues(t);g.setValueAtTime(.8,t);
+  this.riser(t,1.1);const h=t+1.1;this.impact(h);this.anvil(h,.14);this.choir(h+.05,[0,4,7,12,16],5);this.brass(h,[0,7,12],.07,2.4);this.taiko(h+.2,.6);this.taiko(h+.4,.45);
+  this.brass(h+2.3,[5,9,12],.05,2.2);this.choir(h+2.3,[5,9,12,17],3.4);this.taiko(h+2.3,.4);this.brass(h+4.3,[0,4,7,12],.065,3.2);this.choir(h+4.3,[0,4,7,12,16],4.6);this.anvil(h+4.3,.09);this.taiko(h+4.3,.55);
+  g.setValueAtTime(.8,h+7.2);g.linearRampToValueAtTime(0.0001,h+9.6);}catch(e){}},
  toggle(){this.muted=!this.muted;try{localStorage.setItem("dc-mute",this.muted?"1":"");}catch(e){}if(this.ctx){const g=this.master.gain,t=this.ctx.currentTime;g.cancelScheduledValues(t);g.setValueAtTime(g.value,t);g.linearRampToValueAtTime(this.muted?0:.75,t+.3);}}};
 try{PSND.muted=localStorage.getItem("dc-mute")==="1";}catch(e){}
 const PR={on:false,i:0,timer:null,paused:false,dur:28000,t0:0};

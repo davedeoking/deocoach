@@ -13,7 +13,7 @@ if(!Array.isArray(S.pros)||!S.pros.length)S.pros=["coach"];
 function PRO(){return proBy(S.pros[0]);}
 function proList(){return S.pros.map(proBy);}
 function proLine(){const L=proList().map(p=>p.many);return L.length>1?L.slice(0,-1).join(", ")+" and "+L[L.length-1]:L[0];}
-function proToggle(k){const i=S.pros.indexOf(k);if(i>=0){if(S.pros.length>1)S.pros.splice(i,1);}else S.pros.push(k);save();render();}
+function proToggle(k){proTap(k);render();}
 function proPrimary(k){S.pros=[k,...S.pros.filter(x=>x!==k)];save();render();}
 
 // ---- editions ----
@@ -105,8 +105,23 @@ PORTALS._multi.push(["Sessionize — open calls for speakers","https://sessioniz
 // ---- picker UI (used on Start, Profile and the header) ----
 function proPicker(compact){return `<div class="propick ${compact?"cmp":""}">${PROS.map(p=>{const on=S.pros.includes(p.k),pri=S.pros[0]===p.k;return `<button class="pchip ${on?"on":""} ${pri?"pri":""}" onclick="proToggle('${p.k}')" title="${esc(p.d)}"><span>${p.ic}</span> ${p.n}${pri&&S.pros.length>1?' <i>main</i>':""}</button>`;}).join("")}</div>${!compact&&S.pros.length>1?`<p class="small">Main focus: <select onchange="proPrimary(this.value)">${proList().map(p=>`<option value="${p.k}">${p.n}</option>`).join("")}</select> — shapes wording, bodies and opportunity searches.</p>`:""}`;}
 function edSwitch(){return `<div class="seg edseg">${["global","africa"].map(k=>`<button class="${S.ed===k?"on":""}" onclick="setEd('${k}')">${k==="global"?"🌍 Global":"🌍 Africa Edition"}</button>`).join("")}</div>`;}
-function proCard(){return `<div class="card procard"><div class="kicker">WHO DEOCOACH IS WORKING FOR</div><h2 style="margin:.2rem 0">I am a…</h2><p class="small">Pick every hat you wear. DeoCoach adapts its bodies, opportunities and wording to your work as a ${esc(proLine())}.</p>${proPicker()}<div class="flex" style="gap:10px;align-items:center;margin-top:.6rem;flex-wrap:wrap"><span class="small"><b>Edition:</b></span>${edSwitch()}<span class="small muted">${S.ed==="africa"?"African cities, bodies and events — the ACW partnership edition.":"Africa plus world hubs: London, New York, Toronto, Dubai, Riyadh, Mumbai, Singapore and more."}</span></div></div>`;}
+function proCard(){return `<div class="card procard"><div class="kicker">WHO DEOCOACH IS WORKING FOR</div><h2 style="margin:.2rem 0">I am a…</h2><p class="small">Pick every hat you wear — your first pick is your main focus. DeoCoach adapts its bodies, opportunities and wording to your work as a ${esc(proLine())}.</p>${proPicker()}<div class="flex" style="gap:10px;align-items:center;margin-top:.6rem;flex-wrap:wrap"><span class="small"><b>Edition:</b></span>${edSwitch()}<span class="small muted">${S.ed==="africa"?"African cities, bodies and events — the ACW partnership edition.":"Africa plus world hubs: London, New York, Toronto, Dubai, Riyadh, Mumbai, Singapore and more."}</span></div></div>`;}
 // profession-aware words for the X-Ray and other templates
 function pw(s){const p=PRO();if(p.k==="coach")return s;return s.replace(/\bcoaching\b/g,p.act).replace(/\bCoaching\b/g,p.act[0].toUpperCase()+p.act.slice(1)).replace(/\bcoaches\b/g,p.many).replace(/\bprofessional coach\b/g,"professional "+p.n.toLowerCase()).replace(/\bI coach\b/g,p.k==="speaker"?"I speak":p.k==="trainer"?"I train":p.k==="facilitator"?"I facilitate":p.k==="mentor"?"I mentor":"I consult").replace(/\bcoach\b/g,p.n.toLowerCase());}
 // title-case variant for menu labels ("Coach Signature" -> "Speaker Signature"); leaves DeoCoach and names alone
 function pwT(s){const p=PRO();if(p.k==="coach")return s;return pw(s).replace(/^Coach\b/,p.n).replace(/\bCoaching Academies\b/,"Academies & Training Institutes");}
+
+// ---- the welcome gate: David welcomes you, you say who you are, you enter (with the welcome score) ----
+function gateHTML(intro){const P=S.pros;return `<div class="gcard" onclick="event.stopPropagation()"><figure class="gport"><img src="david/p-headshot.webp" alt="Coach David Adeoye Abodunrin"><figcaption>Coach David Adeoye Abodunrin</figcaption></figure><div class="gbody">
+ <div class="gk">${intro?"WELCOME TO DEOCOACH · ACTIVATING THE FUTURE":"WHO ARE YOU?"}</div><h2>${intro?"You're welcome. Who are you?":"Who are you?"}</h2>
+ <p class="gp">${intro?"I'm Coach David Adeoye Abodunrin. Tell me the work you do, and DeoCoach will shape itself around you — your cities, your professional bodies, your opportunities.":"Pick every hat you wear. Your first pick is your main focus; tap a picked one to make it main, tap the main one to remove it."}</p>
+ <div class="gk">I AM A…</div><div class="propick">${PROS.map(p=>`<button class="pchip ${P.includes(p.k)?"on":""} ${P[0]===p.k?"pri":""}" onclick="gatePick('${p.k}')" title="${esc(p.d)}"><span>${p.ic}</span> ${p.n}${P[0]===p.k&&P.length>1?' <i>main</i>':""}</button>`).join("")}</div>
+ <div class="gk" style="margin-top:12px">EDITION</div><div class="seg edseg">${["global","africa"].map(k=>`<button class="${S.ed===k?"on":""}" onclick="gateEd('${k}')">${k==="global"?"🌍 Global":"🌍 Africa Edition"}</button>`).join("")}</div>
+ <div class="flex" style="gap:12px;align-items:center;margin-top:18px;flex-wrap:wrap"><button class="btn genter" onclick="gateEnter()">${intro?"Enter DeoCoach ▸":"Done ▸"}</button>${intro?`<span class="small gsnd">🔊 enters with sound · <a href="javascript:void 0" onclick="gateEnter(true)">enter quietly</a></span>`:""}</div></div></div>`;}
+function gateRefresh(){document.querySelectorAll(".gwrap").forEach(w=>w.innerHTML=gateHTML(w.dataset.intro==="1"));}
+function proTap(k){const P=S.pros,i=P.indexOf(k);if(i<0)P.unshift(k);else if(i>0){P.splice(i,1);P.unshift(k);}else if(P.length>1)P.shift();save();}
+function gatePick(k){proTap(k);gateRefresh();}
+function gateEd(k){if(!EDS[k])return;S.ed=k;applyEdition();if(typeof VIEWSTATE!=="undefined"){VIEWSTATE.rot=edRot();VIEWSTATE.k=1;}if(S.sonar)S.sonar.city=null;save();gateRefresh();}
+function gateEnter(quiet){if(!quiet&&typeof PSND!=="undefined"&&!PSND.muted)PSND.welcome();const ov=document.getElementById("whoov");if(ov){ov.classList.add("out");setTimeout(()=>ov.remove(),500);}if(window._introEnd)window._introEnd();render();}
+function openWho(){if(document.getElementById("whoov"))return;const o=document.createElement("div");o.id="whoov";o.className="whoov";o.innerHTML=`<div class="gwrap" data-intro="0"></div>`;o.onclick=()=>gateEnter(true);document.body.appendChild(o);gateRefresh();}
+function whoLabel(){const b=document.getElementById("whobtn");if(b)b.innerHTML=`${PRO().ic} ${PRO().n} · ${S.ed==="africa"?"Africa":"Global"}`;b.title=`I am a ${proLine()} · ${ED().name} — tap to change`;}
