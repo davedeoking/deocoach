@@ -328,6 +328,39 @@ body.presenting main{max-width:1500px;margin:0 auto;padding:26px 40px 240px;font
  #pbar{grid-template-columns:1fr;padding:12px 16px}#pbar .pqr{display:none}#pbar .pt{font-size:1.5rem}
 }
 @media(prefers-reduced-motion:reduce){main>*{animation:none}}
+
+/* David's faded portrait — on every page, fades in */
+#dghost{position:fixed;right:-2vw;bottom:0;width:min(34vw,520px);height:min(82vh,780px);z-index:5;pointer-events:none;background-size:cover;background-position:center 18%;opacity:.18;mix-blend-mode:screen;filter:saturate(.6) contrast(1.05);
+ -webkit-mask-image:radial-gradient(ellipse 62% 70% at 55% 42%,#000 35%,transparent 72%);mask-image:radial-gradient(ellipse 62% 70% at 55% 42%,#000 35%,transparent 72%);animation:dgIn 2.4s ease-out both}
+#dghost.in{animation:dgIn 2.4s ease-out both}
+@keyframes dgIn{from{opacity:0;transform:translateY(18px) scale(1.04);filter:blur(6px) saturate(.6)}to{opacity:.18;transform:none;filter:blur(0) saturate(.6) contrast(1.05)}}
+body.presenting #dghost{opacity:.26;width:min(40vw,640px);height:88vh;z-index:5;animation-name:dgInP}
+@keyframes dgInP{from{opacity:0;transform:translateX(40px) scale(1.06);filter:blur(8px)}to{opacity:.26;transform:none;filter:blur(0)}}
+@media (max-width:760px){#dghost{width:70vw;height:55vh;opacity:.1;right:-14vw}@keyframes dgIn{from{opacity:0}to{opacity:.1}}}
+@media (prefers-reduced-motion:reduce){#dghost,#dghost.in{animation:none}}
+/* presenter slide-change flash */
+#pflash{position:fixed;inset:0;z-index:59;pointer-events:none;opacity:0;background:radial-gradient(ellipse at 50% 60%,rgba(255,236,190,.55),rgba(var(--gold-rgb,201,168,76),.25) 35%,transparent 70%)}
+#pflash.go{animation:pfl 1.1s ease-out}
+@keyframes pfl{0%{opacity:0}8%{opacity:1}100%{opacity:0}}
+#pbar .pt.in{animation:ptIn 1s cubic-bezier(.2,.8,.2,1) both}
+@keyframes ptIn{from{opacity:0;letter-spacing:.18em;filter:blur(10px);transform:scale(1.08)}to{opacity:1;letter-spacing:normal;filter:blur(0);transform:none}}
+body.presenting main{animation:pmIn 1.2s ease-out}
+@keyframes pmIn{from{opacity:.2;transform:scale(.985)}to{opacity:1;transform:none}}
+
+/* Coaching academies */
+.hero-acad{background:linear-gradient(110deg,rgba(var(--void),.94),rgba(var(--void),.75)),radial-gradient(ellipse at 85% 20%,rgba(var(--acc),.25),transparent 60%)}
+.chip{border:1px solid var(--line);background:rgba(var(--tint),.04);color:var(--ink);border-radius:999px;padding:7px 13px;font:inherit;font-size:.84rem;cursor:pointer;min-height:38px}
+.chip.on{background:linear-gradient(180deg,rgb(var(--acc2)),rgb(var(--acc)));color:var(--onacc);border-color:transparent;font-weight:700}
+.acadgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:14px;margin:14px 0}
+.acad{position:relative;background:rgba(var(--deep),.55);border:1px solid var(--line);border-radius:18px;padding:18px 20px;display:flex;flex-direction:column;gap:6px}
+.acad h3{margin:0;font-family:var(--fontD);font-size:1.2rem;color:var(--ink)}
+.acad .aloc{font-size:.8rem;letter-spacing:.06em;color:var(--gold)}
+.acad p{margin:.2rem 0;line-height:1.55;font-size:.95rem!important;font-family:inherit!important;font-weight:400!important;color:var(--ink)!important;letter-spacing:normal!important}.acad p.awhy{color:var(--muted)!important;font-size:.9rem!important}
+.acad .aacc{display:flex;flex-wrap:wrap;gap:6px;margin:.3rem 0}.acad .aacc span{font-size:.75rem;border:1px solid rgba(var(--acc),.5);border-radius:999px;padding:3px 10px;color:var(--ink)}
+.acad .awhy{font-size:.9rem;color:var(--muted)}
+.acad.acadfeat{margin:14px 0;padding:26px 28px;border:1.5px solid var(--gold);background:linear-gradient(120deg,rgba(var(--deep),.85),rgba(var(--void),.6)),radial-gradient(ellipse at 100% 0%,rgba(var(--acc),.3),transparent 55%);box-shadow:0 20px 60px rgba(0,0,0,.35)}
+.acad.acadfeat h3{font-size:1.7rem}.acad .afeat{align-self:flex-start;font-size:.72rem;letter-spacing:.2em;text-transform:uppercase;font-weight:800;color:var(--onacc);background:linear-gradient(90deg,var(--gold),var(--gold2));border-radius:999px;padding:4px 12px;margin-bottom:6px}
+.honour{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px}.hon{text-align:center}.hon img{width:120px;height:120px;border-radius:50%;object-fit:cover;border:2px solid var(--gold)}.hon b{display:block;margin-top:8px}.hon span{font-size:.8rem;color:var(--gold)}
 </style>
 </head>
 <body>
@@ -681,8 +714,8 @@ const VIEWS=[
  ["profile","☺","My profile","Me"],["signature","✧","Coach Signature","Me"],["ladder","▲","Competency Ladder","Me"],
  ["niches","⌁","Niche Radar · 10 years","Money"],["income","₦","Capability to Income","Money"],
  ["brand","◈","Brand Compass","Brand"],["funnel","▽","Brand Funnel","Brand"],["stuck","➚","Stuck & growth plan","Brand"],
- ["toolkit","⚙","Client Toolkit","Grow"],["mentor","☯","Supervisor Desk","Grow"]];
-const NEW=["industry","events","bodies","bizdev","fas","clients","backcast","power","scenarios","game","cocreate","caplib","methods","templates","governance","start","atlas","briefing","minds","evidence","opps"];
+ ["toolkit","⚙","Client Toolkit","Grow"],["mentor","☯","Supervisor Desk","Grow"],["academies","✦","Coaching Academies","Grow"]];
+const NEW=["academies","industry","events","bodies","bizdev","fas","clients","backcast","power","scenarios","game","cocreate","caplib","methods","templates","governance","start","atlas","briefing","minds","evidence","opps"];
 function doneMap(){return{profile:!!S.profile.name,signature:!!signature(),ladder:compAvg()>0,niches:!!S.profile.niche,income:S.deals.length>0,brand:S.stage!==null,funnel:!!funnel(),stuck:num(S.hrs.total)>0};}
 function updateChrome(){const d=doneMap();const cur=(location.hash||"#home").slice(1);let h="",grp="";
   VIEWS.forEach(v=>{if(v[3]&&v[3]!==grp){grp=v[3];h+=`<div class="grp">${grp}</div>`;}h+=`<button class="${cur===v[0]?"on":""}" onclick="location.hash='${v[0]}'"><span class="ic">${v[1]}</span>${v[2]}${d[v[0]]?'<span class="ok">✓</span>':NEW.includes(v[0])?'<span class="new">NEW</span>':""}</button>`;});
@@ -1767,6 +1800,136 @@ V.bodies=()=>{evIntelLoad("");const n=evNiche(),nn=nicheById(n),rg=S.ev.breg||""
  <details class="card"><summary><b>All other bodies (${other.length})</b></summary>${other.map(card).join("")}</details>`;};
 AFTER.bodies=()=>{};
 
+// ===== Coaching Academies & Training Organisations across Africa =====
+// Researched from public sources, 22 Nov 2026. ok:"v" = details confirmed on the provider's own site or national press.
+// This is a guide, not a ranking: academies are grouped by region with the evidence for each. Featured: OLCA, Lagos.
+const ACADEMIES=[
+ {id:"olca",feat:1,name:"OLCA Coaching Ltd — Olusola Lanre Coaching Academy",city:"Lagos",area:"Victoria Island",ctry:"Nigeria",reg:"West Africa",
+  lead:"Founder & Chief Catalyst: Dr Lanre Olusola, \"The Catalyst\"",
+  what:"Integrative coaching certification: life coaching, workplace psychology, health coaching, and coaching for HR and leaders. University diplomas, degrees and master's pathways through a five-year MoU with Myles Leadership University (2024).",
+  acc:["LCAN Level 3 Coach Training Institution","Integrative & Transformative Catalysis (ITC) method"],
+  focus:["life","integrative","corporate","academic"],lvl:"Certification → diploma, degree, master's",lang:"English",
+  why:"West Africa's first wholly integrative coaching academy, and Lagos's best-known home for new coaches. Its LCAN Level 3 accreditation was presented during Africa Coaching Week.",
+  src:"https://guardian.ng/?p=2497251",ok:"v"},
+ {id:"core",name:"Centre for CoRE Coaching (TBA Consults)",city:"Lagos",area:"Lekki Phase 1",ctry:"Nigeria",reg:"West Africa",
+  lead:"Founding director: Ajibola Ponnle, founding president of ICF Nigeria",
+  what:"Certified Professional Coach programme built on the ICF core competencies and code of ethics; internal-coach and culture-change programmes for organisations.",
+  acc:["ICF-competency based","First Nigerian-owned programme to follow ICF standards"],
+  focus:["exec","corporate"],lvl:"Professional certification",lang:"English",
+  why:"A pioneer of ICF-standard coach training in Nigeria, with deep links to HR and the public service.",
+  src:"https://www.thisdaylive.com/2019/03/08/tba-grooms-coaches-to-maximise-personal-professional-potentials",ok:"v"},
+ {id:"ez37",name:"EZ37 Solutions",city:"Lagos",ctry:"Nigeria",reg:"West Africa",
+  lead:"Lagos and London",
+  what:"ICF-accredited Level 1 coach certification, delivered virtually in modules (self-awareness, the being and doing of a coach, core competencies, essentials of coaching).",
+  acc:["ICF Level 1 accredited"],focus:["exec","online"],lvl:"ICF Level 1",lang:"English",
+  why:"A Nigerian-run route to the ICF ACC credential without travelling.",
+  src:"https://www.growlearnconnect.org/node/1266",ok:"v"},
+ {id:"lbs",name:"Lagos Business School — The Manager as Coach",city:"Lagos",area:"Lekki-Epe",ctry:"Nigeria",reg:"West Africa",
+  lead:"Pan-Atlantic University business school",
+  what:"Three-day programme on coaching leadership: the science of coaching, the coaching process, tools and a live demonstration. ₦850,000 excl. VAT (2026). LBS also offers executive coaching to its Executive MBA and executive education participants.",
+  acc:["Business-school certificate"],focus:["leader","corporate"],lvl:"Short course",lang:"English",
+  why:"Where Nigerian corporate buyers send managers to learn coaching. Its alumni are your future clients and sponsors.",
+  src:"https://www.lbs.edu.ng/executive-education/open-seminars/the-manager-as-coach/",ok:"v"},
+ {id:"strath",name:"Strathmore Business School — Executive Coaching",city:"Nairobi",ctry:"Kenya",reg:"East Africa",
+  lead:"Strathmore University",
+  what:"Executive Coaching for Managers, an ICF Level 1 programme with the training and mentor coaching needed for the ACC credential. Also a credentialing accelerator and mentoring programme, and a bench of ICF-accredited executive coaches from Kenya, Uganda, Rwanda and Tanzania.",
+  acc:["ICF Level 1 accredited"],focus:["exec","leader","corporate"],lvl:"ICF Level 1 + credentialing support",lang:"English",
+  why:"East Africa's leading business-school route into executive coaching.",
+  src:"https://sbs.strathmore.edu/programme/executive-coaching-for-managers-programme/",ok:"v"},
+ {id:"uct",name:"UCT Graduate School of Business — Centre for Coaching",city:"Cape Town",ctry:"South Africa",reg:"Southern Africa",
+  lead:"University of Cape Town, with New Ventures West",
+  what:"Coaching for Development: a six-month ICF Level 1 apprenticeship (90 hours). Professional Coaching Course: a one-year ICF Level 2 programme. Integral coaching approach; Leader-as-Coach and Leadership Conversations short courses.",
+  acc:["ICF Level 1","ICF Level 2"],focus:["exec","integrative","academic"],lvl:"Six-month and one-year programmes",lang:"English",
+  why:"One of the continent's most respected homes of executive-coaching theory and practice.",
+  src:"https://gsb.uct.ac.za/centre-coaching",ok:"v"},
+ {id:"usb",name:"Stellenbosch Business School — MPhil in Leadership Coaching",city:"Cape Town",area:"Bellville Park",ctry:"South Africa",reg:"Southern Africa",
+  lead:"Programme head: Prof Nicky Terblanche",
+  what:"Master's degree in leadership coaching (blended), with research into African coaching practice and AI in coaching.",
+  acc:["EMCC Global Master Practitioner (EQA)","AACSB · EQUIS · AMBA school"],focus:["exec","academic"],lvl:"Master's",lang:"English",
+  why:"The research-led route for coaches who want academic authority and to publish.",
+  src:"https://emccglobal.org/master-practitioner-eqa-for-leading-south-african-stellenbosch-business-school/",ok:"v"},
+ {id:"sacap",name:"SACAP — South African College of Applied Psychology",city:"Cape Town · Johannesburg · Durban · Pretoria",ctry:"South Africa",reg:"Southern Africa",
+  lead:"Four campuses plus online",
+  what:"Postgraduate Diploma in Coaching (ICF ACTP, 235 hours, with a six-month supervised internship); Coach Practitioner Programme; short online Coaching in the Workplace course.",
+  acc:["ICF Level 2 / ACTP","COMENSA Gold & Silver approved"],focus:["life","exec","academic","online"],lvl:"Short course → postgraduate diploma",lang:"English",
+  why:"A psychology-grounded, fully accredited ladder from first course to postgraduate qualification.",
+  src:"https://www.sacap.edu.za/courses/postgraduate-diploma",ok:"v"},
+ {id:"henley",name:"Henley Business School Africa — Lead with Coaching",city:"Johannesburg",area:"Paulshof",ctry:"South Africa",reg:"Southern Africa",
+  lead:"Henley Africa (quadruple-accredited business school)",
+  what:"Three-day leader-as-coach course (R14,999 incl. VAT); personal coaching built into its executive programmes and MBA.",
+  acc:["AMBA · EQUIS · AACSB · AABS school"],focus:["leader","corporate"],lvl:"Short course",lang:"English",
+  why:"Henley is where many Southern African corporates develop leaders, which makes its network a buyer network for coaches.",
+  src:"https://www.henleysa.ac.za/short-courses/lead-with-coaching",ok:"v"},
+ {id:"think",name:"Think Coaching Academy",ctry:"South Africa",city:"South Africa",reg:"Southern Africa",
+  lead:"Life and advanced coaching certification",
+  what:"Life coaching and advanced coaching certifications.",
+  acc:["SSETA accredited","COMENSA endorsed"],focus:["life"],lvl:"Certification",lang:"English",
+  why:"A practical entry route for new life coaches in South Africa.",
+  src:"https://coursetakers.com/course/life-coaching-course-by-think-coaching-academy",ok:"v"},
+ {id:"cways",name:"CoachingWays Côte d'Ivoire",city:"Abidjan",area:"Marcory",ctry:"Côte d'Ivoire",reg:"West Africa (Francophone)",
+  lead:"Led by Stephan Coridon and Kadé Ba",
+  what:"Professional coach training in French, with a pathway to ICF certification. Graduates become CoachingWays ambassadors.",
+  acc:["ICF certification pathway"],focus:["exec","francophone"],lvl:"Professional certification",lang:"Français",
+  why:"Described in national press as Côte d'Ivoire's first professional coach-training school.",
+  src:"https://www.aip.ci/?p=42727",ok:"v"},
+ {id:"focus",name:"FOCUS TL × Erickson Coaching International",city:"Abidjan",ctry:"Côte d'Ivoire",reg:"West Africa (Francophone)",
+  lead:"Also active in Benin and Cameroon",
+  what:"Erickson's internationally recognised coach education, delivered on site in French, alongside leadership, execution and workplace-wellbeing programmes.",
+  acc:["Erickson programme (ICF standards)"],focus:["exec","francophone"],lvl:"Professional certification",lang:"Français",
+  why:"Brings a global coaching school to Francophone Africa, so coaches no longer have to fly to Europe or America to train.",
+  src:"https://www.erickson.edu/resources/expanding-professional-coaching-in-africa",ok:"v"},
+ {id:"nfak",name:"NF Akademy × Coaching Academy (Tunisia)",city:"Abidjan",ctry:"Côte d'Ivoire",reg:"West Africa (Francophone)",
+  lead:"Director: Nabou Fall",
+  what:"Triple certification in coaching, NLP and hypnosis, with an ICF pathway, for leaders and HR professionals.",
+  acc:["ICF pathway"],focus:["life","francophone"],lvl:"Triple certification",lang:"Français",
+  why:"Designed by two African master-coach trainers to make Abidjan a coach-training hub.",
+  src:"https://www.aip.ci/?p=77780",ok:"v"},
+ {id:"rice",name:"École de Coaching Éthique d'Abidjan (RICE network)",city:"Abidjan",ctry:"Côte d'Ivoire",reg:"West Africa (Francophone)",
+  lead:"Réseau international des coaches éthiques",
+  what:"Six-month ethical-coaching programme, with graduation at the network's Olympiades du coaching éthique.",
+  acc:["Network certification"],focus:["life","francophone"],lvl:"Six-month programme",lang:"Français",
+  why:"Part of the community behind SICEMA, Abidjan's continental coaching fair.",
+  src:"https://www.fratmat.info/article/240996/societe/2e-edition-des-olympiades-du-coaching-ethique-9-nouveaux-coachs-certifies-prets-pour-laccompagnement",ok:"v"},
+ {id:"cta",name:"Coach Transformation Academy",city:"Online (serves Nigeria, Kenya, Egypt and others)",ctry:"Online / Pan-African",reg:"Online",
+  lead:"Global provider with African cohorts",
+  what:"ICF Level 1 (60 hours + 10 hours mentor coaching) and Level 2 (125 hours) programmes, with specialisations in executive, business, career and team coaching.",
+  acc:["ICF Level 1 & 2","EMCC","CCE"],focus:["exec","online"],lvl:"ICF Level 1 → Level 2",lang:"English",
+  why:"A flexible online route for coaches outside the big hubs, including Egypt.",
+  src:"https://coachtransformation.com/nigeria/icf-accredited-coach-training-programs",ok:"v"}
+];
+const ACAD_FOCUS={life:"Life coaching",exec:"Executive & professional",leader:"Leader-as-coach",integrative:"Integrative / behavioural",corporate:"Corporate & HR",academic:"Degree & research",francophone:"Francophone",online:"Online"};
+// Founding Circle — the coaches who supported David's journey. Filled only with names David confirms and each person's consent.
+const HONOUR=[];
+function acadToggle(id){S.acad=S.acad||{list:[]};const l=S.acad.list,i=l.indexOf(id);i<0?l.push(id):l.splice(i,1);save();render();}
+function acadSet(k,v){S.acad=S.acad||{list:[]};S.acad[k]=v;save();render();}
+function acadCard(a,big){const on=(S.acad&&S.acad.list||[]).includes(a.id);
+ return `<div class="acad${a.feat?" acadfeat":""}">${a.feat?`<div class="afeat">★ Featured · ${a.city}</div>`:""}
+  <h3>${a.name}</h3><div class="aloc">${a.area?a.area+", ":""}${a.city}${a.ctry&&!a.city.includes(a.ctry)?" · "+a.ctry:""} · ${a.lang}</div>
+  <div class="small" style="margin:.2rem 0 .5rem">${a.lead}</div><p>${a.what}</p>
+  <div class="aacc">${a.acc.map(x=>`<span>${x}</span>`).join("")}</div>
+  <p class="awhy"><b>Why it matters:</b> ${a.why}</p>
+  <div class="row" style="gap:8px;flex-wrap:wrap;align-items:center"><button class="btn ${on?"":"ghost"}" onclick="acadToggle('${a.id}')">${on?"✓ On my shortlist":"＋ Shortlist"}</button>
+  <a class="small" href="${a.src}" target="_blank" rel="noopener">Source ↗</a><span class="small muted">${a.lvl}</span></div></div>`;}
+V.academies=()=>{const A=S.acad||{list:[]},f=A.f||"",r=A.r||"";const regs=[...new Set(ACADEMIES.map(a=>a.reg))];
+ const list=ACADEMIES.filter(a=>!a.feat&&(!f||a.focus.includes(f))&&(!r||a.reg===r));const feat=ACADEMIES.filter(a=>a.feat);
+ const short=ACADEMIES.filter(a=>A.list.includes(a.id));
+ return `<div class="card hero-acad"><div class="kicker">GROW · WHERE AFRICA TRAINS ITS COACHES</div><h1>Coaching Academies & Training Organisations</h1>
+ <p>Where coaches across Africa train, certify and keep growing, from Lagos to Nairobi, Cape Town and Abidjan, with the evidence for each. This is a guide, not a ranking: check accreditation, mentor-coaching hours and observed sessions before you enrol.</p></div>
+ ${feat.map(a=>acadCard(a,1)).join("")}
+ ${HONOUR.length?`<div class="card"><h2>The Founding Circle</h2><div class="honour">${HONOUR.map(h=>`<div class="hon">${h.img?`<img src="${h.img}" alt="${h.name}">`:""}<b>${h.name}</b><span>${h.role}</span><p>${h.note}</p></div>`).join("")}</div></div>`:""}
+ <div class="card"><div class="row" style="gap:8px;flex-wrap:wrap"><b style="margin-right:6px">Focus</b><button class="chip ${!f?"on":""}" onclick="acadSet('f','')">All</button>${Object.entries(ACAD_FOCUS).map(([k,v])=>`<button class="chip ${f===k?"on":""}" onclick="acadSet('f','${k}')">${v}</button>`).join("")}</div>
+ <div class="row" style="gap:8px;flex-wrap:wrap;margin-top:10px"><b style="margin-right:6px">Region</b><button class="chip ${!r?"on":""}" onclick="acadSet('r','')">All</button>${regs.map(x=>`<button class="chip ${r===x?"on":""}" onclick="acadSet('r','${x}')">${x}</button>`).join("")}</div></div>
+ <div class="acadgrid">${list.map(a=>acadCard(a)).join("")||`<div class="card">No academies match these filters yet.</div>`}</div>
+ <div class="card"><h2>How to choose an academy</h2><ol class="small" style="line-height:1.7">
+ <li><b>Check the level, not just the logo.</b> ICF Level 1 leads to ACC, Level 2 to PCC. COMENSA (South Africa), EMCC and LCAN levels (Nigeria) each mean something different, so ask which credential you can apply for at the end.</li>
+ <li><b>Count the practice.</b> Mentor-coaching hours, observed sessions with feedback and supervised client hours matter more than classroom hours.</li>
+ <li><b>Match it to your niche.</b> Executive coaches gain from business-school networks. Life and wellbeing coaches gain from psychology-grounded programmes. Faith and community coaches gain from integrative ones.</li>
+ <li><b>Look at the alumni.</b> Who hires its graduates? An academy's network is often worth as much as its certificate.</li>
+ <li><b>Ask about money.</b> Total cost, payment plans, and whether the fee includes the credential application and the exam.</li></ol>
+ <p class="small muted">Missing an academy you trust? Tell us and we'll check it and add it. Ghana, Egypt, Uganda, Rwanda and Morocco are next.</p></div>
+ ${short.length?`<div class="card"><h2>My shortlist</h2>${short.map(a=>`<div class="row" style="justify-content:space-between;border-bottom:1px solid var(--line);padding:8px 0"><span><b>${a.name}</b> <span class="small muted">· ${a.city}</span></span><span class="small">${a.lvl}</span></div>`).join("")}
+  <p class="small" style="margin-top:10px">Next: ask each one for the credential you'll qualify for, mentor-coaching hours, cohort dates and the total cost. Then take your shortlist to <a href="#mentor">DeoMentor</a> to decide.</p></div>`:""}`;};
+
 // ===== Industry Intelligence: industries → power-broker calendar (Africa + global), live happenings, alerts, on-device learning-to-rank, Event Prep Copilot =====
 const INDUSTRIES=[["fin","Banking & financial services"],["ins","Insurance & pensions"],["energy","Oil, gas & power"],["mining","Mining & metals"],["tech","Telecoms & technology"],["fmcg","FMCG & manufacturing"],["health","Health & pharma"],["pub","Government & public sector"],["dev","Development, DFIs & NGOs"],["edu","Education & universities"],["agri","Agriculture & food"],["creative","Creative, media & entertainment"],["legal","Legal & professional services"],["faith","Faith & ministry"],["realestate","Real estate & construction"],["logistics","Transport, logistics & aviation"],["tourism","Hospitality & tourism"],["retail","Retail & e-commerce"]];
 const IND_N=Object.fromEntries(INDUSTRIES);
@@ -2086,6 +2249,7 @@ const TOUR=[["start","Where do you want to begin?","Eight questions every Africa
  ["industry","Event Prep Copilot","Ask at depth before any room: the power brokers, your talk abstract, your 30-second introduction, the etiquette, the follow-up.","#pc"],
  ["events","Events & Happenings Radar","A seismograph of the year ahead: the rooms to be in, your best role, how long to stay — and the elections and budget cycles that move money."],
  ["bodies","Professional Bodies — Africa & Global","59 professional bodies and flagship conferences, from CIPM, ICAN and the NBA to ICF Converge and SHRM — with your conference year planned."],
+ ["academies","Coaching Academies","Where Africa trains its coaches: from OLCA in Lagos to Strathmore in Nairobi, UCT and Stellenbosch in Cape Town and the schools of Abidjan, with accreditation and evidence for each."],
  ["bizdev","Budget & Pipeline Engine","Work backwards from the income you want to the conversations you need this week — and spend only where your buyers gather."],
  ["atlas","Horizon Atlas","Where coaching opportunity is rising across 30 African cities, from Year 1 to Year 10."],
  ["opps","Opportunity Desk","Live tenders, bids and jobs, gathered daily from public sources."],
@@ -2125,7 +2289,22 @@ const PSND={ctx:null,master:null,timer:null,step:0,muted:false,next:0,
   [-12,-5,0,3].forEach(n=>[-12,0,12].forEach(det=>{const o=c.createOscillator();o.type="sawtooth";o.frequency.value=this.hz(n);o.detune.value=det;o.connect(f);o.start(t);o.stop(t+3.1);}));
   const b=c.createOscillator(),bg=c.createGain();b.type="sine";b.frequency.setValueAtTime(80,t);b.frequency.exponentialRampToValueAtTime(28,t+1.4);this.env(bg,t,.004,.9,1.8);b.connect(bg);bg.connect(this.bus);b.start(t);b.stop(t+1.9);
   this.nz(t,1.6,"highpass",3000,.7,.18);this.taiko(t,.9);},
- chime(){if(!this.ctx||this.muted)return;this.impact();this.cut=this.ctx.currentTime+1.2;},
+ choir(t,notes,dur){const c=this.ctx;notes.forEach(n=>{const o=c.createOscillator(),lfo=c.createOscillator(),lg=c.createGain(),g=c.createGain();o.type="sawtooth";o.frequency.value=this.hz(n+12);lfo.frequency.value=5.2;lg.gain.value=4;lfo.connect(lg);lg.connect(o.detune);
+   [[700,.9],[1150,.6],[2600,.25]].forEach(([f,a])=>{const b=c.createBiquadFilter(),bg=c.createGain();b.type="bandpass";b.frequency.value=f;b.Q.value=7;bg.gain.value=a;o.connect(b);b.connect(bg);bg.connect(g);});
+   g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.09,t+.5);g.gain.exponentialRampToValueAtTime(.0001,t+dur);g.connect(this.bus);o.start(t);lfo.start(t);o.stop(t+dur+.1);lfo.stop(t+dur+.1);});},
+ anvil(t,v){const c=this.ctx;[[880,1],[2117,.6],[3341,.4],[4790,.25]].forEach(([f,a])=>{const o=c.createOscillator(),g=c.createGain();o.type="sine";o.frequency.value=f;this.env(g,t,.001,v*a,1.1);o.connect(g);g.connect(this.bus);o.start(t);o.stop(t+1.2);});},
+ // reverse-cymbal swell + rising tone + taiko roll that lands exactly on the slide change
+ pre(lead){if(!this.ctx||this.muted)return;const c=this.ctx,t=c.currentTime+.02,e=t+lead;this.preT=e;this.cut=e+.05;
+  const s=c.createBufferSource(),f=c.createBiquadFilter(),g=c.createGain();s.buffer=this.noise;f.type="highpass";f.frequency.setValueAtTime(1200,t);f.frequency.exponentialRampToValueAtTime(5000,e);g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.5,e-.02);g.gain.linearRampToValueAtTime(0,e);s.connect(f);f.connect(g);g.connect(this.bus);s.start(t);s.stop(e+.05);
+  const o=c.createOscillator(),og=c.createGain();o.type="sawtooth";o.frequency.setValueAtTime(this.hz(-12),t);o.frequency.exponentialRampToValueAtTime(this.hz(12),e);og.gain.setValueAtTime(.0001,t);og.gain.exponentialRampToValueAtTime(.08,e-.02);og.gain.linearRampToValueAtTime(0,e);o.connect(og);og.connect(this.bus);o.start(t);o.stop(e+.05);
+  const n=Math.round(lead/.06);for(let i=0;i<n;i++){const k=i/n;if(k>.55)this.taiko(e-(n-i)*.06*(1-k*.4),.15+k*.55);}
+  for(let i=0;i<8;i++)this.snare(e-.5+i*.0625,.08+i*.03);},
+ chime(){if(!this.ctx||this.muted)return;const c=this.ctx,now=c.currentTime;let t=now+.02;
+  if(!(this.preT&&Math.abs(this.preT-now)<.35)){this.pre(.45);t=now+.47;}// manual click: quick suck-back before the hit
+  this.preT=0;this.impact(t);this.anvil(t,.12);this.choir(t+.05,[-12,-5,0,3,7],3.4);
+  this.brass(t,[-12,-5,0],.07,1.6);this.taiko(t+.18,.7);this.taiko(t+.36,.55);
+  // hold the score in suspense, then slam back in at full force with a drum fill
+  this.cut=t+2.3;this.step=8*16;this.next=t+2.3;for(let i=0;i<8;i++)this.taiko(t+1.82+i*.06,.2+i*.07);},
  PROG:[0,-4,3,-2],CH:[[0,3,7],[-4,0,3],[3,7,10],[-2,2,5]],
  OST:[0,0,12,0,0,10,0,12,0,0,15,0,12,0,10,7],
  TK:{0:1,3:.55,6:.7,8:.9,10:.5,11:.6,14:.75},
@@ -2148,13 +2327,18 @@ const PR={on:false,i:0,timer:null,paused:false,dur:28000,t0:0};
 function qrSVG(sz){return `<svg viewBox="-2 -2 ${QR_N+4} ${QR_N+4}" width="${sz}" height="${sz}" shape-rendering="crispEdges"><rect x="-2" y="-2" width="${QR_N+4}" height="${QR_N+4}" fill="#fff" rx="1.5"/><path d="${QR_D}" stroke="#0b1430" fill="none"/></svg>`;}
 function presentStart(){if(PR.on)return;PR.on=true;PR.i=0;if(!S.ind.sel.length){S.ind.sel=['fin','energy','pub'];PR.demoInd=1;}if(!S.ind.room.topic){S.ind.room.topic='Banks across Africa must raise new capital — mergers and leadership changes are coming';PR.demoTopic=1;}PSND.start();PR.paused=false;document.body.classList.add("presenting");try{document.documentElement.requestFullscreen&&document.documentElement.requestFullscreen().catch(()=>{});}catch(e){}
  let b=document.getElementById("pbar");if(!b){b=document.createElement("div");b.id="pbar";document.body.appendChild(b);}presentGo(0);}
-function presentStop(){PR.on=false;PSND.stop();if(PR.demoInd){S.ind.sel=[];PR.demoInd=0;}if(PR.demoTopic){S.ind.room.topic='';PR.demoTopic=0;}clearTimeout(PR.timer);clearTimeout(PR.sc);document.body.classList.remove("presenting");const b=document.getElementById("pbar");if(b)b.remove();try{document.fullscreenElement&&document.exitFullscreen();}catch(e){}}
+function presentStop(){PR.on=false;clearTimeout(PR.pre);PSND.stop();if(PR.demoInd){S.ind.sel=[];PR.demoInd=0;}if(PR.demoTopic){S.ind.room.topic='';PR.demoTopic=0;}clearTimeout(PR.timer);clearTimeout(PR.sc);document.body.classList.remove("presenting");const b=document.getElementById("pbar");if(b)b.remove();try{document.fullscreenElement&&document.exitFullscreen();}catch(e){}}
 function presentGo(i){const _first=PR.lastI===undefined;PR.i=(i+TOUR.length)%TOUR.length;PR.lastI=PR.i;if(!_first)PSND.chime();const s=TOUR[PR.i];PR.dur=Math.min(36000,Math.max(26000,16000+(s[1].length+s[2].length)*110));clearTimeout(PR.timer);clearTimeout(PR.sc);location.hash=s[0];window.scrollTo(0,0);PR.t0=Date.now();
  document.getElementById("pbar").innerHTML=`<div class="pcap"><div class="pk">DEOCOACH · EDITION FOR AFRICAN COACHES · ${PR.i+1}/${TOUR.length}</div><div class="pt">${s[1]}</div><div class="pl">${s[2]}</div></div>
  <div class="pctl"><button onclick="presentGo(PR.i-1)" title="Back">◀</button><button onclick="presentPause()" title="Pause">${PR.paused?"▶":"❚❚"}</button><button onclick="presentGo(PR.i+1)" title="Next">▶</button><button onclick="PSND.toggle();presentGo(PR.i)" title="Sound on/off (M)">${PSND.muted?"🔇":"🔊"}</button><button onclick="presentStop()" title="Exit (Esc)">✕</button></div>
  <div class="pqr">${qrSVG(108)}<div><b>Scan to open on your phone</b><br>deocoach.vercel.app<br><span class="small">Free · 25 languages · works on a weak connection</span></div></div><div class="pprog"><i style="animation-duration:${PR.dur}ms;animation-play-state:${PR.paused?"paused":"running"}"></i></div>`;
  translatePage&&setTimeout(()=>{const r=document.getElementById("pbar");if(r&&S.lang&&S.lang!=="en")trNodes(r).forEach(n=>{const v=trLookup(n.nodeValue.trim());if(v)n.nodeValue=v;});},50);
- if(s[3])setTimeout(()=>{const el=document.querySelector(s[3]);if(el)window.scrollTo({top:el.getBoundingClientRect().top+window.scrollY-90,behavior:'smooth'});},700);if(!PR.paused){PR.sc=setTimeout(()=>{if(!s[3])window.scrollTo({top:Math.min(520,document.body.scrollHeight*.25),behavior:"smooth"});},PR.dur*.5);PR.timer=setTimeout(()=>presentGo(PR.i+1),PR.dur);}}
+ if(s[3])setTimeout(()=>{const el=document.querySelector(s[3]);if(el)window.scrollTo({top:el.getBoundingClientRect().top+window.scrollY-90,behavior:'smooth'});},700);if(!PR.paused){PR.sc=setTimeout(()=>{if(!s[3])window.scrollTo({top:Math.min(520,document.body.scrollHeight*.25),behavior:"smooth"});},PR.dur*.5);clearTimeout(PR.pre);PR.pre=setTimeout(()=>PSND.pre(2.4),PR.dur-2400);PR.timer=setTimeout(()=>presentGo(PR.i+1),PR.dur);}presentFX();}
+const PHOTO_VIEW={home:"p-headshot",start:"p-headshot",industry:"p-point",events:"p-chair",bodies:"head-formal",bizdev:"p-call",atlas:"pointing",opps:"p-awards",fas:"p-trophies",minds:"head-casual",income:"p-call",scenarios:"p-point",mentor:"p-chair",academies:"head-formal"};
+function dGhost(){let g=document.getElementById("dghost");const v=(location.hash||"#home").slice(1).split("?")[0],f=PHOTO_VIEW[v]||"head-formal";
+ if(g&&g.dataset.f===f)return;if(g)g.remove();g=document.createElement("div");g.id="dghost";g.dataset.f=f;g.setAttribute("aria-hidden","true");g.style.backgroundImage=`url(david/${f}.webp)`;document.body.appendChild(g);}
+function presentFX(){let fl=document.getElementById("pflash");if(!fl){fl=document.createElement("div");fl.id="pflash";document.body.appendChild(fl);}fl.classList.remove("go");void fl.offsetWidth;if(!PSND.muted||true)fl.classList.add("go");
+ const pt=document.querySelector("#pbar .pt");if(pt){pt.classList.remove("in");void pt.offsetWidth;pt.classList.add("in");}dGhost();const g=document.getElementById("dghost");if(g){g.classList.remove("in");void g.offsetWidth;g.classList.add("in");}}
 function presentPause(){PR.paused=!PR.paused;presentGo(PR.i);}
 document.addEventListener("keydown",e=>{if(!PR.on)return;if(e.key==="Escape")presentStop();else if(e.key==="ArrowRight")presentGo(PR.i+1);else if(e.key==="ArrowLeft")presentGo(PR.i-1);else if(e.key===" "){e.preventDefault();presentPause();}else if(e.key==="m"||e.key==="M"){PSND.toggle();presentGo(PR.i);}});
 document.addEventListener("fullscreenchange",()=>{if(PR.on&&!document.fullscreenElement&&PR.fsWas)presentStop();PR.fsWas=!!document.fullscreenElement;});
@@ -2195,7 +2379,7 @@ async function shareCard(kind){const cv=await makeCard(kind);const url=cv.toData
 (function(){const top=document.querySelector(".top");if(top){const w=document.createElement("div");w.className="topx";w.innerHTML=`<button class="lookbtn" id="installbtn" style="display:none" onclick="doInstall()">⤓ Install app</button><button class="lookbtn pbtn" onclick="presentStart()">▶ Present</button>`;const l=top.querySelector(".looks");top.insertBefore(w,l);}
  const f=document.querySelector("footer .credit");if(f){const a=document.createElement("div");a.className="small";a.style.marginTop="8px";a.innerHTML=`<a href="javascript:void 0" onclick="playIntro(true)">Replay the opening</a> · <a href="javascript:void 0" onclick="presentStart()">Presenter mode</a>`;f.after(a);}
  showInstall();})();
-function polishAfter(){applyCloth();applyWeave();applyCityColour();adkNav();tabbar();countUps();if(PR.on&&document.getElementById("main"))document.getElementById("main").classList.add("pmain");}
+function polishAfter(){try{dGhost();}catch(e){}applyCloth();applyWeave();applyCityColour();adkNav();tabbar();countUps();if(PR.on&&document.getElementById("main"))document.getElementById("main").classList.add("pmain");}
 window.POLISH_READY=true;render();
 if(location.hash==="#present")setTimeout(()=>{presentStart();},400);
 setTimeout(()=>playIntro(false),60);

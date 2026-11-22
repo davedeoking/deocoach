@@ -98,6 +98,7 @@ const TOUR=[["start","Where do you want to begin?","Eight questions every Africa
  ["industry","Event Prep Copilot","Ask at depth before any room: the power brokers, your talk abstract, your 30-second introduction, the etiquette, the follow-up.","#pc"],
  ["events","Events & Happenings Radar","A seismograph of the year ahead: the rooms to be in, your best role, how long to stay — and the elections and budget cycles that move money."],
  ["bodies","Professional Bodies — Africa & Global","59 professional bodies and flagship conferences, from CIPM, ICAN and the NBA to ICF Converge and SHRM — with your conference year planned."],
+ ["academies","Coaching Academies","Where Africa trains its coaches: from OLCA in Lagos to Strathmore in Nairobi, UCT and Stellenbosch in Cape Town and the schools of Abidjan, with accreditation and evidence for each."],
  ["bizdev","Budget & Pipeline Engine","Work backwards from the income you want to the conversations you need this week — and spend only where your buyers gather."],
  ["atlas","Horizon Atlas","Where coaching opportunity is rising across 30 African cities, from Year 1 to Year 10."],
  ["opps","Opportunity Desk","Live tenders, bids and jobs, gathered daily from public sources."],
@@ -137,7 +138,22 @@ const PSND={ctx:null,master:null,timer:null,step:0,muted:false,next:0,
   [-12,-5,0,3].forEach(n=>[-12,0,12].forEach(det=>{const o=c.createOscillator();o.type="sawtooth";o.frequency.value=this.hz(n);o.detune.value=det;o.connect(f);o.start(t);o.stop(t+3.1);}));
   const b=c.createOscillator(),bg=c.createGain();b.type="sine";b.frequency.setValueAtTime(80,t);b.frequency.exponentialRampToValueAtTime(28,t+1.4);this.env(bg,t,.004,.9,1.8);b.connect(bg);bg.connect(this.bus);b.start(t);b.stop(t+1.9);
   this.nz(t,1.6,"highpass",3000,.7,.18);this.taiko(t,.9);},
- chime(){if(!this.ctx||this.muted)return;this.impact();this.cut=this.ctx.currentTime+1.2;},
+ choir(t,notes,dur){const c=this.ctx;notes.forEach(n=>{const o=c.createOscillator(),lfo=c.createOscillator(),lg=c.createGain(),g=c.createGain();o.type="sawtooth";o.frequency.value=this.hz(n+12);lfo.frequency.value=5.2;lg.gain.value=4;lfo.connect(lg);lg.connect(o.detune);
+   [[700,.9],[1150,.6],[2600,.25]].forEach(([f,a])=>{const b=c.createBiquadFilter(),bg=c.createGain();b.type="bandpass";b.frequency.value=f;b.Q.value=7;bg.gain.value=a;o.connect(b);b.connect(bg);bg.connect(g);});
+   g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.09,t+.5);g.gain.exponentialRampToValueAtTime(.0001,t+dur);g.connect(this.bus);o.start(t);lfo.start(t);o.stop(t+dur+.1);lfo.stop(t+dur+.1);});},
+ anvil(t,v){const c=this.ctx;[[880,1],[2117,.6],[3341,.4],[4790,.25]].forEach(([f,a])=>{const o=c.createOscillator(),g=c.createGain();o.type="sine";o.frequency.value=f;this.env(g,t,.001,v*a,1.1);o.connect(g);g.connect(this.bus);o.start(t);o.stop(t+1.2);});},
+ // reverse-cymbal swell + rising tone + taiko roll that lands exactly on the slide change
+ pre(lead){if(!this.ctx||this.muted)return;const c=this.ctx,t=c.currentTime+.02,e=t+lead;this.preT=e;this.cut=e+.05;
+  const s=c.createBufferSource(),f=c.createBiquadFilter(),g=c.createGain();s.buffer=this.noise;f.type="highpass";f.frequency.setValueAtTime(1200,t);f.frequency.exponentialRampToValueAtTime(5000,e);g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.5,e-.02);g.gain.linearRampToValueAtTime(0,e);s.connect(f);f.connect(g);g.connect(this.bus);s.start(t);s.stop(e+.05);
+  const o=c.createOscillator(),og=c.createGain();o.type="sawtooth";o.frequency.setValueAtTime(this.hz(-12),t);o.frequency.exponentialRampToValueAtTime(this.hz(12),e);og.gain.setValueAtTime(.0001,t);og.gain.exponentialRampToValueAtTime(.08,e-.02);og.gain.linearRampToValueAtTime(0,e);o.connect(og);og.connect(this.bus);o.start(t);o.stop(e+.05);
+  const n=Math.round(lead/.06);for(let i=0;i<n;i++){const k=i/n;if(k>.55)this.taiko(e-(n-i)*.06*(1-k*.4),.15+k*.55);}
+  for(let i=0;i<8;i++)this.snare(e-.5+i*.0625,.08+i*.03);},
+ chime(){if(!this.ctx||this.muted)return;const c=this.ctx,now=c.currentTime;let t=now+.02;
+  if(!(this.preT&&Math.abs(this.preT-now)<.35)){this.pre(.45);t=now+.47;}// manual click: quick suck-back before the hit
+  this.preT=0;this.impact(t);this.anvil(t,.12);this.choir(t+.05,[-12,-5,0,3,7],3.4);
+  this.brass(t,[-12,-5,0],.07,1.6);this.taiko(t+.18,.7);this.taiko(t+.36,.55);
+  // hold the score in suspense, then slam back in at full force with a drum fill
+  this.cut=t+2.3;this.step=8*16;this.next=t+2.3;for(let i=0;i<8;i++)this.taiko(t+1.82+i*.06,.2+i*.07);},
  PROG:[0,-4,3,-2],CH:[[0,3,7],[-4,0,3],[3,7,10],[-2,2,5]],
  OST:[0,0,12,0,0,10,0,12,0,0,15,0,12,0,10,7],
  TK:{0:1,3:.55,6:.7,8:.9,10:.5,11:.6,14:.75},
@@ -160,13 +176,18 @@ const PR={on:false,i:0,timer:null,paused:false,dur:28000,t0:0};
 function qrSVG(sz){return `<svg viewBox="-2 -2 ${QR_N+4} ${QR_N+4}" width="${sz}" height="${sz}" shape-rendering="crispEdges"><rect x="-2" y="-2" width="${QR_N+4}" height="${QR_N+4}" fill="#fff" rx="1.5"/><path d="${QR_D}" stroke="#0b1430" fill="none"/></svg>`;}
 function presentStart(){if(PR.on)return;PR.on=true;PR.i=0;if(!S.ind.sel.length){S.ind.sel=['fin','energy','pub'];PR.demoInd=1;}if(!S.ind.room.topic){S.ind.room.topic='Banks across Africa must raise new capital — mergers and leadership changes are coming';PR.demoTopic=1;}PSND.start();PR.paused=false;document.body.classList.add("presenting");try{document.documentElement.requestFullscreen&&document.documentElement.requestFullscreen().catch(()=>{});}catch(e){}
  let b=document.getElementById("pbar");if(!b){b=document.createElement("div");b.id="pbar";document.body.appendChild(b);}presentGo(0);}
-function presentStop(){PR.on=false;PSND.stop();if(PR.demoInd){S.ind.sel=[];PR.demoInd=0;}if(PR.demoTopic){S.ind.room.topic='';PR.demoTopic=0;}clearTimeout(PR.timer);clearTimeout(PR.sc);document.body.classList.remove("presenting");const b=document.getElementById("pbar");if(b)b.remove();try{document.fullscreenElement&&document.exitFullscreen();}catch(e){}}
+function presentStop(){PR.on=false;clearTimeout(PR.pre);PSND.stop();if(PR.demoInd){S.ind.sel=[];PR.demoInd=0;}if(PR.demoTopic){S.ind.room.topic='';PR.demoTopic=0;}clearTimeout(PR.timer);clearTimeout(PR.sc);document.body.classList.remove("presenting");const b=document.getElementById("pbar");if(b)b.remove();try{document.fullscreenElement&&document.exitFullscreen();}catch(e){}}
 function presentGo(i){const _first=PR.lastI===undefined;PR.i=(i+TOUR.length)%TOUR.length;PR.lastI=PR.i;if(!_first)PSND.chime();const s=TOUR[PR.i];PR.dur=Math.min(36000,Math.max(26000,16000+(s[1].length+s[2].length)*110));clearTimeout(PR.timer);clearTimeout(PR.sc);location.hash=s[0];window.scrollTo(0,0);PR.t0=Date.now();
  document.getElementById("pbar").innerHTML=`<div class="pcap"><div class="pk">DEOCOACH · EDITION FOR AFRICAN COACHES · ${PR.i+1}/${TOUR.length}</div><div class="pt">${s[1]}</div><div class="pl">${s[2]}</div></div>
  <div class="pctl"><button onclick="presentGo(PR.i-1)" title="Back">◀</button><button onclick="presentPause()" title="Pause">${PR.paused?"▶":"❚❚"}</button><button onclick="presentGo(PR.i+1)" title="Next">▶</button><button onclick="PSND.toggle();presentGo(PR.i)" title="Sound on/off (M)">${PSND.muted?"🔇":"🔊"}</button><button onclick="presentStop()" title="Exit (Esc)">✕</button></div>
  <div class="pqr">${qrSVG(108)}<div><b>Scan to open on your phone</b><br>deocoach.vercel.app<br><span class="small">Free · 25 languages · works on a weak connection</span></div></div><div class="pprog"><i style="animation-duration:${PR.dur}ms;animation-play-state:${PR.paused?"paused":"running"}"></i></div>`;
  translatePage&&setTimeout(()=>{const r=document.getElementById("pbar");if(r&&S.lang&&S.lang!=="en")trNodes(r).forEach(n=>{const v=trLookup(n.nodeValue.trim());if(v)n.nodeValue=v;});},50);
- if(s[3])setTimeout(()=>{const el=document.querySelector(s[3]);if(el)window.scrollTo({top:el.getBoundingClientRect().top+window.scrollY-90,behavior:'smooth'});},700);if(!PR.paused){PR.sc=setTimeout(()=>{if(!s[3])window.scrollTo({top:Math.min(520,document.body.scrollHeight*.25),behavior:"smooth"});},PR.dur*.5);PR.timer=setTimeout(()=>presentGo(PR.i+1),PR.dur);}}
+ if(s[3])setTimeout(()=>{const el=document.querySelector(s[3]);if(el)window.scrollTo({top:el.getBoundingClientRect().top+window.scrollY-90,behavior:'smooth'});},700);if(!PR.paused){PR.sc=setTimeout(()=>{if(!s[3])window.scrollTo({top:Math.min(520,document.body.scrollHeight*.25),behavior:"smooth"});},PR.dur*.5);clearTimeout(PR.pre);PR.pre=setTimeout(()=>PSND.pre(2.4),PR.dur-2400);PR.timer=setTimeout(()=>presentGo(PR.i+1),PR.dur);}presentFX();}
+const PHOTO_VIEW={home:"p-headshot",start:"p-headshot",industry:"p-point",events:"p-chair",bodies:"head-formal",bizdev:"p-call",atlas:"pointing",opps:"p-awards",fas:"p-trophies",minds:"head-casual",income:"p-call",scenarios:"p-point",mentor:"p-chair",academies:"head-formal"};
+function dGhost(){let g=document.getElementById("dghost");const v=(location.hash||"#home").slice(1).split("?")[0],f=PHOTO_VIEW[v]||"head-formal";
+ if(g&&g.dataset.f===f)return;if(g)g.remove();g=document.createElement("div");g.id="dghost";g.dataset.f=f;g.setAttribute("aria-hidden","true");g.style.backgroundImage=`url(david/${f}.webp)`;document.body.appendChild(g);}
+function presentFX(){let fl=document.getElementById("pflash");if(!fl){fl=document.createElement("div");fl.id="pflash";document.body.appendChild(fl);}fl.classList.remove("go");void fl.offsetWidth;if(!PSND.muted||true)fl.classList.add("go");
+ const pt=document.querySelector("#pbar .pt");if(pt){pt.classList.remove("in");void pt.offsetWidth;pt.classList.add("in");}dGhost();const g=document.getElementById("dghost");if(g){g.classList.remove("in");void g.offsetWidth;g.classList.add("in");}}
 function presentPause(){PR.paused=!PR.paused;presentGo(PR.i);}
 document.addEventListener("keydown",e=>{if(!PR.on)return;if(e.key==="Escape")presentStop();else if(e.key==="ArrowRight")presentGo(PR.i+1);else if(e.key==="ArrowLeft")presentGo(PR.i-1);else if(e.key===" "){e.preventDefault();presentPause();}else if(e.key==="m"||e.key==="M"){PSND.toggle();presentGo(PR.i);}});
 document.addEventListener("fullscreenchange",()=>{if(PR.on&&!document.fullscreenElement&&PR.fsWas)presentStop();PR.fsWas=!!document.fullscreenElement;});
@@ -207,7 +228,7 @@ async function shareCard(kind){const cv=await makeCard(kind);const url=cv.toData
 (function(){const top=document.querySelector(".top");if(top){const w=document.createElement("div");w.className="topx";w.innerHTML=`<button class="lookbtn" id="installbtn" style="display:none" onclick="doInstall()">⤓ Install app</button><button class="lookbtn pbtn" onclick="presentStart()">▶ Present</button>`;const l=top.querySelector(".looks");top.insertBefore(w,l);}
  const f=document.querySelector("footer .credit");if(f){const a=document.createElement("div");a.className="small";a.style.marginTop="8px";a.innerHTML=`<a href="javascript:void 0" onclick="playIntro(true)">Replay the opening</a> · <a href="javascript:void 0" onclick="presentStart()">Presenter mode</a>`;f.after(a);}
  showInstall();})();
-function polishAfter(){applyCloth();applyWeave();applyCityColour();adkNav();tabbar();countUps();if(PR.on&&document.getElementById("main"))document.getElementById("main").classList.add("pmain");}
+function polishAfter(){try{dGhost();}catch(e){}applyCloth();applyWeave();applyCityColour();adkNav();tabbar();countUps();if(PR.on&&document.getElementById("main"))document.getElementById("main").classList.add("pmain");}
 window.POLISH_READY=true;render();
 if(location.hash==="#present")setTimeout(()=>{presentStart();},400);
 setTimeout(()=>playIntro(false),60);
