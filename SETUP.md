@@ -19,6 +19,14 @@ create table if not exists public.deocoach_signals (
   id bigint generated always as identity primary key, city text, kind text, niche text, note text, strength int, created_at timestamptz default now());
 create table if not exists public.deocoach_translations (
   id bigint generated always as identity primary key, lang text, source text, current_text text, suggestion text, note text, status text default 'pending', created_at timestamptz default now());
+create table if not exists public.deocoach_intel (
+  id bigint generated always as identity primary key, key text unique, kind text, ref text, city text, niches text[], name text,
+  start_date text, end_date text, venue text, url text, audience text, mag int default 5, confidence text,
+  score int default 1, seen int default 1, votes jsonb default '{}'::jsonb, status text default 'active',
+  first_seen timestamptz default now(), last_seen timestamptz default now());
+create table if not exists public.deocoach_intel_state (k text primary key, v jsonb);
+alter table public.deocoach_intel enable row level security;
+alter table public.deocoach_intel_state enable row level security;
 alter table public.deocoach_translations enable row level security;
 alter table public.deocoach_alerts enable row level security;
 alter table public.deocoach_signals enable row level security;
@@ -31,3 +39,10 @@ alter table public.deocoach_signals enable row level security;
 - Before launch: publish a privacy notice and check it against the Nigeria Data Protection Act 2023, Kenya's Data Protection Act 2019, POPIA and UK/EU GDPR as relevant.
 
 Rebuild after editing anything in `src/`: `python3 src/build.py`
+
+
+## Living intelligence (self-updating event database)
+- `api/intel.js` runs every 6 hours (vercel.json cron). Odd runs harvest one African city (30 in rotation, ~every 15 days each) with Claude + web search; even runs re-check the dates of one curated "check timing" event or professional body.
+- Every re-sighting raises an item's `seen` and `score`; coaches' votes (confirm +2, attended +2, useful +1, wrong −3) move the score; items at −3 or below are hidden; ended items are retired.
+- Confirmed date updates automatically replace the curated "expected" dates in the Events Radar and the Professional Bodies Map.
+- Needs SUPABASE_URL, SUPABASE_SERVICE_KEY, ANTHROPIC_API_KEY; set CRON_SECRET to protect the harvester.
