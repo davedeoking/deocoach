@@ -1,5 +1,5 @@
 // DeoCoach service worker: installable app that keeps working on a weak connection. API calls always go to the network.
-const VER = "dc-v0.8.0";
+const VER = "dc-v0.8.1";
 const SHELL = ["/", "/manifest.json", "/brand/crest.png", "/icon-192.png", "/icon-512.png"];
 self.addEventListener("install", (e) => { e.waitUntil(caches.open(VER).then((c) => c.addAll(SHELL)).then(() => self.skipWaiting())); });
 self.addEventListener("activate", (e) => { e.waitUntil(caches.keys().then((ks) => Promise.all(ks.filter((k) => k !== VER).map((k) => caches.delete(k)))).then(() => self.clients.claim())); });
