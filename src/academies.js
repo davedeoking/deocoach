@@ -97,7 +97,14 @@ const ACADEMIES=[
 ];
 const ACAD_FOCUS={life:"Life coaching",exec:"Executive & professional",leader:"Leader-as-coach",integrative:"Integrative / behavioural",corporate:"Corporate & HR",academic:"Degree & research",francophone:"Francophone",online:"Online"};
 // Founding Circle — the coaches who supported David's journey. Filled only with names David confirms and each person's consent.
-const HONOUR=[];
+const HONOUR=[
+ {name:"Dr Lanre Olusola",role:"Founding Patron",note:"\"The Catalyst\". Founder & Chief Catalyst of OLCA Coaching Ltd, Lagos — a pioneer of life coaching in Nigeria."},
+ {name:"Coach Kayode Olufemi Ayoola",role:"Founding Circle",note:""},
+ {name:"Olakunle Soriyan",role:"Founding Circle",note:"Mentor, executive coach, author and futurist."},
+ {name:"Lolu Mogaji",role:"Founding Circle",note:""},
+ {name:"Niyi Adesanya",role:"Founding Circle",note:"Leadership and business advisor to CEOs; CEO of FifthGear Plus and founder of the Niyi Adesanya Leadership Bootcamp."},
+ {name:"Emmanuel Utomi",role:"Founding Circle",note:""}];
+function honInit(n){return n.replace(/^(Dr|Coach|Prof)\.? /,"").split(" ").filter(Boolean).map(w=>w[0]).slice(0,2).join("").toUpperCase();}
 function acadToggle(id){S.acad=S.acad||{list:[]};const l=S.acad.list,i=l.indexOf(id);i<0?l.push(id):l.splice(i,1);save();render();}
 function acadSet(k,v){S.acad=S.acad||{list:[]};S.acad[k]=v;save();render();}
 function acadCard(a,big){const on=(S.acad&&S.acad.list||[]).includes(a.id);
@@ -114,7 +121,7 @@ V.academies=()=>{const A=S.acad||{list:[]},f=A.f||"",r=A.r||"";const regs=[...ne
  return `<div class="card hero-acad"><div class="kicker">GROW · WHERE AFRICA TRAINS ITS COACHES</div><h1>Coaching Academies & Training Organisations</h1>
  <p>Where coaches across Africa train, certify and keep growing, from Lagos to Nairobi, Cape Town and Abidjan, with the evidence for each. This is a guide, not a ranking: check accreditation, mentor-coaching hours and observed sessions before you enrol.</p></div>
  ${feat.map(a=>acadCard(a,1)).join("")}
- ${HONOUR.length?`<div class="card"><h2>The Founding Circle</h2><div class="honour">${HONOUR.map(h=>`<div class="hon">${h.img?`<img src="${h.img}" alt="${h.name}">`:""}<b>${h.name}</b><span>${h.role}</span><p>${h.note}</p></div>`).join("")}</div></div>`:""}
+ ${HONOUR.length?`<div class="card founding"><div class="kicker">WITH GRATITUDE</div><h2>The Founding Circle</h2><p class="small" style="max-width:60ch">Coaches who stood with Coach David Adeoye Abodunrin on the journey that made DeoCoach possible. Thank you.</p><div class="honour">${HONOUR.map((h,i)=>`<div class="hon${i===0?" patron":""}">${h.img?`<img src="${h.img}" alt="${h.name}">`:`<div class="hmono">${honInit(h.name)}</div>`}<b>${h.name}</b><span>${h.role}</span>${h.note?`<p>${h.note}</p>`:""}</div>`).join("")}</div></div>`:""}
  <div class="card"><div class="row" style="gap:8px;flex-wrap:wrap"><b style="margin-right:6px">Focus</b><button class="chip ${!f?"on":""}" onclick="acadSet('f','')">All</button>${Object.entries(ACAD_FOCUS).map(([k,v])=>`<button class="chip ${f===k?"on":""}" onclick="acadSet('f','${k}')">${v}</button>`).join("")}</div>
  <div class="row" style="gap:8px;flex-wrap:wrap;margin-top:10px"><b style="margin-right:6px">Region</b><button class="chip ${!r?"on":""}" onclick="acadSet('r','')">All</button>${regs.map(x=>`<button class="chip ${r===x?"on":""}" onclick="acadSet('r','${x}')">${x}</button>`).join("")}</div></div>
  <div class="acadgrid">${list.map(a=>acadCard(a)).join("")||`<div class="card">No academies match these filters yet.</div>`}</div>
