@@ -19,5 +19,51 @@
   "api/prep.js": {
    "maxDuration": 60
   }
- }
+ },
+ "redirects": [
+  {
+   "source": "/:path*",
+   "has": [
+    {
+     "type": "host",
+     "value": "deocoach.org"
+    }
+   ],
+   "destination": "https://www.deocoach.com/:path*",
+   "permanent": true
+  },
+  {
+   "source": "/:path*",
+   "has": [
+    {
+     "type": "host",
+     "value": "www.deocoach.org"
+    }
+   ],
+   "destination": "https://www.deocoach.com/:path*",
+   "permanent": true
+  },
+  {
+   "source": "/:path*",
+   "has": [
+    {
+     "type": "host",
+     "value": "deocoach.app"
+    }
+   ],
+   "destination": "https://www.deocoach.com/:path*",
+   "permanent": true
+  },
+  {
+   "source": "/:path*",
+   "has": [
+    {
+     "type": "host",
+     "value": "www.deocoach.app"
+    }
+   ],
+   "destination": "https://www.deocoach.com/:path*",
+   "permanent": true
+  }
+ ]
 }
