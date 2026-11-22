@@ -15,6 +15,9 @@
   },
   "api/intel.js": {
    "maxDuration": 60
+  },
+  "api/prep.js": {
+   "maxDuration": 60
   }
  }
 }

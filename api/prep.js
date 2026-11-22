@@ -15,12 +15,12 @@ module.exports = async (req, res) => {
   let system = GUARD + ` Today is ${today}.`, messages, web = !!b.web, max = 2200;
   if (b.mode === "brief") {
     const ind = clean(b.industry, 80); if (!ind) return res.status(400).json({ error: "industry required" });
-    web = true; max = 2500;
-    messages = [{ role: "user", content: `Use web search to find the 6 most important developments of the past 14 days in the ${ind} industry that matter for coaches who sell leadership, executive, team, career or business coaching in Africa: leadership changes, mergers and deals, big investments or layoffs, regulation and policy, major upcoming events and calls for speakers, skills shortages. Prefer African developments; include global ones that affect Africa. Open the pages you rely on. Reply with ONLY a JSON array: [{"title":"short headline","date":"YYYY-MM-DD or empty","what":"one sentence on what happened","so":"one sentence on the coaching opportunity it creates","url":"source page"}].` }];
+    web = true; max = 4500;
+    messages = [{ role: "user", content: `Use web search to find the 6 most important developments of the past 14 days (each field at most 30 words) in the ${ind} industry that matter for coaches who sell leadership, executive, team, career or business coaching in Africa: leadership changes, mergers and deals, big investments or layoffs, regulation and policy, major upcoming events and calls for speakers, skills shortages. Prefer African developments; include global ones that affect Africa. Open the pages you rely on. Reply with ONLY a JSON array: [{"title":"short headline","date":"YYYY-MM-DD or empty","what":"one sentence on what happened","so":"one sentence on the coaching opportunity it creates","url":"source page"}].` }];
   } else if (b.mode === "council") {
     const seats = (Array.isArray(b.seats) ? b.seats : []).slice(0, 8).map((x) => clean(x, 80)).filter(Boolean); const topic = clean(b.topic, 1500);
     if (!topic || !seats.length) return res.status(400).json({ error: "topic and seats required" });
-    max = 4000; system += " You are now convening a council room. Each seat speaks in its own distinct voice, briefly and concretely, then the chair synthesises. Context about this coach: " + clean(b.context, 1800);
+    max = 7000; system += " You are now convening a council room. Be concise: each voice at most 45 words; each product field at most 30 words; the pitch at most 55 words. Each seat speaks in its own distinct voice, briefly and concretely, then the chair synthesises. Context about this coach: " + clean(b.context, 1800);
     messages = [{ role: "user", content: `Industry happening to think through: "${topic}".
 Council seats present: ${seats.join("; ")}. ${web ? "Use web search to ground the discussion in what is actually happening; cite only what you found." : ""}
 Turn this happening into coaching products and services this coach can sell. Time the pitches to real budget cycles and decision windows (e.g. January-year budgets set Sep–Nov; July fiscal years in East Africa and Egypt; April in South Africa) and to the happening itself. Pricing: give guidance relative to the coach's own average engagement value if provided — never quote market prices you have not found.
@@ -37,7 +37,7 @@ Reply with ONLY JSON: {"voices":[{"seat":"","says":"2–4 sentences"}],"products
     if (web) body.tools = [{ type: "web_search_20250305", name: "web_search", max_uses: b.mode === "brief" ? 5 : 3 }];
     const r = await fetch("https://api.anthropic.com/v1/messages", { method: "POST", signal: ctl.signal, headers: { "x-api-key": key, "anthropic-version": "2023-06-01", "content-type": "application/json" }, body: JSON.stringify(body) });
     clearTimeout(tm); const j = await r.json(); if (!r.ok) return res.status(502).json({ error: "upstream", detail: j.error && j.error.type });
-    const text = (j.content || []).filter((c) => c.type === "text").map((c) => c.text).join("").trim();
+    const text = (j.content || []).filter((c) => c.type === "text").map((c) => c.text).join("").replace(/```(?:json)?/g, "").trim();
     const seen = new Set(), sources = [];
     (j.content || []).forEach((c) => { (c.citations || []).forEach((ci) => { if (ci.url && !seen.has(ci.url)) { seen.add(ci.url); sources.push({ title: clean(ci.title, 120), url: ci.url }); } }); });
     (j.content || []).filter((c) => c.type === "web_search_tool_result" && Array.isArray(c.content)).forEach((c) => c.content.forEach((s) => { if (s.url && !seen.has(s.url) && sources.length < 8) { seen.add(s.url); sources.push({ title: clean(s.title, 120), url: s.url }); } }));
