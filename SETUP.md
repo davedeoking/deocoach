@@ -81,3 +81,11 @@ Optional Vercel variables (David enters these himself):
 - PAYSTACK_SECRET_KEY: card checkout; set the Paystack webhook to https://www.deocoach.com/api/paystack
 - BANK_DETAILS: the bank-transfer instructions shown on the membership page (multi-line text).
 Prices live in lib/plans.js (null = "reserve your place" until set).
+
+## LCAN vouchers (free DeoCoach Pro for LCAN members)
+```sql
+create table if not exists public.deocoach_vouchers (code text primary key, batch text, created_at timestamptz default now(), redeemed_at timestamptz, name text, email text);
+alter table public.deocoach_vouchers enable row level security;
+```
+Batch LCAN-2026-A (500 codes) was loaded on 23 Nov 2026. The code list is kept OUT of this repo (given to David as a CSV for LCAN).
+Redeem page: deocoach.com/lcan?code=LCAN-XXXX-XXXX · API: /api/voucher.

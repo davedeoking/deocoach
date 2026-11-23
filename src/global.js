@@ -164,7 +164,7 @@ window.addEventListener("appinstalled",()=>track("install"));
 
 // ---- the sticky subscribe bar, the timed invitation and the soft unlock on results ----
 let _icnt=null;async function intelCount(){if(_icnt!==null)return _icnt;_icnt=0;try{const r=await fetch("/api/intel");const j=await r.json();const wk=Date.now()-7*864e5;_icnt=(j.items||[]).filter(x=>new Date(x.first_seen||0).getTime()>wk).length;}catch(e){}return _icnt;}
-function subBarOff(){return /^#(join|coaching|member|acw|founding50)/.test(location.hash)||!!S.subbed||(S.subHide&&S.subHide>Date.now())||!!document.getElementById("intro");}
+function subBarOff(){return /^#(join|coaching|member|acw|founding50|lcan)/.test(location.hash)||!!S.subbed||(S.subHide&&S.subHide>Date.now())||!!document.getElementById("intro");}
 async function subBar(){if(subBarOff()){const b=document.getElementById("subbar");if(b)b.remove();document.body.classList.remove("hasbar");return;}document.body.classList.add("hasbar");
  let b=document.getElementById("subbar");if(!b){b=document.createElement("div");b.id="subbar";b.setAttribute("role","region");b.setAttribute("aria-label","Free opportunity emails");document.body.appendChild(b);requestAnimationFrame(()=>b.classList.add("in"));}
  const n=await intelCount();
