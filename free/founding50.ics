@@ -1,21 +1,21 @@
 BEGIN:VCALENDAR
 VERSION:2.0
-PRODID:-//DeoCoach//Founding 50//EN
+PRODID:-//DeoCoach//Founding 100//EN
 CALSCALE:GREGORIAN
 METHOD:PUBLISH
-X-WR-CALNAME:DeoCoach Founding 50
+X-WR-CALNAME:DeoCoach Founding 100
 BEGIN:VEVENT
 UID:f50-20261210@deocoach.com
 DTSTAMP:20261123T000000Z
 DTSTART:20261210T180000Z
 DTEND:20261210T193000Z
-SUMMARY:Founding 50 · Session 1 of 12: Map: where your time really goes
-DESCRIPTION:Live Zoom session with Coach David Adeoye Abodunrin. The Zoom link is emailed to every Founding 50 member on the morning of each session.
+SUMMARY:Founding 100 · Session 1 of 12: Map: where your time really goes
+DESCRIPTION:Live Zoom session with Coach David Adeoye Abodunrin. The Zoom link is emailed to every Founding 100 member on the morning of each session.
 LOCATION:Zoom (link by email)
 BEGIN:VALARM
 TRIGGER:-PT30M
 ACTION:DISPLAY
-DESCRIPTION:Founding 50 session in 30 minutes
+DESCRIPTION:Founding 100 session in 30 minutes
 END:VALARM
 END:VEVENT
 BEGIN:VEVENT
@@ -23,13 +23,13 @@ UID:f50-20261217@deocoach.com
 DTSTAMP:20261123T000000Z
 DTSTART:20261217T180000Z
 DTEND:20261217T193000Z
-SUMMARY:Founding 50 · Session 2 of 12: Map: your client journey, end to end
-DESCRIPTION:Live Zoom session with Coach David Adeoye Abodunrin. The Zoom link is emailed to every Founding 50 member on the morning of each session.
+SUMMARY:Founding 100 · Session 2 of 12: Map: your client journey, end to end
+DESCRIPTION:Live Zoom session with Coach David Adeoye Abodunrin. The Zoom link is emailed to every Founding 100 member on the morning of each session.
 LOCATION:Zoom (link by email)
 BEGIN:VALARM
 TRIGGER:-PT30M
 ACTION:DISPLAY
-DESCRIPTION:Founding 50 session in 30 minutes
+DESCRIPTION:Founding 100 session in 30 minutes
 END:VALARM
 END:VEVENT
 BEGIN:VEVENT
@@ -37,13 +37,13 @@ UID:f50-20270107@deocoach.com
 DTSTAMP:20261123T000000Z
 DTSTART:20270107T180000Z
 DTEND:20270107T193000Z
-SUMMARY:Founding 50 · Session 3 of 12: Map: choosing your first five automations
-DESCRIPTION:Live Zoom session with Coach David Adeoye Abodunrin. The Zoom link is emailed to every Founding 50 member on the morning of each session.
+SUMMARY:Founding 100 · Session 3 of 12: Map: choosing your first five automations
+DESCRIPTION:Live Zoom session with Coach David Adeoye Abodunrin. The Zoom link is emailed to every Founding 100 member on the morning of each session.
 LOCATION:Zoom (link by email)
 BEGIN:VALARM
 TRIGGER:-PT30M
 ACTION:DISPLAY
-DESCRIPTION:Founding 50 session in 30 minutes
+DESCRIPTION:Founding 100 session in 30 minutes
 END:VALARM
 END:VEVENT
 BEGIN:VEVENT
@@ -51,13 +51,13 @@ UID:f50-20270114@deocoach.com
 DTSTAMP:20261123T000000Z
 DTSTART:20270114T180000Z
 DTEND:20270114T193000Z
-SUMMARY:Founding 50 · Session 4 of 12: Automate: booking, reminders and follow-ups
-DESCRIPTION:Live Zoom session with Coach David Adeoye Abodunrin. The Zoom link is emailed to every Founding 50 member on the morning of each session.
+SUMMARY:Founding 100 · Session 4 of 12: Automate: booking, reminders and follow-ups
+DESCRIPTION:Live Zoom session with Coach David Adeoye Abodunrin. The Zoom link is emailed to every Founding 100 member on the morning of each session.
 LOCATION:Zoom (link by email)
 BEGIN:VALARM
 TRIGGER:-PT30M
 ACTION:DISPLAY
-DESCRIPTION:Founding 50 session in 30 minutes
+DESCRIPTION:Founding 100 session in 30 minutes
 END:VALARM
 END:VEVENT
 BEGIN:VEVENT
@@ -65,13 +65,13 @@ UID:f50-20270121@deocoach.com
 DTSTAMP:20261123T000000Z
 DTSTART:20270121T180000Z
 DTEND:20270121T193000Z
-SUMMARY:Founding 50 · Session 5 of 12: Automate: notes, summaries and session records with AI
-DESCRIPTION:Live Zoom session with Coach David Adeoye Abodunrin. The Zoom link is emailed to every Founding 50 member on the morning of each session.
+SUMMARY:Founding 100 · Session 5 of 12: Automate: notes, summaries and session records with AI
+DESCRIPTION:Live Zoom session with Coach David Adeoye Abodunrin. The Zoom link is emailed to every Founding 100 member on the morning of each session.
 LOCATION:Zoom (link by email)
 BEGIN:VALARM
 TRIGGER:-PT30M
 ACTION:DISPLAY
-DESCRIPTION:Founding 50 session in 30 minutes
+DESCRIPTION:Founding 100 session in 30 minutes
 END:VALARM
 END:VEVENT
 BEGIN:VEVENT
@@ -79,13 +79,13 @@ UID:f50-20270128@deocoach.com
 DTSTAMP:20261123T000000Z
 DTSTART:20270128T180000Z
 DTEND:20270128T193000Z
-SUMMARY:Founding 50 · Session 6 of 12: Automate: content and LinkedIn on autopilot
-DESCRIPTION:Live Zoom session with Coach David Adeoye Abodunrin. The Zoom link is emailed to every Founding 50 member on the morning of each session.
+SUMMARY:Founding 100 · Session 6 of 12: Automate: content and LinkedIn on autopilot
+DESCRIPTION:Live Zoom session with Coach David Adeoye Abodunrin. The Zoom link is emailed to every Founding 100 member on the morning of each session.
 LOCATION:Zoom (link by email)
 BEGIN:VALARM
 TRIGGER:-PT30M
 ACTION:DISPLAY
-DESCRIPTION:Founding 50 session in 30 minutes
+DESCRIPTION:Founding 100 session in 30 minutes
 END:VALARM
 END:VEVENT
 BEGIN:VEVENT
@@ -93,13 +93,13 @@ UID:f50-20270204@deocoach.com
 DTSTAMP:20261123T000000Z
 DTSTART:20270204T180000Z
 DTEND:20270204T193000Z
-SUMMARY:Founding 50 · Session 7 of 12: Govern: client data, consent and AI safety
-DESCRIPTION:Live Zoom session with Coach David Adeoye Abodunrin. The Zoom link is emailed to every Founding 50 member on the morning of each session.
+SUMMARY:Founding 100 · Session 7 of 12: Govern: client data, consent and AI safety
+DESCRIPTION:Live Zoom session with Coach David Adeoye Abodunrin. The Zoom link is emailed to every Founding 100 member on the morning of each session.
 LOCATION:Zoom (link by email)
 BEGIN:VALARM
 TRIGGER:-PT30M
 ACTION:DISPLAY
-DESCRIPTION:Founding 50 session in 30 minutes
+DESCRIPTION:Founding 100 session in 30 minutes
 END:VALARM
 END:VEVENT
 BEGIN:VEVENT
@@ -107,13 +107,13 @@ UID:f50-20270211@deocoach.com
 DTSTAMP:20261123T000000Z
 DTSTART:20270211T180000Z
 DTEND:20270211T193000Z
-SUMMARY:Founding 50 · Session 8 of 12: Govern: your AI policy and quality checks
-DESCRIPTION:Live Zoom session with Coach David Adeoye Abodunrin. The Zoom link is emailed to every Founding 50 member on the morning of each session.
+SUMMARY:Founding 100 · Session 8 of 12: Govern: your AI policy and quality checks
+DESCRIPTION:Live Zoom session with Coach David Adeoye Abodunrin. The Zoom link is emailed to every Founding 100 member on the morning of each session.
 LOCATION:Zoom (link by email)
 BEGIN:VALARM
 TRIGGER:-PT30M
 ACTION:DISPLAY
-DESCRIPTION:Founding 50 session in 30 minutes
+DESCRIPTION:Founding 100 session in 30 minutes
 END:VALARM
 END:VEVENT
 BEGIN:VEVENT
@@ -121,13 +121,13 @@ UID:f50-20270218@deocoach.com
 DTSTAMP:20261123T000000Z
 DTSTART:20270218T180000Z
 DTEND:20270218T193000Z
-SUMMARY:Founding 50 · Session 9 of 12: Govern: measuring what the automations save
-DESCRIPTION:Live Zoom session with Coach David Adeoye Abodunrin. The Zoom link is emailed to every Founding 50 member on the morning of each session.
+SUMMARY:Founding 100 · Session 9 of 12: Govern: measuring what the automations save
+DESCRIPTION:Live Zoom session with Coach David Adeoye Abodunrin. The Zoom link is emailed to every Founding 100 member on the morning of each session.
 LOCATION:Zoom (link by email)
 BEGIN:VALARM
 TRIGGER:-PT30M
 ACTION:DISPLAY
-DESCRIPTION:Founding 50 session in 30 minutes
+DESCRIPTION:Founding 100 session in 30 minutes
 END:VALARM
 END:VEVENT
 BEGIN:VEVENT
@@ -135,13 +135,13 @@ UID:f50-20270225@deocoach.com
 DTSTAMP:20261123T000000Z
 DTSTART:20270225T180000Z
 DTEND:20270225T193000Z
-SUMMARY:Founding 50 · Session 10 of 12: Monetise: packages and pricing that scale
-DESCRIPTION:Live Zoom session with Coach David Adeoye Abodunrin. The Zoom link is emailed to every Founding 50 member on the morning of each session.
+SUMMARY:Founding 100 · Session 10 of 12: Monetise: packages and pricing that scale
+DESCRIPTION:Live Zoom session with Coach David Adeoye Abodunrin. The Zoom link is emailed to every Founding 100 member on the morning of each session.
 LOCATION:Zoom (link by email)
 BEGIN:VALARM
 TRIGGER:-PT30M
 ACTION:DISPLAY
-DESCRIPTION:Founding 50 session in 30 minutes
+DESCRIPTION:Founding 100 session in 30 minutes
 END:VALARM
 END:VEVENT
 BEGIN:VEVENT
@@ -149,13 +149,13 @@ UID:f50-20270304@deocoach.com
 DTSTAMP:20261123T000000Z
 DTSTART:20270304T180000Z
 DTEND:20270304T193000Z
-SUMMARY:Founding 50 · Session 11 of 12: Monetise: proposals and corporate offers
-DESCRIPTION:Live Zoom session with Coach David Adeoye Abodunrin. The Zoom link is emailed to every Founding 50 member on the morning of each session.
+SUMMARY:Founding 100 · Session 11 of 12: Monetise: proposals and corporate offers
+DESCRIPTION:Live Zoom session with Coach David Adeoye Abodunrin. The Zoom link is emailed to every Founding 100 member on the morning of each session.
 LOCATION:Zoom (link by email)
 BEGIN:VALARM
 TRIGGER:-PT30M
 ACTION:DISPLAY
-DESCRIPTION:Founding 50 session in 30 minutes
+DESCRIPTION:Founding 100 session in 30 minutes
 END:VALARM
 END:VEVENT
 BEGIN:VEVENT
@@ -163,13 +163,13 @@ UID:f50-20270311@deocoach.com
 DTSTAMP:20261123T000000Z
 DTSTART:20270311T180000Z
 DTEND:20270311T193000Z
-SUMMARY:Founding 50 · Session 12 of 12: Monetise: your 90-day growth plan and graduation
-DESCRIPTION:Live Zoom session with Coach David Adeoye Abodunrin. The Zoom link is emailed to every Founding 50 member on the morning of each session.
+SUMMARY:Founding 100 · Session 12 of 12: Monetise: your 90-day growth plan and graduation
+DESCRIPTION:Live Zoom session with Coach David Adeoye Abodunrin. The Zoom link is emailed to every Founding 100 member on the morning of each session.
 LOCATION:Zoom (link by email)
 BEGIN:VALARM
 TRIGGER:-PT30M
 ACTION:DISPLAY
-DESCRIPTION:Founding 50 session in 30 minutes
+DESCRIPTION:Founding 100 session in 30 minutes
 END:VALARM
 END:VEVENT
 END:VCALENDAR

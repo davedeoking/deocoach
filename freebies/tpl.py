@@ -41,11 +41,11 @@ def page(f):
 <title>{html.escape(f['title'])} · DeoCoach</title><meta name="description" content="{html.escape(f['sub'])}">
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 <link rel="icon" href="/icon-192.png"><style>{CSS}</style></head><body>
-<div class="bar"><button onclick="print()">⬇ Save as PDF / Print</button><a class="g" href="/#free">More free tools</a><a class="g" href="/#founding50">The Founding 50</a></div>
+<div class="bar"><button onclick="print()">⬇ Save as PDF / Print</button><a class="g" href="/#free">More free tools</a><a class="g" href="/#founding50">The Founding 100</a></div>
 <div class="page"><div class="cover"><img class="crest" src="/brand/crest.png" alt=""><div class="k">Free from DeoCoach · {html.escape(f['kind'])}</div><h1>{html.escape(f['title'])}</h1><p>{html.escape(f['sub'])}</p>
 <div class="by"><img src="/david/p-headshot.webp" alt="Coach David Adeoye Abodunrin"><span>By Coach David Adeoye Abodunrin<br>AI &amp; Automation Coach · Master Futurist · Founder, DeoCoach</span></div></div>
 <div class="body">{f['body']}
-<div class="cta"><b>Want help putting this to work?</b> I am personally helping the <b>first 50 coaches</b> automate their practice, free, in the Founding 50 cohort. Places are limited. <a href="/#founding50">Apply at deocoach.com/#founding50</a></div></div>
+<div class="cta"><b>Want help putting this to work?</b> I am personally helping the <b>first 100 coaches</b> automate their practice, free, in the Founding 100 cohort. Places are limited. <a href="/#founding50">Apply at deocoach.com/#founding50</a></div></div>
 <div class="foot"><span>© 2026 Coach David Adeoye Abodunrin · DeoCoach · <b>Making Greatness Common</b></span><span>deocoach.com · Free to use and share with attribution</span></div></div>
 </body></html>"""
 for f in FREEBIES:

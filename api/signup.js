@@ -1,4 +1,4 @@
-// Sign-ups beyond the Founding 50: ACW session registration, executive coaching enquiries, membership reservations,
+// Sign-ups beyond the Founding 100: ACW session registration, executive coaching enquiries, membership reservations,
 // and bank-transfer payment notices. Stored in deocoach_signups; the person gets a confirmation and David a notification.
 // POST {kind:"acw"|"exec"|"member"|"bank", name, email, phone?, org?, role?, segment?, plan?, cycle?, currency?, ref?, note?, consent:true}
 // GET with x-admin-key (CRON_SECRET) → {rows:[…]} for the Footfall dashboard.

@@ -1,6 +1,6 @@
 // Scheduled reminders (Vercel cron, protected by CRON_SECRET):
 //  ?what=acw&when=eve|day  → ACW session registrants, the day before and the morning of Wed 25 Nov
-//  ?what=f50               → Founding 50 members with a reserved place, on the morning of each Thursday session
+//  ?what=f50               → Founding 100 members with a reserved place, on the morning of each Thursday session
 const { mail, esc, wrap } = require("../lib/mail");
 const { ACW, F50_SESSIONS, F50_TOPICS } = require("../lib/plans");
 module.exports = async (req, res) => {
@@ -20,7 +20,7 @@ module.exports = async (req, res) => {
     const i = F50_SESSIONS.indexOf(today); if (i < 0 && !req.query.force) return res.json({ ok: true, sent: 0, note: "no session today" });
     const k = i < 0 ? 0 : i, z = e.F50_ZOOM_LINK, wa = e.F50_WHATSAPP_LINK;
     const r = await fetch(`${url}/rest/v1/deocoach_founding50?select=name,email&status=eq.reserved`, { headers: H }); const rows = r.ok ? await r.json() : [];
-    for (const p of rows) { if (await mail(e, p.email, `Tonight 7pm WAT · Founding 50 session ${k + 1} of 12: ${F50_TOPICS[k]}`, wrap(`<p>Dear ${esc(p.name.split(" ")[0])},</p><p>Tonight at <b>7pm WAT</b> (6pm UK) is session <b>${k + 1} of 12</b>: <b>${esc(F50_TOPICS[k])}</b>.</p><p>${z ? `<b>Join on Zoom:</b> <a href="${esc(z)}">${esc(z)}</a>` : "The Zoom link follows by email."}</p>${wa ? `<p>Our Founding 50 WhatsApp group: <a href="${esc(wa)}">${esc(wa)}</a></p>` : ""}`))) sent++; }
+    for (const p of rows) { if (await mail(e, p.email, `Tonight 7pm WAT · Founding 100 session ${k + 1} of 12: ${F50_TOPICS[k]}`, wrap(`<p>Dear ${esc(p.name.split(" ")[0])},</p><p>Tonight at <b>7pm WAT</b> (6pm UK) is session <b>${k + 1} of 12</b>: <b>${esc(F50_TOPICS[k])}</b>.</p><p>${z ? `<b>Join on Zoom:</b> <a href="${esc(z)}">${esc(z)}</a>` : "The Zoom link follows by email."}</p>${wa ? `<p>Our Founding 100 WhatsApp group: <a href="${esc(wa)}">${esc(wa)}</a></p>` : ""}`))) sent++; }
     return res.json({ ok: true, sent });
   }
   res.status(400).json({ error: "what=acw|f50" });

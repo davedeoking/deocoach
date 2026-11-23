@@ -1,11 +1,11 @@
-// The Founding 50: the first 50 coaches David personally helps to automate their practice.
+// The Founding 100: the first 100 coaches David personally helps to automate their practice.
 // GET  → {cap, taken, left}            (public, for the live "places left" counter)
 // GET with x-admin-key (CRON_SECRET) → {cap, taken, rows:[…]}   (David's list)
 // POST {name,email,city,country,pro,practice,wants,consent,code?} → reserves place #n (or the waitlist once 50 are taken),
 // Priority codes: LCAN members and ACW participants get a unique single-use code (LCAN50-XXXXXX / ACW50-XXXXXX, table deocoach_f50codes);
 //   an LCAN Pro voucher (LCAN-XXXX-XXXX) also counts. F50_RESERVED places (default 20) are held for code holders.
 //      emails the applicant a confirmation and emails David a notification (Resend, when configured).
-const CAP = 50;
+const CAP = +(process.env.F50_CAP || 100);
 // Group codes LCAN and ACW announce publicly; entering one emails the person their own unique single-use code.
 const GROUP = (e) => ({ [String(e.F50_LCAN_GROUP || "LCAN2026").toUpperCase().replace(/[^A-Z0-9]/g, "")]: "lcan", [String(e.F50_ACW_GROUP || "ACW2026").toUpperCase().replace(/[^A-Z0-9]/g, "")]: "acw" });
 const normCode = (c) => { const x = String(c || "").toUpperCase().replace(/[^A-Z0-9]/g, "");
@@ -43,7 +43,7 @@ module.exports = async (req, res) => {
   const H = { apikey: key, Authorization: `Bearer ${key}` };
   try {
     if (req.method === "GET") {
-      const taken = await count(url, H), viaTaken = await count(url, H, "&via=not.is.null"), RES = +(e.F50_RESERVED || 20);
+      const taken = await count(url, H), viaTaken = await count(url, H, "&via=not.is.null"), RES = +(e.F50_RESERVED || 40);
       const resLeft = Math.max(0, RES - viaTaken), left = Math.max(0, CAP - taken);
       if (e.CRON_SECRET && req.headers["x-admin-key"] === e.CRON_SECRET) {
         const r = await fetch(`${url}/rest/v1/deocoach_founding50?select=*&order=id.asc&limit=500`, { headers: H });
@@ -64,17 +64,17 @@ module.exports = async (req, res) => {
       const a = await assign(url, H, grp, name, email);
       if (!a) return res.status(410).json({ error: "All personal codes for this group have been given out. Please apply without a code, or contact coachdeo@deocoach.com." });
       const who = grp === "acw" ? "Africa Coaching Week" : "LCAN", link = `https://www.deocoach.com/?code=${a.code}#founding50`, first0 = esc(name.split(" ")[0]);
-      await mail(e, email, `Your personal ${who} code for the Founding 50: ${a.code}`,
+      await mail(e, email, `Your personal ${who} code for the Founding 100: ${a.code}`,
         `<div style="font-family:Arial,sans-serif;max-width:560px;color:#1d1a14;line-height:1.55"><p>Dear ${first0},</p>
-        <p>Here is your personal ${who} priority code for the DeoCoach Founding 50. It is yours alone and works once:</p>
+        <p>Here is your personal ${who} priority code for the DeoCoach Founding 100. It is yours alone and works once:</p>
         <p style="font-size:26px;font-weight:bold;letter-spacing:2px;margin:14px 0">${a.code}</p>
         <p><a href="${link}" style="display:inline-block;background:#B8862B;color:#fff;padding:12px 20px;border-radius:8px;text-decoration:none;font-weight:bold">Claim my priority place ▸</a></p>
-        <p>The button opens the Founding 50 page with your code filled in. ${CAP} coaches, 12 free live sessions with me, every Thursday at 7pm WAT from 10 December. Places held for ${who} are limited, so claim yours today.</p>
+        <p>The button opens the Founding 100 page with your code filled in. ${CAP} coaches, 12 free live sessions with me, every Thursday at 7pm WAT from 10 December. Places held for ${who} are limited, so claim yours today.</p>
         <p>Activating the future with you,<br><b>Coach David Adeoye Abodunrin</b><br>Founder, DeoCoach · <a href="https://www.deocoach.com">deocoach.com</a></p></div>`);
       if (b.claimOnly) return res.json({ ok: true, claimed: true, kind: grp, again: !!a.again, used: !!a.used });
       b.code = a.code;
     }
-    const before = await count(url, H), viaBefore = await count(url, H, "&via=not.is.null"), RES = +(e.F50_RESERVED || 20);
+    const before = await count(url, H), viaBefore = await count(url, H, "&via=not.is.null"), RES = +(e.F50_RESERVED || 40);
     let via = null, codeStr = null;
     if (String(b.code || "").trim()) {
       const c = normCode(b.code);
@@ -90,7 +90,7 @@ module.exports = async (req, res) => {
         const v = await (await fetch(`${url}/rest/v1/deocoach_vouchers?select=code&code=eq.${c.code}`, { headers: H })).json();
         if (!v.length) return res.status(409).json({ error: "We couldn't find that LCAN code. Please check it, or apply without a code." });
         const dup = await (await fetch(`${url}/rest/v1/deocoach_founding50?select=email&code=eq.${c.code}`, { headers: H })).json();
-        if (dup.length && dup[0].email !== email) return res.status(409).json({ error: "This code has already been used for the Founding 50." });
+        if (dup.length && dup[0].email !== email) return res.status(409).json({ error: "This code has already been used for the Founding 100." });
       }
       via = c.kind; codeStr = c.code;
     }
@@ -105,17 +105,17 @@ module.exports = async (req, res) => {
     // also put them on the weekly opportunities list (they consented to emails from DeoCoach)
     try { await fetch(`${url}/rest/v1/deocoach_alerts?on_conflict=email`, { method: "POST", headers: { ...H, "Content-Type": "application/json", Prefer: "resolution=ignore-duplicates,return=minimal" }, body: JSON.stringify({ email, countries: row.country ? [row.country] : [], kw: "coaching leadership training", cadence: "weekly", token: require("crypto").randomBytes(16).toString("hex"), updated_at: new Date().toISOString() }) }); } catch (x) {}
     const first = esc(name.split(" ")[0]);
-    await mail(e, email, wl ? "You're on the Founding 50 waiting list" : `Your Founding 50 place is reserved (#${pos} of ${CAP})`,
+    await mail(e, email, wl ? "You're on the Founding 100 waiting list" : `Your Founding 100 place is reserved (#${pos} of ${CAP})`,
       `<div style="font-family:Arial,sans-serif;max-width:560px;color:#1d1a14;line-height:1.55">
        <p>Dear ${first},</p>
-       <p>${wl ? `Thank you for applying. ${before < CAP ? "All open places are taken; the remaining places are held for LCAN members and Africa Coaching Week participants with a priority code." : `All ${CAP} Founding places are taken.`} You're first in line on the waiting list. If a place opens, or when the next cohort starts, you'll hear from me first.` : `Thank you for applying. <b>Your place in the Founding 50 is reserved — you are #${pos} of ${CAP}.</b>`}</p>
+       <p>${wl ? `Thank you for applying. ${before < CAP ? "All open places are taken; the remaining places are held for LCAN members and Africa Coaching Week participants with a priority code." : `All ${CAP} Founding places are taken.`} You're first in line on the waiting list. If a place opens, or when the next cohort starts, you'll hear from me first.` : `Thank you for applying. <b>Your place in the Founding 100 is reserved — you are #${pos} of ${CAP}.</b>`}</p>
        ${via && !wl ? `<p>Your ${via === "acw" ? "Africa Coaching Week" : "LCAN"} code <b>${esc(codeStr)}</b> secured you a priority place.</p>` : ""}<p>Over 90 days we'll work through the method together: <b>Map → Automate → Govern → Monetise</b>.</p>
        ${wl ? "" : `<p><b>We start on Thursday 10 December at 7pm WAT (6pm UK)</b>, then meet live on Zoom every Thursday at the same time for 12 sessions, with a break over Christmas and New Year. The last session is on 11 March 2027.<br>
-       <a href="https://www.deocoach.com/free/founding50.ics">Add all 12 sessions to your calendar</a>. The Zoom link comes by email on the morning of each session.${e.F50_WHATSAPP_LINK ? `<br>Join our Founding 50 WhatsApp group: <a href="${esc(e.F50_WHATSAPP_LINK)}">${esc(e.F50_WHATSAPP_LINK)}</a>` : ""}</p>`}
+       <a href="https://www.deocoach.com/free/founding50.ics">Add all 12 sessions to your calendar</a>. The Zoom link comes by email on the morning of each session.${e.F50_WHATSAPP_LINK ? `<br>Join our Founding 100 WhatsApp group: <a href="${esc(e.F50_WHATSAPP_LINK)}">${esc(e.F50_WHATSAPP_LINK)}</a>` : ""}</p>`}
        <p><b>Start today:</b> download the free AI &amp; Automation Starter Kit and fill in your Automation Map before we meet:<br>
        <a href="https://www.deocoach.com/free/ai-automation-starter-kit.html">The AI &amp; Automation Starter Kit</a> · <a href="https://www.deocoach.com/free/automation-map-worksheet.html">The Automation Map</a></p>
        <p>Activating the future with you,<br><b>Coach David Adeoye Abodunrin</b><br>Founder, DeoCoach · <a href="https://www.deocoach.com">deocoach.com</a></p></div>`);
-    if (e.DIGEST_REPLY_TO) await mail(e, e.DIGEST_REPLY_TO, `${wl ? "Waitlist" : "Founding 50 #" + pos}: ${name} (${row.city || "?"}, ${row.pro || "?"})`,
+    if (e.DIGEST_REPLY_TO) await mail(e, e.DIGEST_REPLY_TO, `${wl ? "Waitlist" : "Founding 100 #" + pos}: ${name} (${row.city || "?"}, ${row.pro || "?"})`,
       `<div style="font-family:Arial,sans-serif;line-height:1.5"><p><b>${esc(name)}</b> · ${esc(email)}${row.phone ? " · " + esc(row.phone) : ""}<br>${esc(row.city || "")} ${esc(row.country || "")} · ${esc(row.pro || "")}${via ? " · " + (via === "acw" ? "ACW" : "LCAN") + " code " + esc(codeStr) : ""}</p><p><b>Practice:</b> ${esc(row.practice || "—")}</p><p><b>Wants to automate:</b> ${esc(row.wants || "—")}</p><p>${wl ? "On the waiting list." : `Place #${pos} of ${CAP}.`} Full list on <a href="https://www.deocoach.com/footfall.html">your Footfall page</a>.</p></div>`);
     return res.json({ ok: true, status: row.status, via, position: pos, cap: CAP, left: Math.max(0, CAP - pos), id: saved.id });
   } catch (x) { return res.status(502).json({ error: "upstream" }); }
