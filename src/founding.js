@@ -2,6 +2,14 @@
 let F50={cap:50,taken:null,res:null,busy:false,err:""};
 async function f50Load(){try{const r=await fetch("/api/founding50");if(r.ok){const j=await r.json();F50.cap=j.cap;F50.taken=j.taken;F50.resLeft=j.reservedLeft;F50.openLeft=j.openLeft;F50.res0=j.reserved;}}catch(e){}if(location.hash==="#founding50"||location.hash==="#home"||location.hash===""||location.hash==="#free")render();}
 function f50UrlCode(){try{const q=(location.hash.split('?')[1]||location.search.slice(1));return new URLSearchParams(q).get('code')||'';}catch(e){return '';}}
+async function f50Claim(ev){ev.preventDefault();const g=id=>document.getElementById(id);const m=g("fgmsg");
+ if(!g("fgok").checked){m.textContent="Please tick the consent box.";return;}m.textContent="Sending your personal code…";
+ try{const r=await fetch("/api/founding50",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({claimOnly:true,code:g("fgc").value,name:g("fgn").value,email:g("fge").value,consent:true})});const j=await r.json();
+  m.innerHTML=r.ok?`✓ Done. Your personal ${j.kind==="acw"?"ACW":"LCAN"} code is on its way to <b>${esc(g("fge").value)}</b>${j.again?" (we've re-sent the code you already have)":""}. Check your inbox, then tap “Claim my priority place”.`:esc(j.error||"That group code isn't recognised.");}catch(e){m.textContent="Couldn't send just now — please try again.";}}
+function f50ClaimCard(){return `<div class="card"><h2 style="margin-top:0">Got the LCAN or ACW group code?</h2><p class="muted">Enter it with your name and email, and we'll send your own personal priority code to your inbox.</p>
+ <form onsubmit="f50Claim(event)" class="grid g2" style="gap:12px"><div><label for="fgn">Full name</label><input id="fgn" required autocomplete="name"></div><div><label for="fge">Email</label><input id="fge" type="email" required autocomplete="email"></div>
+ <div><label for="fgc">Group code</label><input id="fgc" required placeholder="e.g. LCAN2026" style="text-transform:uppercase;letter-spacing:.06em"></div><div class="flex" style="align-items:flex-end"><button class="btn" type="submit">Send my personal code ▸</button></div>
+ <label class="flex small" style="grid-column:1/-1;gap:8px;align-items:flex-start;text-transform:none;flex-wrap:nowrap"><input type="checkbox" id="fgok" style="flex:none;margin-top:3px"> I agree that DeoCoach may email me my code and about the Founding 50.</label><p id="fgmsg" class="small" style="grid-column:1/-1;margin:0" aria-live="polite"></p></form></div>`;}
 function f50Left(){return F50.taken==null?null:Math.max(0,F50.cap-F50.taken);}
 function f50Meter(big){const l=f50Left();if(l==null)return `<div class="small muted">Checking places…</div>`;const pct=Math.min(100,(F50.taken/F50.cap)*100);
  return `<div class="f50m ${big?"big":""}"><div class="f50n"><b>${l}</b> of ${F50.cap} places left${F50.resLeft?` · ${F50.resLeft} held for LCAN &amp; ACW codes`:""}</div><div class="f50bar" role="img" aria-label="${F50.taken} of ${F50.cap} places taken"><div style="width:${pct}%"></div></div></div>`;}
@@ -44,13 +52,13 @@ V.founding50=()=>{const done=S.f50||F50.res,me=S.profile||{},c=typeof cityById==
    <div><label for="fcr">I am a…</label><select id="fcr">${PROS.map(p=>`<option value="${p.k}" ${PRO().k===p.k?"selected":""}>${p.n}</option>`).join("")}</select></div>
    <div><label for="fcc">City</label><input id="fcc" autocomplete="address-level2" value="${esc(c?c.n:"")}"></div>
    <div><label for="fcy">Country</label><input id="fcy" autocomplete="country-name" value="${esc(c?c.c:"")}"></div>
-   <div style="grid-column:1/-1"><label for="fcode">LCAN or Africa Coaching Week code (optional): priority place</label><input id="fcode" autocomplete="off" placeholder="e.g. LCAN50-1A2B3C or ACW50-1A2B3C" value="${esc(f50UrlCode())}" style="text-transform:uppercase;letter-spacing:.06em"><div class="small muted" style="margin-top:4px">LCAN members and ACW participants get a unique code. ${F50.res0||20} places are held for code holders.</div></div>
+   <div style="grid-column:1/-1"><label for="fcode">LCAN or Africa Coaching Week code (optional): priority place</label><input id="fcode" autocomplete="off" placeholder="Your personal code, or the LCAN / ACW group code" value="${esc(f50UrlCode())}" style="text-transform:uppercase;letter-spacing:.06em"><div class="small muted" style="margin-top:4px">LCAN members and ACW participants get a unique code. ${F50.res0||20} places are held for code holders.</div></div>
    <div style="grid-column:1/-1"><label for="fcpr">Your practice in one line</label><input id="fcpr" maxlength="300" placeholder="e.g. Executive coach for bank managers in Lagos, 3 years"></div>
    <div style="grid-column:1/-1"><label for="fcw">What would you most like to automate or grow?</label><textarea id="fcw" rows="3" maxlength="600" placeholder="e.g. booking and reminders, session notes, LinkedIn content, proposals…"></textarea></div>
    <label class="flex small" style="grid-column:1/-1;gap:8px;align-items:flex-start;text-transform:none;flex-wrap:nowrap"><input type="checkbox" id="fcok" style="flex:none;margin-top:3px"> I agree that DeoCoach may store these details to run the Founding 50 and email me about it and about weekly opportunities. I can unsubscribe at any time.</label>
    <div style="grid-column:1/-1" class="flex"><button class="btn" id="fcgo" type="submit">Reserve my place ▸</button>${f50Meter()}</div>
    ${F50.err?`<p class="note" style="grid-column:1/-1">${esc(F50.err)}</p>`:""}</form>`}</div>
-${f50Schedule()}
+${(S.f50||F50.res)?"":f50ClaimCard()}${f50Schedule()}
  <div class="card"><h2>Questions</h2>
   <p><b>Is it really free?</b> Yes. The Founding 50 is my thank-you to the community. No card is needed.</p>
   <p><b>When does it start?</b> Thursday 10 December 2026 at 7pm WAT (6pm UK), then every Thursday for 12 sessions, with a break over Christmas and New Year. The Zoom link is emailed on the morning of each session.</p>

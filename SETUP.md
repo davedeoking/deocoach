@@ -111,3 +111,11 @@ alter table public.deocoach_f50codes enable row level security;
 - Each code works once. An LCAN Pro voucher (LCAN-XXXX-XXXX) also counts as an LCAN code (once for the Founding 50).
 - F50_RESERVED (Vercel variable, default 20): places held for code holders. Without a code, applicants are confirmed only while more than the remaining held places are free.
 - Personal link that pre-fills the code: https://www.deocoach.com/?code=ACW50-XXXXXX#founding50
+
+### Group codes (23 Nov 2026)
+- LCAN announces **LCAN2026**; ACW announces **ACW2026** (change with Vercel variables F50_LCAN_GROUP / F50_ACW_GROUP).
+- Entering a group code (on the Founding 50 page, in the "Got the LCAN or ACW group code?" card or the main form) emails the person their own unique code from the AUTO pools (F50-LCAN-AUTO 500, F50-ACW-AUTO 500). Asking again re-sends the same code.
+- A personal code that was emailed to someone can only be used with that email address.
+```sql
+alter table public.deocoach_f50codes add column if not exists assigned_at timestamptz, add column if not exists assigned_email text;
+```
