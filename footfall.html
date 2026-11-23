@@ -43,7 +43,7 @@ header{display:flex;align-items:center;justify-content:space-between;gap:16px;fl
 <div id="app" class="wrap"></div>
 <div class="tip" id="tip"></div>
 <script>
-const PAGES={home:"Command Centre",start:"Start here",atlas:"Horizon Atlas",industry:"Industry Intelligence",events:"Events Radar",bodies:"Professional Bodies",academies:"Coaching Academies",bizdev:"Budget & Pipeline",minds:"City Minds",opps:"Opportunity Desk",fas:"Future Activation",profile:"My profile",briefing:"Briefing",mentor:"Supervisor Desk"};
+const PAGES={founding50:"The Founding 50",free:"Free Toolkit",home:"Command Centre",start:"Start here",atlas:"Horizon Atlas",industry:"Industry Intelligence",events:"Events Radar",bodies:"Professional Bodies",academies:"Coaching Academies",bizdev:"Budget & Pipeline",minds:"City Minds",opps:"Opportunity Desk",fas:"Future Activation",profile:"My profile",briefing:"Briefing",mentor:"Supervisor Desk"};
 const SRC={direct:"Direct / typed / app",whatsapp:"WhatsApp",linkedin:"LinkedIn",facebook:"Facebook",instagram:"Instagram",x:"X (Twitter)",google:"Google",email:"Email",zoom:"Zoom",internal:"DeoCoach link"};
 const PRO={coach:"Coach",trainer:"Trainer",facilitator:"Facilitator",mentor:"Mentor",speaker:"Speaker",consultant:"Consultant"};
 let days=+(sessionStorage.getItem("ffd")||7),timer=null,data=null;
@@ -77,11 +77,14 @@ function render(j,err){const t=j?j.totals:{};const v=t.visit||0,s=t.sub||0;
   <div class="card"><h2>Where they came from</h2>${list(j.bySource,SRC)}</div>
   <div class="card"><h2>Pages opened</h2>${list(j.byPage,PAGES)}</div>
   <div class="card"><h2>Professions chosen</h2>${list(j.byPro,PRO,"No one has used the welcome card yet.")}</div>
-  <div class="card"><h2>Where they subscribed</h2>${list(j.bySubAt,{bar:"Sticky bar",gate:"Welcome card",unlock:"Unlock on results",modal:"Get alerts window",opps:"Opportunity Desk form"},"No subscriptions yet.")}</div>
+  <div class="card"><h2>Where they subscribed</h2>${list(j.bySubAt,{bar:"Sticky bar",gate:"Welcome card",unlock:"Unlock on results",modal:"Get alerts window",opps:"Opportunity Desk form",free:"Free Toolkit download",founding50:"Founding 50 application"},"No subscriptions yet.")}</div>
   <div class="card"><h2>Edition &amp; device</h2>${list((j.byEdition||[]).map(x=>({k:x.k==="africa"?"Africa Edition":"Global Edition",v:x.v})).concat((j.byDevice||[]).map(x=>({k:x.k[0].toUpperCase()+x.k.slice(1),v:x.v}))))}</div>
  </div>
+ <div class="card" style="margin-top:14px"><h2>The Founding 50 — applications</h2><div id="f50list" class="empty">Loading…</div></div>
  <p class="note">Counted without cookies or personal data: city and country come from the network location of each visit, never an address or a name. Visitors who switch on Do Not Track are not counted. Share links with ?src=parley (or any word) to see that source by name.</p>`}`;
- if(j)chart(j.daily);}
+ if(j){chart(j.daily);f50();}}
+async function f50(){const el=document.getElementById("f50list");if(!el)return;try{const r=await fetch("/api/founding50",{headers:{"x-admin-key":key()}});const j=await r.json();const R=j.rows||[];
+ el.innerHTML=`<p style="margin:0 0 8px"><b style="color:#F5D27A;font-size:20px">${j.taken||0}</b> of ${j.cap} places taken</p>`+(R.length?`<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:13px"><tr>${["#","When","Name","Email","WhatsApp","City","Profession","Practice","Wants to automate","Status"].map(h=>`<th style="text-align:left;padding:6px 8px;color:#E9B949;border-bottom:1px solid rgba(233,185,73,.3)">${h}</th>`).join("")}</tr>${R.map((x,i)=>`<tr>${[i+1,new Date(x.at).toLocaleString("en-GB",{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"}),x.name,x.email,x.phone||"",[x.city,x.country].filter(Boolean).join(", "),x.pro||"",x.practice||"",x.wants||"",x.status].map(v=>`<td style="padding:6px 8px;border-bottom:1px solid rgba(233,185,73,.12);vertical-align:top">${esc(v)}</td>`).join("")}</tr>`).join("")}</table></div>`:"<p class=\"empty\">No applications yet.</p>");}catch(e){el.textContent="Couldn't load applications.";}}
 function chart(d){const el=document.getElementById("chart");if(!el)return;const W=el.clientWidth||900,H=220,pl=34,pr=12,pt=14,pb=26,n=d.length,mx=Math.max(4,...d.map(x=>x.v));const top=Math.ceil(mx/4)*4;
  const x=i=>pl+(n<2?0:i*(W-pl-pr)/(n-1)),y=v=>pt+(H-pt-pb)*(1-v/top);
  let g="";for(let k=0;k<=4;k++){const val=top*k/4,yy=y(val);g+=`<line x1="${pl}" x2="${W-pr}" y1="${yy}" y2="${yy}" stroke="rgba(233,185,73,.12)"/><text x="${pl-8}" y="${yy+4}" fill="#B9AE97" font-size="11" text-anchor="end">${val}</text>`;}

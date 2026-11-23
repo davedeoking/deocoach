@@ -22,6 +22,21 @@
  },
  "redirects": [
   {
+   "source": "/founding50",
+   "destination": "/#founding50",
+   "permanent": false
+  },
+  {
+   "source": "/free",
+   "destination": "/#free",
+   "permanent": false
+  },
+  {
+   "source": "/toolkit",
+   "destination": "/#free",
+   "permanent": false
+  },
+  {
    "source": "/:path((?!sw\\.js$).*)",
    "has": [
     {

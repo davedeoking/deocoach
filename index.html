@@ -32,6 +32,12 @@ a{color:var(--gold2)}
 .crest{width:46px;height:46px;object-fit:contain;filter:drop-shadow(0 0 14px rgba(var(--acc),.45))}
 .brand1{font-family:var(--fontM);font-size:1.2rem;color:var(--gold2);letter-spacing:.06em}
 .brand2{font-size:.76rem;color:var(--mute)}
+.f50ban{display:flex;align-items:center;gap:12px;margin:.2rem 0 1rem;padding:12px 16px;border-radius:14px;border:1px solid var(--gold);background:linear-gradient(135deg,rgba(var(--acc),.22),rgba(var(--acc),.06));color:var(--ink);text-decoration:none}.f50ban:hover{border-color:var(--gold2)}.f50s{font-size:1.4rem;color:var(--gold2)}.f50left{color:#3DD6C6;margin-left:6px;white-space:nowrap}.f50go{margin-left:auto;font-weight:700;color:var(--gold2);white-space:nowrap}.f50hero{border-color:var(--gold)}.f50grid{display:grid;grid-template-columns:minmax(0,1fr) 230px;gap:28px;align-items:center}.f50p{margin:0;text-align:center}.f50p img{width:220px;height:270px;object-fit:cover;object-position:top;border-radius:20px;border:2px solid var(--gold);box-shadow:0 0 40px rgba(var(--acc),.25)}.f50p figcaption{margin-top:8px;font:700 .85rem Inter;color:var(--gold2)}.f50p figcaption span{font-weight:500;color:var(--mute)}
+.f50m{display:flex;flex-direction:column;gap:6px;min-width:220px}.f50n{font-size:.95rem}.f50n b{font-size:1.3rem;color:var(--gold2)}.f50m.big .f50n b{font-size:2rem}.f50bar{height:10px;border-radius:6px;background:rgba(var(--acc),.18);overflow:hidden}.f50bar div{height:100%;background:linear-gradient(90deg,var(--gold),var(--gold2));border-radius:6px}
+.f50l{padding-left:1.1rem}.f50l li{margin:.45rem 0}.f50form label{display:block;font-size:.8rem;margin-bottom:4px}.f50form input,.f50form select,.f50form textarea{width:100%}
+.freegrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}.freecard{display:flex;flex-direction:column;gap:6px}.freecard h3{margin:.1rem 0;font-size:1.1rem}.freecard .btn{margin-top:auto;align-self:flex-start}.fic{font-size:1.8rem}
+@media(max-width:720px){.f50grid{grid-template-columns:1fr}.f50p{order:-1}.f50p img{width:140px;height:170px}}
+
 #subbar{position:fixed;left:50%;bottom:16px;transform:translate(-50%,140%);z-index:90;width:min(1080px,calc(100% - 24px));background:linear-gradient(135deg,rgba(var(--deep),.97),rgba(var(--void),.98));border:1px solid var(--gold);border-radius:18px;box-shadow:0 18px 50px rgba(0,0,0,.55),0 0 40px rgba(var(--acc),.18);padding:12px 16px 8px;transition:transform .6s cubic-bezier(.2,.8,.2,1)}
 #subbar.in{transform:translate(-50%,0)}.sbin{display:flex;align-items:center;gap:14px;flex-wrap:wrap}.sbt{flex:1 1 320px;font-size:.95rem;color:var(--ink)}.sbt b{color:var(--gold2)}.sbn{color:#3DD6C6;font-weight:700}
 .sbf{display:flex;gap:8px;flex:1 1 340px}.sbf input{flex:1;min-width:0;padding:11px 13px;border-radius:12px;border:1px solid rgba(var(--acc),.45);background:rgba(var(--tint),.06);color:var(--ink);font:500 .95rem Inter,sans-serif}.sbf .btn{white-space:nowrap}
@@ -732,14 +738,14 @@ function plan(months){
 
 /* ---------- navigation ---------- */
 const VIEWS=[
- ["start","✧","Start here",""],["home","✦","Command Centre",""],
+ ["start","✧","Start here",""],["founding50","★","The Founding 50",""],["free","✚","Free Toolkit",""],["home","✦","Command Centre",""],
  ["atlas","◉","Horizon Atlas","Futures & opportunities"],["industry","⬡","Industry Intelligence","Futures & opportunities"],["events","✷","Events & Happenings Radar","Futures & opportunities"],["bodies","⌘","Professional Bodies Map","Futures & opportunities"],["bizdev","⟁","Budget & Pipeline Engine","Futures & opportunities"],["briefing","☼","Daily & weekly briefing","Futures & opportunities"],["minds","❖","City Minds & Culture","Futures & opportunities"],["opps","✉","Opportunity Desk","Futures & opportunities"],["evidence","▤","Evidence & insight feeds","Futures & opportunities"],
  ["fas","❂","Future Activation hub","Future Activation"],["clients","♢","Client workspaces","Future Activation"],["backcast","⟲","Coach Backcasting","Future Activation"],["power","⚑","Power Moves","Future Activation"],["scenarios","⌬","Scenario Engine","Future Activation"],["game","♞","Strategic Interaction","Future Activation"],["cocreate","✺","CoachCoCreation","Future Activation"],["caplib","▦","320 Capabilities","Future Activation"],["methods","❦","Methodology Atlas","Future Activation"],["templates","✎","Working Templates","Future Activation"],["governance","⚖","Measurement & Governance","Future Activation"],
  ["profile","☺","My profile","Me"],["signature","✧","Coach Signature","Me"],["ladder","▲","Competency Ladder","Me"],
  ["niches","⌁","Niche Radar · 10 years","Money"],["income","₦","Capability to Income","Money"],
  ["brand","◈","Brand Compass","Brand"],["funnel","▽","Brand Funnel","Brand"],["stuck","➚","Stuck & growth plan","Brand"],
  ["toolkit","⚙","Client Toolkit","Grow"],["mentor","☯","Supervisor Desk","Grow"],["academies","✦","Coaching Academies","Grow"]];
-const NEW=["academies","industry","events","bodies","bizdev","fas","clients","backcast","power","scenarios","game","cocreate","caplib","methods","templates","governance","start","atlas","briefing","minds","evidence","opps"];
+const NEW=["founding50","free","academies","industry","events","bodies","bizdev","fas","clients","backcast","power","scenarios","game","cocreate","caplib","methods","templates","governance","start","atlas","briefing","minds","evidence","opps"];
 function doneMap(){return{profile:!!S.profile.name,signature:!!signature(),ladder:compAvg()>0,niches:!!S.profile.niche,income:S.deals.length>0,brand:S.stage!==null,funnel:!!funnel(),stuck:num(S.hrs.total)>0};}
 function updateChrome(){const d=doneMap();const cur=(location.hash||"#home").slice(1);let h="",grp="";
   VIEWS.forEach(v=>{if(v[3]&&v[3]!==grp){grp=v[3];h+=`<div class="grp">${grp}</div>`;}h+=`<button class="${cur===v[0]?"on":""}" onclick="location.hash='${v[0]}'"><span class="ic">${v[1]}</span>${typeof pwT==="function"?pwT(v[2]):v[2]}${d[v[0]]?'<span class="ok">✓</span>':NEW.includes(v[0])?'<span class="new">NEW</span>':""}</button>`;});
@@ -755,7 +761,7 @@ V.home=()=>{const sg=signature(),f=funnel(),top=nicheScores(S.yr)[0],by=deals(),
  return `<div class="card"><div class="hero"><div><div class="tag">${ED().tag}</div>
  <h1>${S.profile.name?"Welcome, "+esc(S.profile.name.split(" ")[0])+".":(LOOKS[S.look]||LOOKS.royal).head}</h1>
  <p class="lead">For ${esc(proLine())}: sense where opportunities are rising across ${ED().cities}, know what people there care about, read the culture, find live tenders, conferences and jobs, and turn your capabilities into income with a plan from 90 days to 5 years.</p>
- <div class="flex"><a class="btn" href="#start">Where do I start?</a><a class="btn ghost" href="#atlas">Horizon Atlas</a><a class="btn ghost" href="#opps">Opportunities</a><a class="btn ghost" href="#briefing">Today's briefing</a><a class="btn ghost" href="#${!d.profile?"profile":!d.signature?"signature":!d.funnel?"funnel":"stuck"}">${pct<100?"Continue setup ("+pct+"%)":"My growth plan"}</a></div>
+ <a class="f50ban" href="#founding50"><span class="f50s">★</span><span><b>The Founding 50:</b> I will personally help the first 50 coaches automate their practice — free. ${f50Left()==null?"":`<b class="f50left">${f50Left()} places left</b>`}</span><span class="f50go">Apply ▸</span></a><div class="flex"><a class="btn" href="#start">Where do I start?</a><a class="btn ghost" href="#free">🎁 Free Toolkit</a><a class="btn ghost" href="#atlas">Horizon Atlas</a><a class="btn ghost" href="#opps">Opportunities</a><a class="btn ghost" href="#briefing">Today's briefing</a><a class="btn ghost" href="#${!d.profile?"profile":!d.signature?"signature":!d.funnel?"funnel":"stuck"}">${pct<100?"Continue setup ("+pct+"%)":"My growth plan"}</a></div>
  <p class="small" style="margin-top:12px">Strongest signal by Year 5: <b style="color:var(--teal)">${lead.c.n}</b> (${lead.s}/100 across its top niches).</p></div>
  <div class="globe-wrap"><div class="globe-hud">◉ Horizon · Year 5 · all niches</div><canvas id="heroGlobe" height="420"></canvas></div></div></div>
  <div class="grid g3">
@@ -1106,10 +1112,10 @@ function subBarOff(){return !!S.subbed||(S.subHide&&S.subHide>Date.now())||!!doc
 async function subBar(){if(subBarOff()){const b=document.getElementById("subbar");if(b)b.remove();document.body.classList.remove("hasbar");return;}document.body.classList.add("hasbar");
  let b=document.getElementById("subbar");if(!b){b=document.createElement("div");b.id="subbar";b.setAttribute("role","region");b.setAttribute("aria-label","Free opportunity emails");document.body.appendChild(b);requestAnimationFrame(()=>b.classList.add("in"));}
  const n=await intelCount();
- b.innerHTML=`<div class="sbin"><div class="sbt"><b>🔔 Free every week:</b> conferences, tenders and calls for ${esc(PRO().many)} in ${esc(subCountry())}${n?` · <span class="sbn">${n} new found this week</span>`:""}</div>
- <form class="sbf" onsubmit="event.preventDefault();sbGo()"><label for="sbem" class="sr">Email</label><input id="sbem" type="email" autocomplete="email" placeholder="your@email.com" required><button class="btn" type="submit">Email me free ▸</button></form>
+ b.innerHTML=`<div class="sbin"><div class="sbt"><b>🎁 Free: The AI &amp; Automation Starter Kit for Coaches</b> + weekly conferences, tenders and calls for ${esc(PRO().many)} in ${esc(subCountry())}${n?` · <span class="sbn">${n} new found this week</span>`:""}</div>
+ <form class="sbf" onsubmit="event.preventDefault();sbGo()"><label for="sbem" class="sr">Email</label><input id="sbem" type="email" autocomplete="email" placeholder="your@email.com" required><button class="btn" type="submit">Send it to me ▸</button></form>
  <button class="sbx" aria-label="Hide for 3 days" onclick="S.subHide=Date.now()+3*864e5;save();document.getElementById('subbar').remove();document.body.classList.remove('hasbar')">✕</button></div><div class="sbc small" id="sbmsg">By subscribing you agree to receive DeoCoach opportunity emails. Unsubscribe in one click.</div>`;}
-async function sbGo(){const m=document.getElementById("sbmsg");m.textContent="Subscribing…";const e=await quickSub(document.getElementById("sbem").value,"weekly","bar");if(e)m.textContent=e;else{toast&&toast("You're in — your first opportunities arrive with the next digest");}}
+async function sbGo(){const m=document.getElementById("sbmsg");m.textContent="Subscribing…";const e=await quickSub(document.getElementById("sbem").value,"weekly","bar");if(e){m.textContent=e;return;}const t=document.createElement("div");t.className="whoov";t.id="subov";t.onclick=closeAlerts;t.innerHTML=`<div class="gwrap"><div class="gcard subcard" onclick="event.stopPropagation()"><div class="gbody"><div class="gk">YOU'RE IN</div><h2>Your Starter Kit is ready</h2><p class="gp">Your weekly opportunities start with the next digest. All ${FREEBIES.length} free tools are now unlocked.</p><div class="flex" style="gap:10px;flex-wrap:wrap"><a class="btn genter" href="free/ai-automation-starter-kit.html" target="_blank" rel="noopener" onclick="closeAlerts()">Open the Starter Kit ▸</a><a class="btn ghost" href="#founding50" onclick="closeAlerts()">★ Join the Founding 50</a></div></div></div></div>`;document.body.appendChild(t);}
 // invite once per session: after the 3rd page or 75 seconds, never on the first screen, never if hidden or subscribed
 (function(){let views=0,asked=false;try{asked=sessionStorage.getItem("dc-subask")==="1";}catch(e){}
  const ask=()=>{if(asked||subBarOff()||document.querySelector(".whoov"))return;asked=true;try{sessionStorage.setItem("dc-subask","1");}catch(e){}openAlerts();};
@@ -2156,6 +2162,84 @@ V.academies=()=>{const A=S.acad||{list:[]},f=A.f||"",r=A.r||"";const regs=[...ne
  <p class="small muted">Missing an academy you trust? Tell us and we'll check it and add it. Ghana, Egypt, Uganda, Rwanda and Morocco are next.</p></div>
  ${short.length?`<div class="card"><h2>My shortlist</h2>${short.map(a=>`<div class="row" style="justify-content:space-between;border-bottom:1px solid var(--line);padding:8px 0"><span><b>${a.name}</b> <span class="small muted">· ${a.city}</span></span><span class="small">${a.lvl}</span></div>`).join("")}
   <p class="small" style="margin-top:10px">Next: ask each one for the credential you'll qualify for, mentor-coaching hours, cohort dates and the total cost. Then take your shortlist to <a href="#mentor">DeoMentor</a> to decide.</p></div>`:""}`;};
+
+const FREEBIES=[{"slug": "ai-automation-starter-kit", "kind": "Starter Kit", "title": "The AI & Automation Starter Kit for Coaches", "blurb": "The 90-day Map → Automate → Govern → Monetise method, with your first five automations and the prompts to run them.", "ic": "🚀"}, {"slug": "50-ai-prompts-for-coaches", "kind": "Prompt Library", "title": "50 AI Prompts for Coaches", "blurb": "Copy-and-paste prompts for every part of your practice, from session prep to proposals.", "ic": "✍"}, {"slug": "automation-map-worksheet", "kind": "Worksheet", "title": "The Coach's Automation Map", "blurb": "A printable one-week task audit: keep, automate, delegate or drop.", "ic": "🗺"}, {"slug": "client-data-ai-safety-checklist", "kind": "Checklist", "title": "Client Data & AI Safety Checklist", "blurb": "Fifteen checks, consent wording and a one-page AI policy you can adapt today.", "ic": "🛡"}, {"slug": "30-day-linkedin-content-engine", "kind": "Content Plan", "title": "The 30-Day LinkedIn Content Engine for Coaches", "blurb": "Thirty post ideas, a structure that works and a prompt that drafts each one.", "ic": "📣"}, {"slug": "discovery-call-script-and-follow-ups", "kind": "Script + Templates", "title": "Discovery Call Script & 5 Follow-up Emails", "blurb": "A client-first 30-minute call structure plus five follow-up emails for every outcome.", "ic": "📞"}, {"slug": "3-tier-package-builder", "kind": "Worksheet", "title": "The 3-Tier Package Builder", "blurb": "Design Essential, Growth and Premium offers clients can say yes to.", "ic": "💎"}, {"slug": "ai-tool-stack-for-coaches", "kind": "Guide", "title": "The AI Tool Stack for Coaches", "blurb": "The tools for each job in your practice, with a free option first.", "ic": "🧰"}];
+
+// ===== The Founding 50 and the Free Toolkit =====
+let F50={cap:50,taken:null,res:null,busy:false,err:""};
+async function f50Load(){try{const r=await fetch("/api/founding50");if(r.ok){const j=await r.json();F50.cap=j.cap;F50.taken=j.taken;}}catch(e){}if(location.hash==="#founding50"||location.hash==="#home"||location.hash===""||location.hash==="#free")render();}
+function f50Left(){return F50.taken==null?null:Math.max(0,F50.cap-F50.taken);}
+function f50Meter(big){const l=f50Left();if(l==null)return `<div class="small muted">Checking places…</div>`;const pct=Math.min(100,(F50.taken/F50.cap)*100);
+ return `<div class="f50m ${big?"big":""}"><div class="f50n"><b>${l}</b> of ${F50.cap} places left</div><div class="f50bar" role="img" aria-label="${F50.taken} of ${F50.cap} places taken"><div style="width:${pct}%"></div></div></div>`;}
+async function f50Apply(ev){ev.preventDefault();if(F50.busy)return;const g=id=>document.getElementById(id);
+ if(!g("fcok").checked){F50.err="Please tick the consent box.";render();return;}
+ F50.busy=true;F50.err="";const btn=g("fcgo");if(btn)btn.textContent="Reserving your place…";
+ const body={name:g("fcn").value,email:g("fce").value,phone:g("fcp").value,city:g("fcc").value,country:g("fcy").value,pro:g("fcr").value,practice:g("fcpr").value,wants:g("fcw").value,consent:true};
+ try{const r=await fetch("/api/founding50",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify(body)});const j=await r.json();
+  if(!r.ok){F50.err=j.error||"Something went wrong — please try again.";}else{F50.res=j;F50.taken=j.position;S.f50=j;S.subbed=S.subbed||body.email;save();track("sub",{p:"founding50"});}}
+ catch(e){F50.err="Couldn't reach the server — please try again.";}F50.busy=false;render();}
+V.founding50=()=>{const done=S.f50||F50.res,me=S.profile||{},c=typeof cityById==="function"&&cityById(me.cityId);
+ return `<div class="card f50hero"><div class="f50grid"><div>
+  <div class="kicker">THE FOUNDING 50 · FREE · LIMITED TO 50 PLACES</div>
+  <h1 style="margin:.3rem 0 .6rem">I will personally help the first 50 coaches automate their practice.</h1>
+  <p class="lead">Ninety days. One method: <b>Map → Automate → Govern → Monetise</b>. Free for the Founding 50 — my thank-you to the coaching community that shaped me.</p>
+  ${f50Meter(true)}
+  <p class="small" style="margin-top:.6rem">For coaches, trainers, facilitators, mentors, speakers and consultants — in Africa and worldwide.</p></div>
+  <figure class="f50p"><img src="david/p-headshot.webp" alt="Coach David Adeoye Abodunrin"><figcaption>Coach David Adeoye Abodunrin<br><span>AI &amp; Automation Coach · Master Futurist</span></figcaption></figure></div></div>
+ <div class="grid g2">
+  <div class="card"><h2>What you get</h2><ul class="f50l">
+   <li><b>A free place in the Founding Cohort</b> of the 90-day AI &amp; Automation Activation.</li>
+   <li><b>Live group sessions with David on Zoom</b> through the four moves.</li>
+   <li><b>Your Automation Map reviewed by David</b>, with your first five automations chosen for you.</li>
+   <li><b>The full Free Toolkit</b>: starter kit, 50 prompts, scripts, templates and the tool stack.</li>
+   <li><b>Founding Member status on DeoCoach</b>: a Founding badge, early access to new features and the founding price locked in.</li></ul></div>
+  <div class="card"><h2>What I ask of you</h2><ul class="f50l">
+   <li><b>One hour a week</b> for 90 days, and the courage to start small.</li>
+   <li><b>Do the work</b> between sessions — five automations, one a week.</li>
+   <li><b>Honest feedback</b>, and if it helped you, a short testimonial others can learn from.</li>
+   <li><b>Pay it forward</b>: share one thing you learned with another coach.</li></ul>
+   <p class="small">Free means free: no card, no catch. Places are reserved in the order applications arrive.</p></div></div>
+ <div class="card f50form" id="apply">${done?`<div class="kicker">${done.status==="waitlist"?"YOU'RE ON THE WAITING LIST":"YOUR PLACE IS RESERVED"}</div><h2 style="margin:.3rem 0">${done.status==="waitlist"?"You're first in line for the next cohort.":`You are #${done.position} of ${done.cap}.`}</h2>
+   <p>Check your inbox for a confirmation from coachdeo@deocoach.com. David will email the start date and the Zoom link.</p><p><b>Start today:</b></p>
+   <div class="flex" style="gap:10px;flex-wrap:wrap"><a class="btn" href="free/ai-automation-starter-kit.html" target="_blank" rel="noopener">Open the Starter Kit ▸</a><a class="btn ghost" href="free/automation-map-worksheet.html" target="_blank" rel="noopener">Fill in your Automation Map</a><a class="btn ghost" href="#free">All free tools</a></div>`
+ :`<h2 style="margin-top:0">Apply for your place</h2>${f50Left()===0?`<p class="note">All 50 places are taken — apply to join the waiting list for the next cohort.</p>`:""}
+  <form onsubmit="f50Apply(event)" class="grid g2" style="gap:12px">
+   <div><label for="fcn">Full name</label><input id="fcn" required autocomplete="name" value="${esc(me.name||"")}"></div>
+   <div><label for="fce">Email</label><input id="fce" type="email" required autocomplete="email" value="${esc(S.subbed||"")}"></div>
+   <div><label for="fcp">WhatsApp number (optional)</label><input id="fcp" type="tel" autocomplete="tel" placeholder="+234…"></div>
+   <div><label for="fcr">I am a…</label><select id="fcr">${PROS.map(p=>`<option value="${p.k}" ${PRO().k===p.k?"selected":""}>${p.n}</option>`).join("")}</select></div>
+   <div><label for="fcc">City</label><input id="fcc" autocomplete="address-level2" value="${esc(c?c.n:"")}"></div>
+   <div><label for="fcy">Country</label><input id="fcy" autocomplete="country-name" value="${esc(c?c.c:"")}"></div>
+   <div style="grid-column:1/-1"><label for="fcpr">Your practice in one line</label><input id="fcpr" maxlength="300" placeholder="e.g. Executive coach for bank managers in Lagos, 3 years"></div>
+   <div style="grid-column:1/-1"><label for="fcw">What would you most like to automate or grow?</label><textarea id="fcw" rows="3" maxlength="600" placeholder="e.g. booking and reminders, session notes, LinkedIn content, proposals…"></textarea></div>
+   <label class="flex small" style="grid-column:1/-1;gap:8px;align-items:flex-start;text-transform:none;flex-wrap:nowrap"><input type="checkbox" id="fcok" style="flex:none;margin-top:3px"> I agree that DeoCoach may store these details to run the Founding 50 and email me about it and about weekly opportunities. I can unsubscribe at any time.</label>
+   <div style="grid-column:1/-1" class="flex"><button class="btn" id="fcgo" type="submit">Reserve my place ▸</button>${f50Meter()}</div>
+   ${F50.err?`<p class="note" style="grid-column:1/-1">${esc(F50.err)}</p>`:""}</form>`}</div>
+ <div class="card"><h2>Questions</h2>
+  <p><b>Is it really free?</b> Yes. The Founding 50 is my thank-you to the community. No card is needed.</p>
+  <p><b>When does it start?</b> The start date and Zoom link go by email to everyone with a reserved place.</p>
+  <p><b>Do I need to be technical?</b> No. If you can use WhatsApp and email, you can do this.</p>
+  <p><b>What if I'm not a coach?</b> Trainers, facilitators, mentors, speakers and consultants are welcome — the method is the same.</p>
+  <p><b>What happens to my details?</b> They're used only to run the Founding 50 and send you DeoCoach emails you can leave at any time. They're never sold or shared.</p></div>`;};
+
+// ---- Free Toolkit ----
+let FREE_PENDING=null;
+V.free=()=>`<div class="card"><div class="kicker">FREE · ${FREEBIES.length} TOOLS · BY COACH DAVID ADEOYE ABODUNRIN</div><h1 style="margin:.3rem 0">The Free Toolkit</h1>
+ <p class="lead">Everything a ${esc(PRO().n.toLowerCase())} needs to start automating and growing this week. Free to download, print and share.${S.subbed?"":" Enter your email once to unlock them all."}</p>
+ <div class="flex" style="gap:10px;flex-wrap:wrap"><a class="btn" href="#founding50">★ Join the Founding 50 — ${f50Left()==null?"":f50Left()+" places left"}</a></div></div>
+ <div class="freegrid">${FREEBIES.map(f=>`<div class="card freecard"><div class="fic" aria-hidden="true">${f.ic}</div><div class="kicker">${esc(f.kind.toUpperCase())}</div><h3>${esc(f.title)}</h3><p class="small">${esc(f.blurb)}</p>
+  <button class="btn ${S.subbed?"ghost":""}" onclick="openFree('${f.slug}')">${S.subbed?"Open ▸":"Get it free ▸"}</button></div>`).join("")}</div>`;
+function openFree(slug){if(S.subbed){window.open("free/"+slug+".html","_blank","noopener");track("view",{p:"free-"+slug.slice(0,24)});return;}
+ FREE_PENDING=slug;const f=FREEBIES.find(x=>x.slug===slug)||FREEBIES[0];if(document.getElementById("subov"))return;const o=document.createElement("div");o.id="subov";o.className="whoov";
+ o.innerHTML=`<div class="gwrap"><div class="gcard subcard" onclick="event.stopPropagation()"><div class="gbody"><div class="gk">FREE DOWNLOAD</div><h2>${esc(f.title)}</h2><p class="gp">Enter your email to unlock all ${FREEBIES.length} free tools. You'll also get weekly opportunities for ${esc(PRO().many)} — unsubscribe in one click.</p>
+ <form onsubmit="event.preventDefault();freeGo()"><label class="small" for="frem">Email</label><input id="frem" type="email" required autocomplete="email" placeholder="you@example.com" style="width:100%;margin:4px 0 10px">
+ <label class="flex small" style="gap:8px;align-items:flex-start;text-transform:none;flex-wrap:nowrap"><input type="checkbox" id="frok" style="flex:none;margin-top:3px"> I agree to receive emails from DeoCoach (coachdeo@deocoach.com).</label>
+ <div class="flex" style="gap:10px;margin-top:14px;flex-wrap:wrap"><button class="btn genter" type="submit" id="frgo">Unlock the toolkit ▸</button><button class="btn ghost" type="button" onclick="closeAlerts()">Not now</button></div></form><div id="frmsg" class="small" style="margin-top:8px"></div></div></div></div>`;
+ o.onclick=closeAlerts;document.body.appendChild(o);setTimeout(()=>{const i=document.getElementById("frem");if(i)i.focus();},50);}
+async function freeGo(){const m=document.getElementById("frmsg");if(!document.getElementById("frok").checked){m.textContent="Please tick the consent box first.";return;}
+ m.textContent="Unlocking…";const e=await quickSub(document.getElementById("frem").value,"weekly","free");if(e){m.textContent=e;return;}
+ const s=FREE_PENDING||FREEBIES[0].slug;m.innerHTML=`Unlocked. <a class="btn" style="margin-left:6px" href="free/${s}.html" target="_blank" rel="noopener" onclick="closeAlerts();render()">Open your download ▸</a>`;}
+f50Load();
 
 // ===== Industry Intelligence: industries → power-broker calendar (Africa + global), live happenings, alerts, on-device learning-to-rank, Event Prep Copilot =====
 const INDUSTRIES=[["fin","Banking & financial services"],["ins","Insurance & pensions"],["energy","Oil, gas & power"],["mining","Mining & metals"],["tech","Telecoms & technology"],["fmcg","FMCG & manufacturing"],["health","Health & pharma"],["pub","Government & public sector"],["dev","Development, DFIs & NGOs"],["edu","Education & universities"],["agri","Agriculture & food"],["creative","Creative, media & entertainment"],["legal","Legal & professional services"],["faith","Faith & ministry"],["realestate","Real estate & construction"],["logistics","Transport, logistics & aviation"],["tourism","Hospitality & tourism"],["retail","Retail & e-commerce"]];
