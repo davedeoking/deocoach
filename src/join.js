@@ -19,7 +19,7 @@ const jcMsg=k=>JC.msg[k]?`<p class="note" style="grid-column:1/-1">${esc(JC.msg[
 
 // ---- the hub ----
 V.join=()=>`<div class="card"><div class="kicker">SIGN ON · DEOCOACH</div><h1 style="margin:.3rem 0">Choose how you'd like to work with Coach David</h1><p class="lead">Four doors. Pick the one that fits where you are now.</p></div>
- <div class="grid g2">
+ <div class="grid joing">
   <a class="card joinc" href="#founding50"><div class="joini">★</div><h2>The Founding 50</h2><p>Free 90-day AI &amp; Automation programme for coaches, trainers, facilitators, mentors and speakers. 12 live Zoom sessions from 10 December.</p><div class="small">${f50Left()==null?"":`<b>${f50Left()} of 50 places left</b> · `}Free</div><span class="btn">Apply ▸</span></a>
   <a class="card joinc" href="#member"><div class="joini">◆</div><h2>DeoCoach Membership</h2><p>The full intelligence engine, every city and alert, and monthly live group coaching with Coach David on Premium.</p><div class="small">Founding Member pricing opens soon</div><span class="btn">See plans ▸</span></a>
   <a class="card joinc" href="#coaching"><div class="joini">✦</div><h2>Executive coaching &amp; advisory</h2><p>For nations and governments, boards and executive teams, and leaders who want to reach the future they are anticipating — first.</p><div class="small">Discovery call · enquiry</div><span class="btn">Work with David ▸</span></a>
