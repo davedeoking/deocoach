@@ -12,7 +12,7 @@ async function count(url, H) {
 }
 async function mail(e, to, subject, html) {
   if (!e.RESEND_API_KEY || !e.DIGEST_FROM || !to) return;
-  try { await fetch("https://api.resend.com/emails", { method: "POST", headers: { Authorization: `Bearer ${e.RESEND_API_KEY}`, "Content-Type": "application/json" }, body: JSON.stringify({ from: e.DIGEST_FROM, ...(e.DIGEST_REPLY_TO ? { reply_to: e.DIGEST_REPLY_TO } : {}), to, subject, html }) }); } catch (x) {}
+  try { await fetch("https://api.resend.com/emails", { method: "POST", headers: { Authorization: `Bearer ${e.RESEND_API_KEY}`, "Content-Type": "application/json" }, body: JSON.stringify({ from: e.DIGEST_FROM, ...(e.DIGEST_REPLY_TO ? { reply_to: "coachdeo@deocoach.com" } : {}), to, subject, html }) }); } catch (x) {}
 }
 module.exports = async (req, res) => {
   const e = process.env, { SUPABASE_URL: url, SUPABASE_SERVICE_KEY: key } = e;
@@ -46,7 +46,9 @@ module.exports = async (req, res) => {
       `<div style="font-family:Arial,sans-serif;max-width:560px;color:#1d1a14;line-height:1.55">
        <p>Dear ${first},</p>
        <p>${wl ? `Thank you for applying. All ${CAP} Founding places are taken, so you're first in line on the waiting list. If a place opens, or when the next cohort starts, you'll hear from me first.` : `Thank you for applying. <b>Your place in the Founding 50 is reserved — you are #${pos} of ${CAP}.</b>`}</p>
-       <p>Over 90 days we'll work through the method together: <b>Map → Automate → Govern → Monetise</b>. I'll email you the start date and the Zoom link for our first live session.</p>
+       <p>Over 90 days we'll work through the method together: <b>Map → Automate → Govern → Monetise</b>.</p>
+       ${wl ? "" : `<p><b>We start on Thursday 10 December at 7pm WAT (6pm UK)</b>, then meet live on Zoom every Thursday at the same time for 12 sessions, with a break over Christmas and New Year. The last session is on 11 March 2027.<br>
+       <a href="https://www.deocoach.com/free/founding50.ics">Add all 12 sessions to your calendar</a>. The Zoom link comes by email on the morning of each session.${e.F50_WHATSAPP_LINK ? `<br>Join our Founding 50 WhatsApp group: <a href="${esc(e.F50_WHATSAPP_LINK)}">${esc(e.F50_WHATSAPP_LINK)}</a>` : ""}</p>`}
        <p><b>Start today:</b> download the free AI &amp; Automation Starter Kit and fill in your Automation Map before we meet:<br>
        <a href="https://www.deocoach.com/free/ai-automation-starter-kit.html">The AI &amp; Automation Starter Kit</a> · <a href="https://www.deocoach.com/free/automation-map-worksheet.html">The Automation Map</a></p>
        <p>Activating the future with you,<br><b>Coach David Adeoye Abodunrin</b><br>Founder, DeoCoach · <a href="https://www.deocoach.com">deocoach.com</a></p></div>`);

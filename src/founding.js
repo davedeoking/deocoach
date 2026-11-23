@@ -33,7 +33,7 @@ V.founding50=()=>{const done=S.f50||F50.res,me=S.profile||{},c=typeof cityById==
    <li><b>Pay it forward</b>: share one thing you learned with another coach.</li></ul>
    <p class="small">Free means free: no card, no catch. Places are reserved in the order applications arrive.</p></div></div>
  <div class="card f50form" id="apply">${done?`<div class="kicker">${done.status==="waitlist"?"YOU'RE ON THE WAITING LIST":"YOUR PLACE IS RESERVED"}</div><h2 style="margin:.3rem 0">${done.status==="waitlist"?"You're first in line for the next cohort.":`You are #${done.position} of ${done.cap}.`}</h2>
-   <p>Check your inbox for a confirmation from coachdeo@deocoach.com. David will email the start date and the Zoom link.</p><p><b>Start today:</b></p>
+   <p>Check your inbox for a confirmation from coachdeo@deocoach.com. We start on Thursday 10 December at 7pm WAT; the Zoom link comes by email on the morning of each session. <a href="free/founding50.ics" download>Add all 12 sessions to your calendar</a>.</p><p><b>Start today:</b></p>
    <div class="flex" style="gap:10px;flex-wrap:wrap"><a class="btn" href="free/ai-automation-starter-kit.html" target="_blank" rel="noopener">Open the Starter Kit ▸</a><a class="btn ghost" href="free/automation-map-worksheet.html" target="_blank" rel="noopener">Fill in your Automation Map</a><a class="btn ghost" href="#free">All free tools</a></div>`
  :`<h2 style="margin-top:0">Apply for your place</h2>${f50Left()===0?`<p class="note">All 50 places are taken — apply to join the waiting list for the next cohort.</p>`:""}
   <form onsubmit="f50Apply(event)" class="grid g2" style="gap:12px">
@@ -48,9 +48,10 @@ V.founding50=()=>{const done=S.f50||F50.res,me=S.profile||{},c=typeof cityById==
    <label class="flex small" style="grid-column:1/-1;gap:8px;align-items:flex-start;text-transform:none;flex-wrap:nowrap"><input type="checkbox" id="fcok" style="flex:none;margin-top:3px"> I agree that DeoCoach may store these details to run the Founding 50 and email me about it and about weekly opportunities. I can unsubscribe at any time.</label>
    <div style="grid-column:1/-1" class="flex"><button class="btn" id="fcgo" type="submit">Reserve my place ▸</button>${f50Meter()}</div>
    ${F50.err?`<p class="note" style="grid-column:1/-1">${esc(F50.err)}</p>`:""}</form>`}</div>
+${f50Schedule()}
  <div class="card"><h2>Questions</h2>
   <p><b>Is it really free?</b> Yes. The Founding 50 is my thank-you to the community. No card is needed.</p>
-  <p><b>When does it start?</b> The start date and Zoom link go by email to everyone with a reserved place.</p>
+  <p><b>When does it start?</b> Thursday 10 December 2026 at 7pm WAT (6pm UK), then every Thursday for 12 sessions, with a break over Christmas and New Year. The Zoom link is emailed on the morning of each session.</p>
   <p><b>Do I need to be technical?</b> No. If you can use WhatsApp and email, you can do this.</p>
   <p><b>What if I'm not a coach?</b> Trainers, facilitators, mentors, speakers and consultants are welcome — the method is the same.</p>
   <p><b>What happens to my details?</b> They're used only to run the Founding 50 and send you DeoCoach emails you can leave at any time. They're never sold or shared.</p></div>`;};
