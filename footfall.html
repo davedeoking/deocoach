@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>DeoCoach · Footfall</title>
+<link rel="icon" href="/icon-192.png">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0A0E22;--card:#121735;--line:rgba(233,185,73,.22);--gold:#E9B949;--gold2:#F5D27A;--ink:#F5EBD7;--mute:#B9AE97;--bar:#E9B949;--track:rgba(233,185,73,.12)}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 Inter,system-ui,sans-serif}
+.wrap{max-width:1180px;margin:0 auto;padding:24px 20px 60px}
+header{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:20px}
+.brand{display:flex;align-items:center;gap:12px}.brand img{width:44px;height:44px}
+.brand b{font-family:Cinzel,serif;letter-spacing:.2em;color:var(--gold);font-size:18px;display:block}.brand span{font-size:12px;color:var(--mute)}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:999px;overflow:hidden}
+.seg button{background:none;border:0;color:var(--ink);padding:10px 16px;font:600 13px Inter;cursor:pointer;min-height:44px}
+.seg button.on{background:var(--gold);color:#1a1200}
+.btn{background:var(--gold);color:#1a1200;border:0;border-radius:999px;padding:11px 18px;font:700 14px Inter;cursor:pointer;min-height:44px}
+.ghost{background:none;color:var(--gold2);border:1px solid var(--line)}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:16px}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px 16px}
+.kpi .l{font-size:11px;letter-spacing:.16em;color:var(--mute);text-transform:uppercase}.kpi .v{font-size:30px;font-weight:700;color:var(--gold2);line-height:1.2}.kpi .s{font-size:12px;color:var(--mute)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px 18px}
+.card h2{margin:0 0 10px;font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--gold)}
+.row{display:grid;grid-template-columns:minmax(0,1fr) 46px;gap:10px;align-items:center;padding:5px 0}
+.row .n{font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.row .bw{grid-column:1/2;height:8px;background:var(--track);border-radius:4px;overflow:hidden;margin-top:3px}
+.row .b{height:100%;background:var(--bar);border-radius:4px}
+.row .c{text-align:right;font-weight:700;color:var(--ink);font-variant-numeric:tabular-nums}
+.empty{color:var(--mute);font-size:14px}
+#chart{width:100%;height:220px;display:block}
+.tip{position:fixed;pointer-events:none;background:#0A0E22;border:1px solid var(--gold);color:var(--ink);padding:6px 10px;border-radius:8px;font-size:13px;display:none;z-index:9}
+.gate{max-width:420px;margin:12vh auto;background:var(--card);border:1px solid var(--line);border-radius:20px;padding:26px}
+.gate input{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--line);background:#0A0E22;color:var(--ink);font:500 15px Inter;margin:8px 0 14px}
+.note{font-size:12px;color:var(--mute);margin-top:18px}
+.live{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--mute)}.dot{width:8px;height:8px;border-radius:50%;background:#3DD6C6}
+</style>
+</head>
+<body>
+<div id="app" class="wrap"></div>
+<div class="tip" id="tip"></div>
+<script>
+const PAGES={home:"Command Centre",start:"Start here",atlas:"Horizon Atlas",industry:"Industry Intelligence",events:"Events Radar",bodies:"Professional Bodies",academies:"Coaching Academies",bizdev:"Budget & Pipeline",minds:"City Minds",opps:"Opportunity Desk",fas:"Future Activation",profile:"My profile",briefing:"Briefing",mentor:"Supervisor Desk"};
+const SRC={direct:"Direct / typed / app",whatsapp:"WhatsApp",linkedin:"LinkedIn",facebook:"Facebook",instagram:"Instagram",x:"X (Twitter)",google:"Google",email:"Email",zoom:"Zoom",internal:"DeoCoach link"};
+const PRO={coach:"Coach",trainer:"Trainer",facilitator:"Facilitator",mentor:"Mentor",speaker:"Speaker",consultant:"Consultant"};
+let days=+(sessionStorage.getItem("ffd")||7),timer=null,data=null;
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"})[c]);
+const key=()=>sessionStorage.getItem("ffk")||"";
+function gate(msg){document.getElementById("app").innerHTML=`<div class="gate"><div class="brand"><img src="/brand/crest.png" alt=""><div><b>FOOTFALL</b><span>DeoCoach · private</span></div></div><p style="margin:18px 0 0">Enter your admin key (the CRON_SECRET phrase you set in Vercel).</p><form onsubmit="event.preventDefault();sessionStorage.setItem('ffk',document.getElementById('k').value);load()"><label for="k" class="note" style="display:block;margin:12px 0 0">Admin key</label><input id="k" type="password" autocomplete="current-password" required><button class="btn" type="submit">Open footfall</button></form>${msg?`<p style="color:#ffb4a8">${esc(msg)}</p>`:""}</div>`;}
+async function load(){if(!key())return gate();
+ try{const r=await fetch("/api/footfall?days="+days,{headers:{"x-admin-key":key()}});
+  if(r.status===401){sessionStorage.removeItem("ffk");return gate("That key didn't match.");}
+  const j=await r.json();if(!r.ok)return render(null,j.error||"Not available yet.");data=j;render(j);}
+ catch(e){render(null,"Couldn't reach the server.");}
+ clearTimeout(timer);timer=setTimeout(load,60000);}
+function list(items,map,empty){if(!items||!items.length)return `<p class="empty">${empty||"No visits yet."}</p>`;const mx=Math.max(...items.map(x=>x.v));
+ return items.map(x=>`<div class="row"><div><div class="n" title="${esc(map&&map[x.k]||x.k)}">${esc(map&&map[x.k]||x.k)}</div><div class="bw"><div class="b" style="width:${Math.max(3,x.v/mx*100)}%"></div></div></div><div class="c">${x.v}</div></div>`).join("");}
+function render(j,err){const t=j?j.totals:{};const v=t.visit||0,s=t.sub||0;
+ document.getElementById("app").innerHTML=`<header><div class="brand"><img src="/brand/crest.png" alt="DeoCoach crest"><div><b>FOOTFALL</b><span>Who is visiting deocoach.com, from where · <span class="live"><span class="dot"></span> refreshes every minute</span></span></div></div>
+ <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center"><div class="seg" role="group" aria-label="Date range">${[1,7,30,90].map(d=>`<button class="${d===days?"on":""}" onclick="days=${d};sessionStorage.setItem('ffd',${d});load()">${d===1?"Today":d+" days"}</button>`).join("")}</div><button class="btn ghost" onclick="load()">Refresh</button><button class="btn ghost" onclick="sessionStorage.removeItem('ffk');gate()">Lock</button></div></header>
+ ${err?`<div class="card"><p>${esc(err)}</p><p class="note">If this says the table is missing, the footfall table still needs creating in Supabase.</p></div>`:`
+ <div class="kpis">
+  <div class="kpi"><div class="l">Visits</div><div class="v">${v}</div><div class="s">site opens</div></div>
+  <div class="kpi"><div class="l">Page views</div><div class="v">${(t.view||0)+v}</div><div class="s">${v?((t.view||0)/v+1).toFixed(1):"0"} pages per visit</div></div>
+  <div class="kpi"><div class="l">Cities</div><div class="v">${j.cities}</div><div class="s">${j.countries} countries</div></div>
+  <div class="kpi"><div class="l">Said who they are</div><div class="v">${t.gate||0}</div><div class="s">entered via the welcome card</div></div>
+  <div class="kpi"><div class="l">Subscribed</div><div class="v">${s}</div><div class="s">${v?(s/v*100).toFixed(1):"0.0"}% of visits</div></div>
+  <div class="kpi"><div class="l">App installs</div><div class="v">${t.install||0}</div><div class="s">added to home screen</div></div>
+ </div>
+ <div class="card" style="margin-bottom:14px"><h2>Visits per day</h2><svg id="chart" role="img" aria-label="Visits per day"></svg></div>
+ <div class="grid">
+  <div class="card"><h2>Top cities</h2>${list(j.byCity)}</div>
+  <div class="card"><h2>Countries</h2>${list(j.byCountry)}</div>
+  <div class="card"><h2>Where they came from</h2>${list(j.bySource,SRC)}</div>
+  <div class="card"><h2>Pages opened</h2>${list(j.byPage,PAGES)}</div>
+  <div class="card"><h2>Professions chosen</h2>${list(j.byPro,PRO,"No one has used the welcome card yet.")}</div>
+  <div class="card"><h2>Edition &amp; device</h2>${list((j.byEdition||[]).map(x=>({k:x.k==="africa"?"Africa Edition":"Global Edition",v:x.v})).concat((j.byDevice||[]).map(x=>({k:x.k[0].toUpperCase()+x.k.slice(1),v:x.v}))))}</div>
+ </div>
+ <p class="note">Counted without cookies or personal data: city and country come from the network location of each visit, never an address or a name. Visitors who switch on Do Not Track are not counted. Share links with ?src=parley (or any word) to see that source by name.</p>`}`;
+ if(j)chart(j.daily);}
+function chart(d){const el=document.getElementById("chart");if(!el)return;const W=el.clientWidth||900,H=220,pl=34,pr=12,pt=14,pb=26,n=d.length,mx=Math.max(4,...d.map(x=>x.v));const top=Math.ceil(mx/4)*4;
+ const x=i=>pl+(n<2?0:i*(W-pl-pr)/(n-1)),y=v=>pt+(H-pt-pb)*(1-v/top);
+ let g="";for(let k=0;k<=4;k++){const val=top*k/4,yy=y(val);g+=`<line x1="${pl}" x2="${W-pr}" y1="${yy}" y2="${yy}" stroke="rgba(233,185,73,.12)"/><text x="${pl-8}" y="${yy+4}" fill="#B9AE97" font-size="11" text-anchor="end">${val}</text>`;}
+ const step=Math.ceil(n/8);d.forEach((p,i)=>{if(i%step===0||i===n-1)g+=`<text x="${x(i)}" y="${H-6}" fill="#B9AE97" font-size="11" text-anchor="${i===n-1&&n>1?"end":i===0?"start":"middle"}">${new Date(p.d+"T00:00:00Z").toLocaleDateString("en-GB",{day:"numeric",month:"short",timeZone:"UTC"})}</text>`;});
+ const path=d.map((p,i)=>`${i?"L":"M"}${x(i)},${y(p.v)}`).join("");
+ g+=`<path d="${path}" fill="none" stroke="#E9B949" stroke-width="2" stroke-linejoin="round"/>`;
+ if(n===1)g+=`<circle cx="${x(0)}" cy="${y(d[0].v)}" r="5" fill="#E9B949" stroke="#121735" stroke-width="2"/>`;
+ g+=`<line id="cx" y1="${pt}" y2="${H-pb}" stroke="#F5D27A" stroke-dasharray="3 3" opacity="0"/><circle id="cd" r="5" fill="#E9B949" stroke="#121735" stroke-width="2" opacity="0"/><rect x="${pl}" y="0" width="${W-pl-pr}" height="${H}" fill="transparent" id="hit"/>`;
+ el.setAttribute("viewBox",`0 0 ${W} ${H}`);el.innerHTML=g;const tip=document.getElementById("tip"),cx=el.querySelector("#cx"),cd=el.querySelector("#cd");
+ el.querySelector("#hit").addEventListener("mousemove",e=>{const r=el.getBoundingClientRect(),px=(e.clientX-r.left)*W/r.width;const i=Math.max(0,Math.min(n-1,Math.round((px-pl)/((W-pl-pr)/Math.max(1,n-1)))));const p=d[i];
+  cx.setAttribute("x1",x(i));cx.setAttribute("x2",x(i));cx.setAttribute("opacity",1);cd.setAttribute("cx",x(i));cd.setAttribute("cy",y(p.v));cd.setAttribute("opacity",1);
+  tip.style.display="block";tip.style.left=(e.clientX+12)+"px";tip.style.top=(e.clientY-36)+"px";tip.innerHTML=`<b>${p.v}</b> visit${p.v===1?"":"s"} · ${new Date(p.d+"T00:00:00Z").toLocaleDateString("en-GB",{weekday:"short",day:"numeric",month:"short",timeZone:"UTC"})}`;});
+ el.querySelector("#hit").addEventListener("mouseleave",()=>{tip.style.display="none";cx.setAttribute("opacity",0);cd.setAttribute("opacity",0);});}
+window.addEventListener("resize",()=>{if(data)chart(data.daily);});
+load();
+</script>
+</body>
+</html>

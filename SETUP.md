@@ -25,6 +25,12 @@ create table if not exists public.deocoach_intel (
   score int default 1, seen int default 1, votes jsonb default '{}'::jsonb, status text default 'active',
   first_seen timestamptz default now(), last_seen timestamptz default now());
 create table if not exists public.deocoach_intel_state (k text primary key, v jsonb);
+create table if not exists public.deocoach_hits (
+  id bigint generated always as identity primary key, at timestamptz default now(), kind text, city text, region text, country text,
+  path text, src text, pro text, ed text, dev text, lang text);
+create index if not exists deocoach_hits_at on public.deocoach_hits (at);
+alter table public.deocoach_hits enable row level security;
+
 alter table public.deocoach_intel enable row level security;
 alter table public.deocoach_intel_state enable row level security;
 alter table public.deocoach_translations enable row level security;
@@ -47,3 +53,7 @@ Rebuild after editing anything in `src/`: `python3 src/build.py`
 - Every re-sighting raises an item's `seen` and `score`; coaches' votes (confirm +2, attended +2, useful +1, wrong −3) move the score; items at −3 or below are hidden; ended items are retired.
 - Confirmed date updates automatically replace the curated "expected" dates in the Events Radar and the Professional Bodies Map.
 - Needs SUPABASE_URL, SUPABASE_SERVICE_KEY, ANTHROPIC_API_KEY; set CRON_SECRET to protect the harvester.
+
+
+## Footfall (visitor counting)
+`/api/hit` records each visit anonymously (city/country from Vercel geo headers, page, source, profession, edition, device; no IP, no cookies; Do Not Track respected). The private report is at **/footfall** — unlock it with the `CRON_SECRET` phrase. Tag shared links with `?src=parley` (or any word) to name the source.
