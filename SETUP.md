@@ -99,3 +99,15 @@ create table if not exists public.deocoach_coaches (
 alter table public.deocoach_coaches enable row level security;
 ```
 Public page deocoach.com/coaches · coaches apply at deocoach.com/list-yourself · David approves on Footfall. Emails and phones are never public; client messages are relayed by email (reply-to the client).
+
+
+## Founding 50 priority codes (LCAN members and ACW participants) — 23 Nov 2026
+```sql
+alter table public.deocoach_founding50 add column if not exists code text, add column if not exists via text;
+create table if not exists public.deocoach_f50codes (code text primary key, batch text, kind text, created_at timestamptz default now(), used_at timestamptz, name text, email text);
+alter table public.deocoach_f50codes enable row level security;
+```
+- Batches loaded 23 Nov 2026: F50-LCAN-2026 (300 codes, LCAN50-XXXXXX) and F50-ACW-2026 (300 codes, ACW50-XXXXXX). Code lists are kept OUT of this repo (CSV given to David).
+- Each code works once. An LCAN Pro voucher (LCAN-XXXX-XXXX) also counts as an LCAN code (once for the Founding 50).
+- F50_RESERVED (Vercel variable, default 20): places held for code holders. Without a code, applicants are confirmed only while more than the remaining held places are free.
+- Personal link that pre-fills the code: https://www.deocoach.com/?code=ACW50-XXXXXX#founding50

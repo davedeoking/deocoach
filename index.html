@@ -2179,14 +2179,15 @@ const FREEBIES=[{"slug": "ai-automation-starter-kit", "kind": "Starter Kit", "ti
 
 // ===== The Founding 50 and the Free Toolkit =====
 let F50={cap:50,taken:null,res:null,busy:false,err:""};
-async function f50Load(){try{const r=await fetch("/api/founding50");if(r.ok){const j=await r.json();F50.cap=j.cap;F50.taken=j.taken;}}catch(e){}if(location.hash==="#founding50"||location.hash==="#home"||location.hash===""||location.hash==="#free")render();}
+async function f50Load(){try{const r=await fetch("/api/founding50");if(r.ok){const j=await r.json();F50.cap=j.cap;F50.taken=j.taken;F50.resLeft=j.reservedLeft;F50.openLeft=j.openLeft;F50.res0=j.reserved;}}catch(e){}if(location.hash==="#founding50"||location.hash==="#home"||location.hash===""||location.hash==="#free")render();}
+function f50UrlCode(){try{const q=(location.hash.split('?')[1]||location.search.slice(1));return new URLSearchParams(q).get('code')||'';}catch(e){return '';}}
 function f50Left(){return F50.taken==null?null:Math.max(0,F50.cap-F50.taken);}
 function f50Meter(big){const l=f50Left();if(l==null)return `<div class="small muted">Checking places…</div>`;const pct=Math.min(100,(F50.taken/F50.cap)*100);
- return `<div class="f50m ${big?"big":""}"><div class="f50n"><b>${l}</b> of ${F50.cap} places left</div><div class="f50bar" role="img" aria-label="${F50.taken} of ${F50.cap} places taken"><div style="width:${pct}%"></div></div></div>`;}
+ return `<div class="f50m ${big?"big":""}"><div class="f50n"><b>${l}</b> of ${F50.cap} places left${F50.resLeft?` · ${F50.resLeft} held for LCAN &amp; ACW codes`:""}</div><div class="f50bar" role="img" aria-label="${F50.taken} of ${F50.cap} places taken"><div style="width:${pct}%"></div></div></div>`;}
 async function f50Apply(ev){ev.preventDefault();if(F50.busy)return;const g=id=>document.getElementById(id);
  if(!g("fcok").checked){F50.err="Please tick the consent box.";render();return;}
  F50.busy=true;F50.err="";const btn=g("fcgo");if(btn)btn.textContent="Reserving your place…";
- const body={name:g("fcn").value,email:g("fce").value,phone:g("fcp").value,city:g("fcc").value,country:g("fcy").value,pro:g("fcr").value,practice:g("fcpr").value,wants:g("fcw").value,consent:true};
+ const body={code:(g("fcode")||{}).value||"",name:g("fcn").value,email:g("fce").value,phone:g("fcp").value,city:g("fcc").value,country:g("fcy").value,pro:g("fcr").value,practice:g("fcpr").value,wants:g("fcw").value,consent:true};
  try{const r=await fetch("/api/founding50",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify(body)});const j=await r.json();
   if(!r.ok){F50.err=j.error||"Something went wrong — please try again.";}else{F50.res=j;F50.taken=j.position;S.f50=j;S.subbed=S.subbed||body.email;save();track("sub",{p:"founding50"});}}
  catch(e){F50.err="Couldn't reach the server — please try again.";}F50.busy=false;render();}
@@ -2222,6 +2223,7 @@ V.founding50=()=>{const done=S.f50||F50.res,me=S.profile||{},c=typeof cityById==
    <div><label for="fcr">I am a…</label><select id="fcr">${PROS.map(p=>`<option value="${p.k}" ${PRO().k===p.k?"selected":""}>${p.n}</option>`).join("")}</select></div>
    <div><label for="fcc">City</label><input id="fcc" autocomplete="address-level2" value="${esc(c?c.n:"")}"></div>
    <div><label for="fcy">Country</label><input id="fcy" autocomplete="country-name" value="${esc(c?c.c:"")}"></div>
+   <div style="grid-column:1/-1"><label for="fcode">LCAN or Africa Coaching Week code (optional): priority place</label><input id="fcode" autocomplete="off" placeholder="e.g. LCAN50-1A2B3C or ACW50-1A2B3C" value="${esc(f50UrlCode())}" style="text-transform:uppercase;letter-spacing:.06em"><div class="small muted" style="margin-top:4px">LCAN members and ACW participants get a unique code. ${F50.res0||20} places are held for code holders.</div></div>
    <div style="grid-column:1/-1"><label for="fcpr">Your practice in one line</label><input id="fcpr" maxlength="300" placeholder="e.g. Executive coach for bank managers in Lagos, 3 years"></div>
    <div style="grid-column:1/-1"><label for="fcw">What would you most like to automate or grow?</label><textarea id="fcw" rows="3" maxlength="600" placeholder="e.g. booking and reminders, session notes, LinkedIn content, proposals…"></textarea></div>
    <label class="flex small" style="grid-column:1/-1;gap:8px;align-items:flex-start;text-transform:none;flex-wrap:nowrap"><input type="checkbox" id="fcok" style="flex:none;margin-top:3px"> I agree that DeoCoach may store these details to run the Founding 50 and email me about it and about weekly opportunities. I can unsubscribe at any time.</label>
