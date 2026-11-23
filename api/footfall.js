@@ -18,7 +18,7 @@ module.exports = async (req, res) => {
       const b = await r.json(); rows = rows.concat(b); if (b.length < 1000) break;
     }
   } catch (e) { return res.status(502).json({ error: "upstream" }); }
-  const t = { visit: 0, view: 0, gate: 0, sub: 0, install: 0 }, day = {}, city = {}, ctry = {}, src = {}, page = {}, pro = {}, ed = {}, dev = {};
+  const t = { visit: 0, view: 0, gate: 0, sub: 0, install: 0 }, day = {}, city = {}, ctry = {}, src = {}, page = {}, pro = {}, ed = {}, dev = {}, subAt = {};
   for (let i = 0; i < days; i++) { const d = new Date(since.getTime() + i * 864e5); day[d.toISOString().slice(0, 10)] = 0; }
   const inc = (m, k) => { if (k) m[k] = (m[k] || 0) + 1; };
   for (const h of rows) {
@@ -30,7 +30,8 @@ module.exports = async (req, res) => {
     }
     if (h.kind === "visit" || h.kind === "view") inc(page, h.path);
     if (h.kind === "gate") inc(pro, h.pro);
+    if (h.kind === "sub") inc(subAt, h.path);
   }
   res.json({ days, since: since.toISOString(), totals: t, cities: Object.keys(city).length, countries: Object.keys(ctry).length,
-    daily: Object.entries(day).map(([d, v]) => ({ d, v })), byCity: top(city, 20), byCountry: top(ctry), bySource: top(src), byPage: top(page), byPro: top(pro, 6), byEdition: top(ed, 2), byDevice: top(dev, 3) });
+    daily: Object.entries(day).map(([d, v]) => ({ d, v })), byCity: top(city, 20), byCountry: top(ctry), bySource: top(src), byPage: top(page), byPro: top(pro, 6), byEdition: top(ed, 2), byDevice: top(dev, 3), bySubAt: top(subAt, 6) });
 };

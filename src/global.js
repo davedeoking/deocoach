@@ -122,9 +122,9 @@ function gateRefresh(){document.querySelectorAll(".gwrap").forEach(w=>w.innerHTM
 function proTap(k){const P=S.pros,i=P.indexOf(k);if(i<0)P.unshift(k);else if(i>0){P.splice(i,1);P.unshift(k);}else if(P.length>1)P.shift();save();}
 function gatePick(k){proTap(k);gateRefresh();}
 function gateEd(k){if(!EDS[k])return;S.ed=k;applyEdition();if(typeof VIEWSTATE!=="undefined"){VIEWSTATE.rot=edRot();VIEWSTATE.k=1;}if(S.sonar)S.sonar.city=null;save();gateRefresh();}
-function gateEnter(quiet){const ge=document.getElementById("gsem"),gk=document.getElementById("gsok");if(ge&&ge.value.trim()&&gk&&gk.checked)quickSub(ge.value,"weekly");if(document.querySelector("#intro .gwrap"))track("gate");if(!quiet&&typeof PSND!=="undefined"&&!PSND.muted)PSND.welcome();const ov=document.getElementById("whoov");if(ov){ov.classList.add("out");setTimeout(()=>ov.remove(),500);}if(window._introEnd)window._introEnd();render();}
+function gateEnter(quiet){const ge=document.getElementById("gsem"),gk=document.getElementById("gsok");if(ge&&ge.value.trim()&&gk&&gk.checked)quickSub(ge.value,"weekly","gate");if(document.querySelector("#intro .gwrap"))track("gate");if(!quiet&&typeof PSND!=="undefined"&&!PSND.muted)PSND.welcome();const ov=document.getElementById("whoov");if(ov){ov.classList.add("out");setTimeout(()=>ov.remove(),500);}if(window._introEnd)window._introEnd();render();setTimeout(subBar,900);}
 function openWho(){if(document.getElementById("whoov"))return;const o=document.createElement("div");o.id="whoov";o.className="whoov";o.innerHTML=`<div class="gwrap" data-intro="0"></div>`;o.onclick=()=>gateEnter(true);document.body.appendChild(o);gateRefresh();}
-function whoLabel(){const b=document.getElementById("whobtn");if(b)b.innerHTML=`${PRO().ic} ${PRO().n} · ${S.ed==="africa"?"Africa":"Global"}`;b.title=`I am a ${proLine()} · ${ED().name} — tap to change`;}
+function whoLabel(){setTimeout(subBar,0);const b=document.getElementById("whobtn");if(b)b.innerHTML=`${PRO().ic} ${PRO().n} · ${S.ed==="africa"?"Africa":"Global"}`;b.title=`I am a ${proLine()} · ${ED().name} — tap to change`;}
 
 // ---- footfall: anonymous visit counting (no cookies, no identifiers; respects Do Not Track) ----
 function track(k,extra){try{if(navigator.doNotTrack==="1"||window.doNotTrack==="1"||navigator.webdriver)return;const q=new URLSearchParams(location.search);
@@ -135,9 +135,9 @@ track("visit");window.addEventListener("hashchange",()=>track("view"));
 // ---- quick subscribe: weekly opportunities by email, from the welcome card or the header ----
 function subCountry(){const c=typeof cityById==="function"&&S.profile&&cityById(S.profile.cityId);return c?c.c:(S.ed==="africa"?"Nigeria":"United Kingdom");}
 function subKw(){return ({coach:"coaching leadership training",trainer:"training workshop capacity building",facilitator:"facilitation workshop strategy",mentor:"mentoring programme",speaker:"keynote speaker conference",consultant:"consultancy advisory"})[PRO().k];}
-async function quickSub(email,cadence){email=String(email||"").trim();if(!/^[^@\s]+@[^@\s]+\.[a-z]{2,}$/i.test(email))return "Please enter a valid email.";
+async function quickSub(email,cadence,where){email=String(email||"").trim();if(!/^[^@\s]+@[^@\s]+\.[a-z]{2,}$/i.test(email))return "Please enter a valid email.";
  try{const r=await fetch("/api/subscribe",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({email,consent:true,countries:[subCountry()],kw:subKw(),cadence:cadence||"weekly"})});
-  if(!r.ok)return "Couldn't subscribe just now — please try again.";S.subbed=email;save();track("sub");return "";}catch(e){return "Couldn't subscribe just now — please try again.";}}
+  if(!r.ok)return "Couldn't subscribe just now — please try again.";S.subbed=email;S.subHide=0;save();track("sub",{p:where||"modal"});const b=document.getElementById("subbar");if(b)b.remove();return "";}catch(e){return "Couldn't subscribe just now — please try again.";}}
 function openAlerts(){if(document.getElementById("subov"))return;const o=document.createElement("div");o.id="subov";o.className="whoov";
  o.innerHTML=`<div class="gwrap"><div class="gcard subcard" onclick="event.stopPropagation()"><div class="gbody"><div class="gk">FREE · ${esc(ED().short.toUpperCase())}</div><h2>Get your opportunities by email</h2>
  <p class="gp">Conferences, tenders, calls for speakers and briefs for ${esc(PRO().many)} in ${esc(subCountry())}, chosen by DeoCoach's intelligence engine. Unsubscribe in one click.</p>
@@ -151,3 +151,20 @@ async function qsGo(){const m=document.getElementById("qsmsg");if(!document.getE
  m.textContent="Subscribing…";const err=await quickSub(document.getElementById("qsem").value,document.getElementById("qsd").classList.contains("on")?"daily":"weekly");
  if(err){m.textContent=err;return;}m.textContent="You're in. Your first opportunities arrive with the next digest.";setTimeout(closeAlerts,1800);}
 window.addEventListener("appinstalled",()=>track("install"));
+
+// ---- the sticky subscribe bar, the timed invitation and the soft unlock on results ----
+let _icnt=null;async function intelCount(){if(_icnt!==null)return _icnt;_icnt=0;try{const r=await fetch("/api/intel");const j=await r.json();const wk=Date.now()-7*864e5;_icnt=(j.items||[]).filter(x=>new Date(x.first_seen||0).getTime()>wk).length;}catch(e){}return _icnt;}
+function subBarOff(){return !!S.subbed||(S.subHide&&S.subHide>Date.now())||!!document.getElementById("intro");}
+async function subBar(){if(subBarOff()){const b=document.getElementById("subbar");if(b)b.remove();document.body.classList.remove("hasbar");return;}document.body.classList.add("hasbar");
+ let b=document.getElementById("subbar");if(!b){b=document.createElement("div");b.id="subbar";b.setAttribute("role","region");b.setAttribute("aria-label","Free opportunity emails");document.body.appendChild(b);requestAnimationFrame(()=>b.classList.add("in"));}
+ const n=await intelCount();
+ b.innerHTML=`<div class="sbin"><div class="sbt"><b>🔔 Free every week:</b> conferences, tenders and calls for ${esc(PRO().many)} in ${esc(subCountry())}${n?` · <span class="sbn">${n} new found this week</span>`:""}</div>
+ <form class="sbf" onsubmit="event.preventDefault();sbGo()"><label for="sbem" class="sr">Email</label><input id="sbem" type="email" autocomplete="email" placeholder="your@email.com" required><button class="btn" type="submit">Email me free ▸</button></form>
+ <button class="sbx" aria-label="Hide for 3 days" onclick="S.subHide=Date.now()+3*864e5;save();document.getElementById('subbar').remove();document.body.classList.remove('hasbar')">✕</button></div><div class="sbc small" id="sbmsg">By subscribing you agree to receive DeoCoach opportunity emails. Unsubscribe in one click.</div>`;}
+async function sbGo(){const m=document.getElementById("sbmsg");m.textContent="Subscribing…";const e=await quickSub(document.getElementById("sbem").value,"weekly","bar");if(e)m.textContent=e;else{toast&&toast("You're in — your first opportunities arrive with the next digest");}}
+// invite once per session: after the 3rd page or 75 seconds, never on the first screen, never if hidden or subscribed
+(function(){let views=0,asked=false;try{asked=sessionStorage.getItem("dc-subask")==="1";}catch(e){}
+ const ask=()=>{if(asked||subBarOff()||document.querySelector(".whoov"))return;asked=true;try{sessionStorage.setItem("dc-subask","1");}catch(e){}openAlerts();};
+ window.addEventListener("hashchange",()=>{views++;if(views>=3)setTimeout(ask,1200);});setTimeout(ask,75000);})();
+function unlockCard(n,preview){return `<div class="unlock"><div class="ublur" aria-hidden="true">${preview.map(t=>`<div>${esc(t)}</div>`).join("")}</div><div class="ubox"><b>🔒 ${n} more opportunit${n===1?"y":"ies"} matched your search</b><p class="small" style="margin:.3rem 0 .6rem">Unlock them free — and get new ones every week by email.</p><form class="flex" style="gap:8px;flex-wrap:wrap" onsubmit="event.preventDefault();unlockGo()"><label for="ulem" class="sr">Email</label><input id="ulem" type="email" autocomplete="email" placeholder="your@email.com" required style="flex:1;min-width:200px"><button class="btn" type="submit">Unlock free ▸</button></form><p class="small" id="ulmsg" style="margin-top:6px">By unlocking you agree to receive DeoCoach opportunity emails. Unsubscribe any time.</p></div></div>`;}
+async function unlockGo(){const m=document.getElementById("ulmsg");m.textContent="Unlocking…";const e=await quickSub(document.getElementById("ulem").value,"weekly","unlock");if(e){m.textContent=e;return;}if(typeof loadOpps==="function")loadOpps();}
