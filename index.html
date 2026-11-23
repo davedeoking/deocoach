@@ -1081,10 +1081,20 @@ function openWho(){if(document.getElementById("whoov"))return;const o=document.c
 function whoLabel(){setTimeout(subBar,0);const b=document.getElementById("whobtn");if(b)b.innerHTML=`${PRO().ic} ${PRO().n} · ${S.ed==="africa"?"Africa":"Global"}`;b.title=`I am a ${proLine()} · ${ED().name} — tap to change`;}
 
 // ---- footfall: anonymous visit counting (no cookies, no identifiers; respects Do Not Track) ----
-function track(k,extra){try{if(navigator.doNotTrack==="1"||window.doNotTrack==="1"||navigator.webdriver)return;const q=new URLSearchParams(location.search);
- const d=JSON.stringify(Object.assign({k,p:((location.hash||"#home").slice(1).split(/[?&/]/)[0]||"home"),r:k==="visit"?document.referrer:"",u:k==="visit"?(q.get("utm_source")||q.get("src")||""):"",pro:(S.pros||[])[0],ed:S.ed,l:(S.lang||navigator.language||"").slice(0,8)},extra||{}));
+// Anonymous footfall. VID is random per page load and lives only in memory (never stored on the device), so it cannot follow anyone between visits.
+const VID=Math.random().toString(36).slice(2,12),T0=Date.now();let VDEPTH=0,VPAGES=1,VENG=0,VEND=0;
+function vsig(){let tz="";try{tz=Intl.DateTimeFormat().resolvedOptions().timeZone||"";}catch(e){}
+ const w=screen.width||0;return{tz,scr:w?(w<480?"phone":w<1024?"tablet":"wide"):"none",sw:w,nl:(navigator.languages||[]).length,tch:("ontouchstart" in window)?1:0};}
+function track(k,extra){try{if(navigator.doNotTrack==="1"||window.doNotTrack==="1")return;const q=new URLSearchParams(location.search);
+ const d=JSON.stringify(Object.assign({k,v:VID,wd:navigator.webdriver?1:0,p:((location.hash||"#home").slice(1).split(/[?&/]/)[0]||"home"),r:k==="visit"?document.referrer:"",u:k==="visit"?(q.get("utm_source")||q.get("src")||""):"",pro:(S.pros||[])[0],ed:S.ed,l:(S.lang||navigator.language||"").slice(0,8)},k==="visit"?vsig():{},extra||{}));
  if(navigator.sendBeacon)navigator.sendBeacon("/api/hit",new Blob([d],{type:"application/json"}));else fetch("/api/hit",{method:"POST",headers:{"content-type":"application/json"},body:d,keepalive:true});}catch(e){}}
-track("visit");window.addEventListener("hashchange",()=>track("view"));
+track("visit");window.addEventListener("hashchange",()=>{VPAGES++;track("view");});
+// A real person scrolls, taps, clicks or types. The first such action after 3 seconds marks the visit as "engaged".
+(function(){const on=()=>{if(VENG||Date.now()-T0<3000)return;VENG=1;track("eng",{secs:Math.round((Date.now()-T0)/1000)});};
+ ["pointerdown","keydown","touchstart","wheel"].forEach(e=>window.addEventListener(e,on,{passive:true}));
+ window.addEventListener("scroll",()=>{const h=document.documentElement,m=(h.scrollHeight-innerHeight)||1;VDEPTH=Math.max(VDEPTH,Math.min(100,Math.round(scrollY/m*100)));if(VDEPTH>10)on();},{passive:true});
+ const end=()=>{if(VEND)return;VEND=1;track("end",{secs:Math.round((Date.now()-T0)/1000),dep:VDEPTH,pg:VPAGES,e:VENG});};
+ document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="hidden")end();else VEND=0;});window.addEventListener("pagehide",end);})();
 
 // ---- quick subscribe: weekly opportunities by email, from the welcome card or the header ----
 function subCountry(){const c=typeof cityById==="function"&&S.profile&&cityById(S.profile.cityId);return c?c.c:(S.ed==="africa"?"Nigeria":"United Kingdom");}

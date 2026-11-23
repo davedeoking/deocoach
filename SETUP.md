@@ -29,6 +29,9 @@ create table if not exists public.deocoach_hits (
   id bigint generated always as identity primary key, at timestamptz default now(), kind text, city text, region text, country text,
   path text, src text, pro text, ed text, dev text, lang text);
 create index if not exists deocoach_hits_at on public.deocoach_hits (at);
+-- Visitor intelligence (bots, engagement, browser, time on site):
+alter table public.deocoach_hits add column if not exists vid text, add column if not exists bot text, add column if not exists browser text, add column if not exists os text, add column if not exists tz text, add column if not exists scr text, add column if not exists secs int, add column if not exists depth int, add column if not exists pages int, add column if not exists eng boolean;
+create index if not exists deocoach_hits_vid on public.deocoach_hits (vid);
 alter table public.deocoach_hits enable row level security;
 
 alter table public.deocoach_intel enable row level security;
