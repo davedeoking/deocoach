@@ -1,141 +1,146 @@
 {
- "crons": [
-  {
-   "path": "/api/digest",
-   "schedule": "0 6 * * *"
-  },
-  {
-   "path": "/api/intel?cron=1",
-   "schedule": "0 */6 * * *"
-  },
-  {
-   "path": "/api/remind?what=acw&when=eve",
-   "schedule": "0 8 24 11 *"
-  },
-  {
-   "path": "/api/remind?what=acw&when=day",
-   "schedule": "0 7 25 11 *"
-  },
-  {
-   "path": "/api/remind?what=f50",
-   "schedule": "0 8 * * 4"
-  }
- ],
- "functions": {
-  "api/events.js": {
-   "maxDuration": 60
-  },
-  "api/intel.js": {
-   "maxDuration": 60
-  },
-  "api/prep.js": {
-   "maxDuration": 60
-  }
- },
- "redirects": [
-  {
-   "source": "/coaches",
-   "destination": "/#coaches",
-   "permanent": false
-  },
-  {
-   "source": "/find-a-coach",
-   "destination": "/#coaches",
-   "permanent": false
-  },
-  {
-   "source": "/list-yourself",
-   "destination": "/#listme",
-   "permanent": false
-  },
-  {
-   "source": "/join",
-   "destination": "/#join",
-   "permanent": false
-  },
-  {
-   "source": "/signon",
-   "destination": "/#join",
-   "permanent": false
-  },
-  {
-   "source": "/coaching",
-   "destination": "/#coaching",
-   "permanent": false
-  },
-  {
-   "source": "/work-with-david",
-   "destination": "/#coaching",
-   "permanent": false
-  },
-  {
-   "source": "/membership",
-   "destination": "/#member",
-   "permanent": false
-  },
-  {
-   "source": "/acw",
-   "destination": "/#acw",
-   "permanent": false
-  },
-  {
-   "source": "/founding50",
-   "destination": "/#founding50",
-   "permanent": false
-  },
-  {
-   "source": "/free",
-   "destination": "/#free",
-   "permanent": false
-  },
-  {
-   "source": "/toolkit",
-   "destination": "/#free",
-   "permanent": false
-  },
-  {
-   "source": "/:path((?!sw\\.js$).*)",
-   "has": [
+  "crons": [
     {
-     "type": "host",
-     "value": "www.deocoach.org"
-    }
-   ],
-   "destination": "https://www.deocoach.com/:path",
-   "permanent": true
-  },
-  {
-   "source": "/:path((?!sw\\.js$).*)",
-   "has": [
+      "path": "/api/digest",
+      "schedule": "0 6 * * *"
+    },
     {
-     "type": "host",
-     "value": "deocoach.org"
-    }
-   ],
-   "destination": "https://www.deocoach.com/:path",
-   "permanent": true
-  },
-  {
-   "source": "/:path((?!sw\\.js$).*)",
-   "has": [
+      "path": "/api/intel?cron=1",
+      "schedule": "0 */6 * * *"
+    },
     {
-     "type": "host",
-     "value": "www.deocoach.app"
-    }
-   ],
-   "destination": "https://www.deocoach.com/:path",
-   "permanent": true
-  },
-  {
-   "source": "/:path((?!sw\\.js$).*)",
-   "has": [
+      "path": "/api/remind?what=acw&when=eve",
+      "schedule": "0 8 24 11 *"
+    },
     {
-     "type": "host",
-     "value": "deocoach.app"
+      "path": "/api/remind?what=acw&when=day",
+      "schedule": "0 7 25 11 *"
+    },
+    {
+      "path": "/api/remind?what=f50",
+      "schedule": "0 8 * * 4"
     }
-   ],
-   "destination": "https://www.deocoach.com/:path",
-   "permanent": true
-  }
- ]
+  ],
+  "functions": {
+    "api/events.js": {
+      "maxDuration": 60
+    },
+    "api/intel.js": {
+      "maxDuration": 60
+    },
+    "api/prep.js": {
+      "maxDuration": 60
+    }
+  },
+  "redirects": [
+    {
+      "source": "/video",
+      "destination": "/media/DeoCoach_See_the_Future_Own_It_1080p.mp4",
+      "permanent": false
+    },
+    {
+      "source": "/coaches",
+      "destination": "/#coaches",
+      "permanent": false
+    },
+    {
+      "source": "/find-a-coach",
+      "destination": "/#coaches",
+      "permanent": false
+    },
+    {
+      "source": "/list-yourself",
+      "destination": "/#listme",
+      "permanent": false
+    },
+    {
+      "source": "/join",
+      "destination": "/#join",
+      "permanent": false
+    },
+    {
+      "source": "/signon",
+      "destination": "/#join",
+      "permanent": false
+    },
+    {
+      "source": "/coaching",
+      "destination": "/#coaching",
+      "permanent": false
+    },
+    {
+      "source": "/work-with-david",
+      "destination": "/#coaching",
+      "permanent": false
+    },
+    {
+      "source": "/membership",
+      "destination": "/#member",
+      "permanent": false
+    },
+    {
+      "source": "/acw",
+      "destination": "/#acw",
+      "permanent": false
+    },
+    {
+      "source": "/founding50",
+      "destination": "/#founding50",
+      "permanent": false
+    },
+    {
+      "source": "/free",
+      "destination": "/#free",
+      "permanent": false
+    },
+    {
+      "source": "/toolkit",
+      "destination": "/#free",
+      "permanent": false
+    },
+    {
+      "source": "/:path((?!sw\\.js$).*)",
+      "has": [
+        {
+          "type": "host",
+          "value": "www.deocoach.org"
+        }
+      ],
+      "destination": "https://www.deocoach.com/:path",
+      "permanent": true
+    },
+    {
+      "source": "/:path((?!sw\\.js$).*)",
+      "has": [
+        {
+          "type": "host",
+          "value": "deocoach.org"
+        }
+      ],
+      "destination": "https://www.deocoach.com/:path",
+      "permanent": true
+    },
+    {
+      "source": "/:path((?!sw\\.js$).*)",
+      "has": [
+        {
+          "type": "host",
+          "value": "www.deocoach.app"
+        }
+      ],
+      "destination": "https://www.deocoach.com/:path",
+      "permanent": true
+    },
+    {
+      "source": "/:path((?!sw\\.js$).*)",
+      "has": [
+        {
+          "type": "host",
+          "value": "deocoach.app"
+        }
+      ],
+      "destination": "https://www.deocoach.com/:path",
+      "permanent": true
+    }
+  ]
 }
