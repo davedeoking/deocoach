@@ -34,6 +34,21 @@
  },
  "redirects": [
   {
+   "source": "/coaches",
+   "destination": "/#coaches",
+   "permanent": false
+  },
+  {
+   "source": "/find-a-coach",
+   "destination": "/#coaches",
+   "permanent": false
+  },
+  {
+   "source": "/list-yourself",
+   "destination": "/#listme",
+   "permanent": false
+  },
+  {
    "source": "/join",
    "destination": "/#join",
    "permanent": false

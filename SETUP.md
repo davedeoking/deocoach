@@ -89,3 +89,13 @@ alter table public.deocoach_vouchers enable row level security;
 ```
 Batch LCAN-2026-A (500 codes) was loaded on 23 Nov 2026. The code list is kept OUT of this repo (given to David as a CSV for LCAN).
 Redeem page: deocoach.com/lcan?code=LCAN-XXXX-XXXX · API: /api/voucher.
+
+## Find a Coach directory
+```sql
+create table if not exists public.deocoach_coaches (
+  id bigint generated always as identity primary key, created_at timestamptz default now(), status text default 'pending', featured boolean,
+  name text, email text unique, phone text, title text, pro text, city text, country text, niches text[], langs text[], formats text[], audience text[],
+  bio text, years int, rate text, photo text, linkedin text, website text, accred text, badges text[]);
+alter table public.deocoach_coaches enable row level security;
+```
+Public page deocoach.com/coaches · coaches apply at deocoach.com/list-yourself · David approves on Footfall. Emails and phones are never public; client messages are relayed by email (reply-to the client).
