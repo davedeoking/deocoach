@@ -23,10 +23,10 @@ async function f50Apply(ev){ev.preventDefault();if(F50.busy)return;const g=id=>d
 V.founding50=()=>{const done=S.f50||F50.res,me=S.profile||{},c=typeof cityById==="function"&&cityById(me.cityId);
  return `<div class="card f50hero"><div class="f50grid"><div>
   <div class="kicker">THE FOUNDING 100 · FREE · LIMITED TO 100 PLACES</div>
-  <h1 style="margin:.3rem 0 .6rem">I will personally help the first 100 coaches automate their practice.</h1>
+  <h1 style="margin:.3rem 0 .6rem">I will personally help the first 100 coaches and consultants automate their practice.</h1>
   <p class="lead">Ninety days. One method: <b>Map → Automate → Govern → Monetise</b>. Free for the Founding 100 — my thank-you to the coaching community that shaped me.</p>
   ${f50Meter(true)}
-  <p class="small" style="margin-top:.6rem">For coaches, trainers, facilitators, mentors, speakers and consultants — in Africa and worldwide.</p></div>
+  <p class="small" style="margin-top:.6rem">For coaches, consultants, trainers, facilitators, mentors and speakers — in Africa and worldwide.</p></div>
   <figure class="f50p"><img src="david/p-headshot.webp" alt="Coach David Adeoye Abodunrin"><figcaption>Coach David Adeoye Abodunrin<br><span>AI &amp; Automation Coach · Master Futurist</span></figcaption></figure></div></div>
  <div class="grid g2">
   <div class="card"><h2>What you get</h2><ul class="f50l">

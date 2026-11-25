@@ -45,7 +45,7 @@ def page(f):
 <div class="page"><div class="cover"><img class="crest" src="/brand/crest.png" alt=""><div class="k">Free from DeoCoach · {html.escape(f['kind'])}</div><h1>{html.escape(f['title'])}</h1><p>{html.escape(f['sub'])}</p>
 <div class="by"><img src="/david/p-headshot.webp" alt="Coach David Adeoye Abodunrin"><span>By Coach David Adeoye Abodunrin<br>AI &amp; Automation Coach · Master Futurist · Founder, DeoCoach</span></div></div>
 <div class="body">{f['body']}
-<div class="cta"><b>Want help putting this to work?</b> I am personally helping the <b>first 100 coaches</b> automate their practice, free, in the Founding 100 cohort. Places are limited. <a href="/#founding50">Apply at deocoach.com/#founding50</a></div></div>
+<div class="cta"><b>Want help putting this to work?</b> I am personally helping the <b>first 100 coaches and consultants</b> automate their practice, free, in the Founding 100 cohort. Places are limited. <a href="/#founding50">Apply at deocoach.com/#founding50</a></div></div>
 <div class="foot"><span>© 2026 Coach David Adeoye Abodunrin · DeoCoach · <b>Making Greatness Common</b></span><span>deocoach.com · Free to use and share with attribution</span></div></div>
 </body></html>"""
 for f in FREEBIES:

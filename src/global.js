@@ -7,7 +7,7 @@ const PROS=[
  {k:"facilitator",n:"Facilitator",many:"facilitators",act:"facilitation",ic:"◎",d:"Strategy days, retreats, workshops and group processes",kw:"facilitator OR facilitation OR workshop"},
  {k:"mentor",n:"Mentor",many:"mentors",act:"mentoring",ic:"☯",d:"Mentoring programmes, accelerators and leadership pipelines",kw:"mentoring OR mentor OR accelerator"},
  {k:"speaker",n:"Speaker",many:"speakers",act:"speaking",ic:"✷",d:"Keynotes, conferences, panels, MC and moderation",kw:"\"call for speakers\" OR keynote OR speaker"},
- {k:"consultant",n:"Consultant",many:"consultants",act:"consulting",ic:"⬡",d:"Advisory, transformation and organisational development",kw:"consultant OR consultancy OR advisory"}];
+ {k:"consultant",n:"Consultant",many:"consultants",act:"consulting",ic:"⬡",d:"Strategy, management, transformation, GRC, AI and organisational development consulting",kw:"consultant OR consultancy OR \"consulting services\" OR advisory OR \"technical assistance\""}];
 const proBy=k=>PROS.find(p=>p.k===k)||PROS[0];
 if(!Array.isArray(S.pros)||!S.pros.length)S.pros=["coach"];
 function PRO(){return proBy(S.pros[0]);}

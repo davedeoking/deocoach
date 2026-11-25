@@ -300,3 +300,56 @@ f"""<div class="box"><b>Start free, upgrade only when it pays.</b> Tool names an
 <h2>A simple starter stack</h2><ol><li>A booking link with reminders.</li><li>Video calls on the platform your clients already use.</li><li>One AI assistant, with training switched off where you can.</li><li>One folder per client, in one place.</li><li>A free email list and WhatsApp Business.</li></ol>
 <p>That's enough to run a professional practice. Add the next tool only when a task is costing you more than an hour a week.</p>""",
 "The tools for each job in your practice, with a free option first.", "🧰")
+
+# 9 ─────────────────────────────────────────────────────────────
+add("consultant-proposal-and-eoi-kit", "Toolkit", "The Consultant's Proposal & EOI Response Kit",
+"Win more consulting work: qualify the right bids, answer expressions of interest that get shortlisted, and write proposals clients say yes to.",
+"""<div class="box"><b>The promise.</b> Most consultants lose bids before they write a word: they chase the wrong ones, ignore the evaluation criteria, or send a CV where the buyer wanted evidence. This kit gives you a bid/no-bid filter, an EOI structure, a proposal template and AI prompts that do the heavy lifting.</div>
+
+<h2>Step 1 — Bid or no bid? (score in 10 minutes)</h2>
+<p>Score each line 0, 1 or 2. Bid if you score 12 or more. Between 8 and 11, bid only with a partner who fills your gaps. Under 8, walk away and spend the time on a better opportunity.</p>
+<table><tr><th>Question</th><th style="width:16%">Score (0–2)</th></tr>
+<tr class="fill"><td>Do we meet every mandatory requirement (registration, years, turnover, certifications)?</td><td></td></tr>
+<tr class="fill"><td>Have we delivered this kind of work before, and can we name it?</td><td></td></tr>
+<tr class="fill"><td>Do we know the buyer, or someone who knows them?</td><td></td></tr>
+<tr class="fill"><td>Can we field the named experts they ask for, with the right CVs?</td><td></td></tr>
+<tr class="fill"><td>Is the budget or fee ceiling workable for us?</td><td></td></tr>
+<tr class="fill"><td>Can we submit a strong response before the deadline without dropping client work?</td><td></td></tr>
+<tr class="fill"><td>Does winning this move us towards the market we want in two years?</td><td></td></tr>
+<tr class="fill"><td>Is the evaluation weighted to quality, not only to the lowest price?</td><td></td></tr>
+<tr class="fill"><td><b>Total (out of 16)</b></td><td></td></tr></table>
+
+<h2>Step 2 — Answer the Expression of Interest</h2>
+<p>An EOI decides who is shortlisted. Evaluators score against published criteria, usually firm experience, relevant assignments and key staff. Mirror their headings exactly so they can find the points.</p>
+<ol><li><b>Cover letter (one page).</b> Name the assignment and reference number, state your interest, and give three reasons you are the right firm in one sentence each.</li>
+<li><b>Firm profile (one page).</b> Legal name, registration, years in operation, offices, headcount, and the services that match this assignment. Cut everything else.</li>
+<li><b>Relevant assignments (the section that wins).</b> For each one: client, country, dates, value, your role, what you delivered and the measurable result. Put the most similar assignments first.</li>
+<li><b>Key experts.</b> Short CVs in the buyer's format, with each person's experience matched to the role they will play.</li>
+<li><b>Partners (if any).</b> Who they are, what gap they fill, and a signed letter of association.</li></ol>
+<div class="box"><b>The shortlist rule.</b> Evaluators reward evidence that is similar in sector, size and geography. "We have done exactly this, here, at this scale" beats a long list of general experience.</div>
+
+<h2>Step 3 — Write the proposal</h2>
+<table><tr><th>Section</th><th>What it must do</th></tr>
+<tr><td><b>1. Understanding</b></td><td>Restate the client's problem better than they did, including what happens if it is not solved. Show you read the terms of reference closely.</td></tr>
+<tr><td><b>2. Comments on the terms of reference</b></td><td>Respectfully point out gaps, risks or better options. This is where you show judgement.</td></tr>
+<tr><td><b>3. Approach and methodology</b></td><td>Phases, activities and outputs, each tied to an objective in their terms of reference.</td></tr>
+<tr><td><b>4. Work plan</b></td><td>A timeline by week or month, with milestones and deliverables.</td></tr>
+<tr><td><b>5. Team</b></td><td>Who does what, how many days each, and why they are the right person.</td></tr>
+<tr><td><b>6. Risks and quality</b></td><td>The five biggest risks, how you will manage them, and how you will assure quality.</td></tr>
+<tr><td><b>7. Fees</b></td><td>Clear, complete and in their format: day rates, days, expenses, taxes. No surprises.</td></tr></table>
+
+<h2>Step 4 — Price with confidence</h2>
+<ul><li><b>Build up, then check down.</b> Days × day rate + expenses + contingency, then compare with what the buyer can likely pay.</li>
+<li><b>Offer options</b> where the rules allow: a core scope, and an enhanced scope with more impact.</li>
+<li><b>Price the outcome, not the hours</b> on private-sector work: what is the result worth to the client?</li></ul>
+
+<h2>AI prompts that save hours</h2>
+<p>Remove client-confidential details before pasting anything into an AI tool, and check every output against the source documents.</p>
+<div class="prompt">You are a bid manager. From these terms of reference, list every mandatory requirement, every evaluation criterion with its weight, every deliverable and every deadline, as four tables. Then list the questions we should ask the buyer before the clarification deadline. Terms of reference: [paste]</div>
+<div class="prompt">Rewrite this past assignment as an EOI reference in under 120 words: client, country, dates, value, our role, what we delivered, and the measurable result. Make it match these evaluation criteria: [criteria]. Assignment notes: [paste]</div>
+<div class="prompt">Draft the "Understanding of the assignment" section of a consulting proposal. Restate the client's problem, why it matters now, what success looks like and the risks of doing nothing. Use the client's own terms from the terms of reference. Under 400 words. Terms of reference: [paste]</div>
+<div class="prompt">Act as a strict evaluator. Score our draft proposal against these criteria and weights, out of 100. For each criterion, say what is missing and how to add points. Criteria: [paste]. Draft: [paste]</div>
+
+<h2>Where to find the bids</h2>
+<p>The <b>Opportunity Desk</b> on DeoCoach pulls tenders, EOIs and consulting jobs from public sources, and you can switch on daily alerts for your countries. Set your profession to Consultant so the search matches consulting work. Also register on your national procurement portal and with the development banks active in your region.</p>""",
+"Qualify bids, answer EOIs that get shortlisted and write proposals that win.", "📑")

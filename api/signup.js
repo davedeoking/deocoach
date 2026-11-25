@@ -1,4 +1,4 @@
-// Sign-ups beyond the Founding 100: ACW session registration, executive coaching enquiries, membership reservations,
+// Sign-ups beyond the Founding 100: ACW session registration, executive coaching & consulting enquiries, membership reservations,
 // and bank-transfer payment notices. Stored in deocoach_signups; the person gets a confirmation and David a notification.
 // POST {kind:"acw"|"exec"|"member"|"bank", name, email, phone?, org?, role?, segment?, plan?, cycle?, currency?, ref?, note?, consent:true}
 // GET with x-admin-key (CRON_SECRET) → {rows:[…]} for the Footfall dashboard.
@@ -6,7 +6,7 @@ const { mail, esc, wrap } = require("../lib/mail");
 const { PLANS, ACW } = require("../lib/plans");
 const clip = (s, n) => String(s || "").trim().slice(0, n);
 const KINDS = ["acw", "exec", "member", "bank"];
-const SEG = { nation: "Nation or government", board: "Board or executive team", leader: "Leader or founder", coach: "Coach, trainer or advisor", org: "Organisation" };
+const SEG = { nation: "Nation or government", board: "Board or executive team", leader: "Leader or founder", coach: "Coach, trainer or advisor", consultant: "Consultant or consulting firm", consulting: "Client seeking consulting services", org: "Organisation" };
 module.exports = async (req, res) => {
   const e = process.env, { SUPABASE_URL: url, SUPABASE_SERVICE_KEY: key } = e;
   res.setHeader("Cache-Control", "no-store");
@@ -44,7 +44,7 @@ module.exports = async (req, res) => {
       acw: [`You're registered: ${ACW.title}`, `<p>Dear ${first},</p><p>You're registered for my ACW 2026 AI session, <b>${esc(ACW.title)}</b>, on <b>${ACW.day}${when ? " at " + esc(when) : ""}</b> on Zoom.</p>
         <p>${zoom ? `<b>Join on Zoom:</b> <a href="${esc(zoom)}">${esc(zoom)}</a>` : "I'll email you the Zoom link before the session."} You'll also get a reminder the day before and on the morning of the session.</p>
         <p>To get the most from it, pick one part of your practice you'd love to hand to AI, and bring it with you. If you'd like a head start, the free <a href="https://www.deocoach.com/free/ai-automation-starter-kit.html">AI &amp; Automation Starter Kit</a> is ready for you.</p>`],
-      exec: ["Thank you — your enquiry has reached Coach David", `<p>Dear ${first},</p><p>Thank you for reaching out about working together${row.org ? " with " + esc(row.org) : ""}. I read every enquiry personally and will reply within two working days.</p>
+      exec: ["Thank you — your enquiry has reached Coach David", `<p>Dear ${first},</p><p>Thank you for reaching out about coaching, consulting or advisory work together${row.org ? " with " + esc(row.org) : ""}. I read every enquiry personally and will reply within two working days.</p>
         <p>If you'd like to talk sooner, choose a time for a discovery call here: <a href="${esc(book)}">${esc(book)}</a>.</p><p>Before we speak, it helps to note the one decision or shift that matters most to you right now, and the future you are working towards.</p>`],
       member: [`Your place for ${planName} is reserved`, `<p>Dear ${first},</p><p>Your place for <b>${esc(planName)}</b> is reserved. Founding Member pricing opens shortly, and you'll be the first to hear, with the founding price locked in for as long as you stay a member.</p>
         <p>Until then, everything free on DeoCoach is yours to use: <a href="https://www.deocoach.com">deocoach.com</a>.</p>`],
@@ -52,7 +52,7 @@ module.exports = async (req, res) => {
         <p>As soon as the payment is confirmed (usually within one working day) your membership is switched on and you'll get a confirmation email.</p>`],
     }[kind];
     await mail(e, email, msg[0], wrap(msg[1]));
-    if (e.DIGEST_REPLY_TO) await mail(e, e.DIGEST_REPLY_TO, `${{ acw: "ACW registration", exec: "COACHING ENQUIRY", member: "Membership reservation", bank: "BANK TRANSFER to confirm" }[kind]}: ${name}${row.org ? " · " + row.org : ""}`,
+    if (e.DIGEST_REPLY_TO) await mail(e, e.DIGEST_REPLY_TO, `${{ acw: "ACW registration", exec: "COACHING / CONSULTING ENQUIRY", member: "Membership reservation", bank: "BANK TRANSFER to confirm" }[kind]}: ${name}${row.org ? " · " + row.org : ""}`,
       `<div style="font-family:Arial,sans-serif;line-height:1.5"><p><b>${esc(name)}</b> · <a href="mailto:${esc(email)}">${esc(email)}</a>${row.phone ? " · " + esc(row.phone) : ""}</p>
       ${row.org || row.role ? `<p>${esc(row.role || "")}${row.role && row.org ? ", " : ""}${esc(row.org || "")}</p>` : ""}${row.segment ? `<p><b>Who:</b> ${esc(SEG[row.segment])}</p>` : ""}
       ${plan ? `<p><b>Plan:</b> ${esc(planName)} ${row.cycle ? "(" + row.cycle + "ly)" : ""} ${row.amount ? (row.currency === "USD" ? "$" : "₦") + row.amount : ""} ${row.ref ? "· ref " + esc(row.ref) : ""}</p>` : ""}

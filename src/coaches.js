@@ -1,11 +1,13 @@
-// ===== Find a Coach: a clean directory of African coaches =====
-const CO_NICHES=["Executive & leadership","Career","Business & entrepreneurs","Life & personal growth","Team & organisational","Sales & performance","Women in leadership","Youth & education","Wellbeing & resilience","Relationships & family","Faith-based","AI & digital transformation","Public sector & governance","Health & medical professionals"];
+// ===== Find a Coach or Consultant: a clean directory of African coaches and consultants =====
+const CO_NICHES=["Executive & leadership","Career","Business & entrepreneurs","Life & personal growth","Team & organisational","Sales & performance","Women in leadership","Youth & education","Wellbeing & resilience","Relationships & family","Faith-based","AI & digital transformation","Public sector & governance","Health & medical professionals","Strategy & management consulting","Operations & process improvement","HR & organisational development","Project & programme management","GRC, risk & compliance","Cybersecurity & data protection","AI governance & digital strategy","Finance & investment readiness","Policy & public-sector advisory","Marketing & growth consulting"];
+const CO_CONS=new Set(CO_NICHES.slice(14));
 const CO_LANGS=["English","French","Portuguese","Arabic","Swahili","Yoruba","Hausa","Igbo","Amharic","Zulu","Afrikaans","Twi","Pidgin"];
 const CO_FORMATS=["Online","In person","Group"];
 const CO_AUD=["Individuals","Executives","Teams","Organisations","Governments"];
 const CO_AF=["Nigeria","Ghana","Kenya","South Africa","Rwanda","Uganda","Tanzania","Ethiopia","Egypt","Morocco","Côte d'Ivoire","Senegal","Cameroon","Zambia","Zimbabwe","Botswana","Namibia","Angola","Mozambique","Sierra Leone","Liberia","Gambia","Benin","Togo","Malawi","Tunisia","Algeria","DR Congo","Mauritius","United Kingdom","United States","Canada","United Arab Emirates"];
 let CO={list:null,q:"",country:"",niche:"",lang:"",format:"",pro:"",open:null,contact:null,msg:"",sent:{},applied:false,amsg:""};
-async function coLoad(){try{const r=await fetch("/api/coaches");const j=await r.json();CO.list=j.coaches||[];}catch(e){CO.list=[];}if(/^#(coaches|listme)/.test(location.hash))render();}
+async function coLoad(){try{const r=await fetch("/api/coaches");const j=await r.json();CO.list=j.coaches||[];}catch(e){CO.list=[];}if(/^#(coaches|consultants|listme)/.test(location.hash))render();}
+const coNoun=n=>CO.pro==="consultant"?(n===1?"consultant":"consultants"):(n===1?"professional":"professionals");
 coLoad();
 function coInit(n){return esc(String(n||"?").split(/\s+/).map(w=>w[0]).slice(0,2).join("").toUpperCase());}
 function coAvatar(c,big){return c.photo?`<img class="coav ${big?"big":""}" src="${esc(c.photo)}" alt="${esc(c.name)}" loading="lazy" onerror="this.outerHTML='<div class=&quot;coav ini ${big?"big":""}&quot;>${coInit(c.name)}</div>'">`:`<div class="coav ini ${big?"big":""}">${coInit(c.name)}</div>`;}
@@ -19,9 +21,9 @@ function coCard(c){return `<article class="card cocard" tabindex="0" onclick="CO
   <div class="small muted">${esc((c.formats||[]).join(" · "))}${c.langs&&c.langs.length?" · "+esc(c.langs.join(", ")):""}</div>
   <div class="cofoot"><span class="small">${c.years?esc(c.years)+" yrs":""}${c.rate?(c.years?" · ":"")+esc(c.rate):""}</span><span class="btn sm">View &amp; contact ▸</span></div></article>`;}
 function PRO_N(k){const p=(typeof PROS!=="undefined"&&PROS.find(x=>x.k===k));return p?p.n:"Coach";}
-function coRefresh(){const el=document.getElementById("cogrid");if(!el)return render();const L=(CO.list||[]).filter(coMatch);document.getElementById("cocount").textContent=`${L.length} ${L.length===1?"coach":"coaches"}`;el.innerHTML=L.length?L.map(coCard).join(""):coEmpty();}
-function coEmpty(){return (CO.list||[]).length?`<div class="card coempty"><h3>No coaches match those filters yet.</h3><p class="muted">Try fewer filters, or check back soon: new coaches are being approved every week.</p><button class="btn ghost" onclick="Object.assign(CO,{q:'',country:'',niche:'',lang:'',format:'',pro:''});render()">Clear filters</button></div>`
- :`<div class="card coempty"><h3>The directory is opening now.</h3><p class="muted">African coaches are joining and being verified. Are you a coach? Be among the first listed.</p><a class="btn" href="#listme">List yourself free ▸</a></div>`;}
+function coRefresh(){const el=document.getElementById("cogrid");if(!el)return render();const L=(CO.list||[]).filter(coMatch);document.getElementById("cocount").textContent=`${L.length} ${coNoun(L.length)}`;el.innerHTML=L.length?L.map(coCard).join(""):coEmpty();}
+function coEmpty(){return (CO.list||[]).length?`<div class="card coempty"><h3>No one matches those filters yet.</h3><p class="muted">Try fewer filters, or check back soon: new coaches and consultants are being approved every week.</p><button class="btn ghost" onclick="Object.assign(CO,{q:'',country:'',niche:'',lang:'',format:'',pro:''});render()">Clear filters</button></div>`
+ :`<div class="card coempty"><h3>The directory is opening now.</h3><p class="muted">African coaches and consultants are joining and being verified. Are you one? Be among the first listed.</p><a class="btn" href="#listme">List yourself free ▸</a></div>`;}
 async function coSend(ev){ev.preventDefault();const f=ev.target,g=n=>f.querySelector(`[name="${n}"]`).value;
  if(!f.querySelector('[name="ok"]').checked){CO.msg="Please tick the consent box.";render();return;}CO.msg="Sending…";render();
  try{const r=await fetch("/api/coaches",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({action:"contact",id:CO.open,name:g("name"),email:g("email"),phone:g("phone"),message:g("message"),consent:true})});const j=await r.json();
@@ -37,36 +39,42 @@ function coModal(){const c=(CO.list||[]).find(x=>x.id===CO.open);if(!c)return ""
   <h3 style="margin:16px 0 8px">Contact ${esc(c.name.split(" ")[0])}</h3>
   ${CO.sent[c.id]?`<p><b>Message sent.</b> ${esc(c.name.split(" ")[0])} will reply to you directly by email. A copy of the confirmation is in your inbox.</p>`
   :`<form class="grid g2" style="gap:10px" onsubmit="coSend(event)">${jcF("name","Your name","text",{req:1,val:(S.profile||{}).name})}${jcF("email","Your email","email",{req:1,val:S.subbed})}${jcF("phone","Phone or WhatsApp (optional)","tel")}<div></div>${jcF("message","What would you like help with?","textarea",{wide:1,ph:"A few lines about your goal, your organisation and your timing."})}
-   <label class="flex small" style="grid-column:1/-1;gap:8px;align-items:flex-start;text-transform:none;flex-wrap:nowrap"><input type="checkbox" name="ok" style="flex:none;margin-top:3px"> I agree that DeoCoach may pass my message and contact details to this coach so they can reply.</label>
+   <label class="flex small" style="grid-column:1/-1;gap:8px;align-items:flex-start;text-transform:none;flex-wrap:nowrap"><input type="checkbox" name="ok" style="flex:none;margin-top:3px"> I agree that DeoCoach may pass my message and contact details to this professional so they can reply.</label>
    <div style="grid-column:1/-1"><button class="btn" type="submit">Send message ▸</button></div>${CO.msg?`<p class="note" style="grid-column:1/-1">${esc(CO.msg)}</p>`:""}</form>`}
-  <p class="small muted" style="margin-top:12px">Coaches are reviewed before listing. Always agree scope and fees directly with your coach.</p></div></div></div>`;}
+  <p class="small muted" style="margin-top:12px">Every profile is reviewed before listing. Always agree scope, deliverables and fees directly with your coach or consultant.</p></div></div></div>`;}
 V.coaches=()=>{const L=CO.list==null?null:CO.list.filter(coMatch);
- return `<div class="card cohero"><div class="kicker">FIND A COACH · AFRICA</div><h1 style="margin:.3rem 0 .4rem">Find the right African coach, quickly.</h1>
-  <p class="lead">Search verified coaches, trainers, facilitators and mentors across Africa by country, speciality, language and format. Contact them directly, free.</p>
-  <div class="cosearch"><input type="search" placeholder="Search by name, city or speciality — e.g. executive Lagos, career Nairobi" value="${esc(CO.q)}" oninput="CO.q=this.value;coRefresh()" aria-label="Search coaches"></div>
+ return `<div class="card cohero"><div class="kicker">FIND A COACH OR CONSULTANT · AFRICA</div><h1 style="margin:.3rem 0 .4rem">${CO.pro==="consultant"?"Find the right African consultant, quickly.":"Find the right African coach or consultant, quickly."}</h1>
+  <p class="lead">Search verified coaches, consultants, trainers, facilitators and mentors across Africa by country, speciality, language and format. Contact them directly, free.</p>
+  <div class="seg cochips" role="group" aria-label="Show">${[["","Everyone"],["coach","Coaches"],["consultant","Consultants"]].map(([k,n])=>`<button class="${CO.pro===k?"on":""}" onclick="CO.pro='${k}';render()">${n}</button>`).join("")}</div>
+  <div class="cosearch"><input type="search" placeholder="Search by name, city or speciality — e.g. executive Lagos, strategy consultant Accra" value="${esc(CO.q)}" oninput="CO.q=this.value;coRefresh()" aria-label="Search coaches and consultants"></div>
   <div class="cofilters">${coSel("cof1","Country",CO_AF,CO.country,"country")}${coSel("cof2","Speciality",CO_NICHES,CO.niche,"niche")}${coSel("cof3","Language",CO_LANGS,CO.lang,"lang")}${coSel("cof4","Format",CO_FORMATS,CO.format,"format")}
    <label class="cosel"><span class="small muted">Professional</span><select onchange="CO.pro=this.value;coRefresh()"><option value="">Any</option>${(typeof PROS!=="undefined"?PROS:[]).map(p=>`<option value="${p.k}" ${CO.pro===p.k?"selected":""}>${esc(p.n)}</option>`).join("")}</select></label></div></div>
- <div class="flex" style="justify-content:space-between;align-items:center;margin:4px 2px 10px"><b id="cocount">${L==null?"Loading…":`${L.length} ${L.length===1?"coach":"coaches"}`}</b><a class="btn ghost sm" href="#listme">Are you a coach? List yourself free ▸</a></div>
- <div class="cogrid" id="cogrid">${L==null?`<div class="card"><p>Loading coaches…</p></div>`:L.length?L.map(coCard).join(""):coEmpty()}</div>
+ <div class="flex" style="justify-content:space-between;align-items:center;margin:4px 2px 10px"><b id="cocount">${L==null?"Loading…":`${L.length} ${coNoun(L.length)}`}</b><a class="btn ghost sm" href="#listme">Coach or consultant? List yourself free ▸</a></div>
+ <div class="cogrid" id="cogrid">${L==null?`<div class="card"><p>Loading the directory…</p></div>`:L.length?L.map(coCard).join(""):coEmpty()}</div>
  ${CO.open?coModal():""}`;};
+
+V.consultants=()=>{CO.pro="consultant";return V.coaches();};
 
 // ---- list yourself ----
 async function coApply(ev){ev.preventDefault();const f=ev.target,g=n=>{const x=f.querySelector(`[name="${n}"]`);return x?x.value:"";},chk=n=>[...f.querySelectorAll(`[name="${n}"]:checked`)].map(x=>x.value);
  if(!f.querySelector('[name="ok"]').checked){CO.amsg="Please tick the consent box.";render();return;}
- if(!chk("niches").length){CO.amsg="Please choose at least one speciality.";render();return;}CO.amsg="Sending…";render();
- const body={action:"list",name:g("name"),email:g("email"),phone:g("phone"),title:g("title"),pro:g("pro"),city:g("city"),country:g("country"),niches:chk("niches"),langs:chk("langs"),formats:chk("formats"),audience:chk("audience"),bio:g("bio"),years:g("years"),rate:g("rate"),photo:g("photo"),linkedin:g("linkedin"),website:g("website"),accred:g("accred"),consent:true};
+ if(!chk("niches").length){CO.amsg="Please choose at least one speciality or service.";render();return;}
+ if(chk("niches").length>6){CO.amsg="Please choose up to 6 specialities and services in total.";render();return;}CO.amsg="Sending…";render();
+ const firm=g("firm").trim(),hl=g("title").trim();
+ const body={action:"list",name:g("name"),email:g("email"),phone:g("phone"),title:(firm&&!hl.includes(firm)?[hl,firm].filter(Boolean).join(" · "):hl).slice(0,100),pro:g("pro"),city:g("city"),country:g("country"),niches:chk("niches"),langs:chk("langs"),formats:chk("formats"),audience:chk("audience"),bio:g("bio"),years:g("years"),rate:g("rate"),photo:g("photo"),linkedin:g("linkedin"),website:g("website"),accred:g("accred"),consent:true};
  try{const r=await fetch("/api/coaches",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify(body)});const j=await r.json();
   if(!r.ok)CO.amsg=j.error||"Something went wrong.";else{CO.amsg="";CO.applied=true;S.subbed=S.subbed||body.email;save();track("sub",{p:"listme"});}}catch(e){CO.amsg="Couldn't reach the server — please try again.";}render();}
 const coChecks=(name,opts,max)=>`<div class="cochecks">${opts.map(o=>`<label><input type="checkbox" name="${name}" value="${esc(o)}"> ${esc(o)}</label>`).join("")}</div>${max?`<div class="small muted">Choose up to ${max}.</div>`:""}`;
-V.listme=()=>`<div class="card cohero"><div class="kicker">FIND A COACH · FOR COACHES</div><h1 style="margin:.3rem 0 .4rem">List yourself in Find a Coach — free</h1>
- <p class="lead">Be found by clients, organisations and governments looking for African coaches. Every profile is reviewed before it goes live. Your email is never shown: client messages come straight to your inbox.</p></div>
+V.listme=()=>`<div class="card cohero"><div class="kicker">FIND A COACH OR CONSULTANT · FOR COACHES &amp; CONSULTANTS</div><h1 style="margin:.3rem 0 .4rem">List yourself in Find a Coach or Consultant — free</h1>
+ <p class="lead">Be found by clients, organisations and governments looking for African coaches and consultants, whether you work solo or run a firm. Every profile is reviewed before it goes live. Your email is never shown: client messages come straight to your inbox.</p></div>
  <div class="card">${CO.applied?`<h2>Thank you — your profile is with us.</h2><p>We review every profile, usually within two working days, and will email you the moment yours is live.</p><a class="btn" href="#coaches">See the directory ▸</a>`
  :`<form class="grid g2" style="gap:12px" onsubmit="coApply(event)">
   ${jcF("name","Full name","text",{req:1,val:(S.profile||{}).name})}${jcF("email","Email (private — for client messages)","email",{req:1,val:S.subbed})}
-  ${jcF("title","Headline","text",{ph:"e.g. Executive & Leadership Coach"})}<div><label>I am a…</label><select name="pro">${(typeof PROS!=="undefined"?PROS:[]).map(p=>`<option value="${p.k}" ${PRO().k===p.k?"selected":""}>${esc(p.n)}</option>`).join("")}</select></div>
+  ${jcF("title","Headline","text",{ph:"e.g. Executive Coach · Strategy & GRC Consultant"})}${jcF("firm","Firm or practice name (optional)","text",{ph:"e.g. Acme Advisory Ltd"})}<div></div><div><label>I am a…</label><select name="pro">${(typeof PROS!=="undefined"?PROS:[]).map(p=>`<option value="${p.k}" ${PRO().k===p.k?"selected":""}>${esc(p.n)}</option>`).join("")}</select></div>
   ${jcF("city","City","text")}<div><label>Country</label><input name="country" list="coaf" required><datalist id="coaf">${CO_AF.map(c=>`<option value="${esc(c)}">`).join("")}</datalist></div>
-  <div style="grid-column:1/-1"><label>Specialities</label>${coChecks("niches",CO_NICHES,6)}</div>
-  <div style="grid-column:1/-1"><label>Languages you coach in</label>${coChecks("langs",CO_LANGS)}</div>
+  <div style="grid-column:1/-1"><label>Coaching specialities</label>${coChecks("niches",CO_NICHES.slice(0,14))}</div>
+  <div style="grid-column:1/-1"><label>Consulting services</label>${coChecks("niches",CO_NICHES.slice(14),"")}<div class="small muted">Choose up to 6 across coaching and consulting.</div></div>
+  <div style="grid-column:1/-1"><label>Languages you work in</label>${coChecks("langs",CO_LANGS)}</div>
   <div><label>Format</label>${coChecks("formats",CO_FORMATS)}</div><div><label>You work with</label>${coChecks("audience",CO_AUD)}</div>
   ${jcF("bio","About you and the results you help clients achieve (up to 700 characters)","textarea",{wide:1})}
   ${jcF("years","Years of experience","number")}${jcF("rate","Fees (optional)","text",{ph:"e.g. From ₦150,000 per session"})}

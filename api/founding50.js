@@ -1,4 +1,4 @@
-// The Founding 100: the first 100 coaches David personally helps to automate their practice.
+// The Founding 100: the first 100 coaches and consultants David personally helps to automate their practice.
 // GET  → {cap, taken, left}            (public, for the live "places left" counter)
 // GET with x-admin-key (CRON_SECRET) → {cap, taken, rows:[…]}   (David's list)
 // POST {name,email,city,country,pro,practice,wants,consent,code?} → reserves place #n (or the waitlist once 50 are taken),
@@ -69,7 +69,7 @@ module.exports = async (req, res) => {
         <p>Here is your personal ${who} priority code for the DeoCoach Founding 100. It is yours alone and works once:</p>
         <p style="font-size:26px;font-weight:bold;letter-spacing:2px;margin:14px 0">${a.code}</p>
         <p><a href="${link}" style="display:inline-block;background:#B8862B;color:#fff;padding:12px 20px;border-radius:8px;text-decoration:none;font-weight:bold">Claim my priority place ▸</a></p>
-        <p>The button opens the Founding 100 page with your code filled in. ${CAP} coaches, 12 free live sessions with me, every Thursday at 7pm WAT from 10 December. Places held for ${who} are limited, so claim yours today.</p>
+        <p>The button opens the Founding 100 page with your code filled in. ${CAP} coaches and consultants, 12 free live sessions with me, every Thursday at 7pm WAT from 10 December. Places held for ${who} are limited, so claim yours today.</p>
         <p>Activating the future with you,<br><b>Coach David Adeoye Abodunrin</b><br>Founder, DeoCoach · <a href="https://www.deocoach.com">deocoach.com</a></p></div>`);
       if (b.claimOnly) return res.json({ ok: true, claimed: true, kind: grp, again: !!a.again, used: !!a.used });
       b.code = a.code;

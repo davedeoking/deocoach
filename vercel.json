@@ -54,6 +54,26 @@
       "permanent": false
     },
     {
+      "source": "/consultants",
+      "destination": "/#consultants",
+      "permanent": false
+    },
+    {
+      "source": "/find-a-consultant",
+      "destination": "/#consultants",
+      "permanent": false
+    },
+    {
+      "source": "/consulting",
+      "destination": "/#consulting",
+      "permanent": false
+    },
+    {
+      "source": "/hire-a-consultant",
+      "destination": "/#consulting",
+      "permanent": false
+    },
+    {
       "source": "/coaches",
       "destination": "/#coaches",
       "permanent": false
