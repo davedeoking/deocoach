@@ -109,7 +109,8 @@ function proCard(){return `<div class="card procard"><div class="kicker">WHO DEO
 // profession-aware words for the X-Ray and other templates
 function pw(s){const p=PRO();if(p.k==="coach")return s;return s.replace(/\bcoaching\b/g,p.act).replace(/\bCoaching\b/g,p.act[0].toUpperCase()+p.act.slice(1)).replace(/\bcoaches\b/g,p.many).replace(/\bprofessional coach\b/g,"professional "+p.n.toLowerCase()).replace(/\bI coach\b/g,p.k==="speaker"?"I speak":p.k==="trainer"?"I train":p.k==="facilitator"?"I facilitate":p.k==="mentor"?"I mentor":"I consult").replace(/\bcoach\b/g,p.n.toLowerCase());}
 // title-case variant for menu labels ("Coach Signature" -> "Speaker Signature"); leaves DeoCoach and names alone
-function pwT(s){const p=PRO();if(p.k==="coach")return s;return pw(s).replace(/^Coach\b/,p.n).replace(/\bCoaching Academies\b/,"Academies & Training Institutes");}
+const PW_KEEP=["Executive coaching","List yourself (coaches & consultants)","Find a Coach or Consultant"];
+function pwT(s){const p=PRO();if(p.k==="coach"||PW_KEEP.includes(s))return s;return pw(s).replace(/^Coach\b/,p.n).replace(/\bCoaching Academies\b/,"Academies & Training Institutes");}
 
 // ---- the welcome gate: David welcomes you, you say who you are, you enter (with the welcome score) ----
 function gateHTML(intro){const P=S.pros;return `<div class="gcard" onclick="event.stopPropagation()"><figure class="gport"><img src="david/p-headshot.webp" alt="Coach David Adeoye Abodunrin"><figcaption>Coach David Adeoye Abodunrin</figcaption></figure><div class="gbody">

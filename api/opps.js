@@ -1,4 +1,4 @@
-// Live opportunities for coaches and consultants: tenders, EOIs, consultancies and jobs. GET /api/opps?country=Kenya&kw=leadership
+// Live opportunities for coaches and consultants: tenders, EOIs, consultancies and jobs. Closed notices are filtered out (lib/opps.js). GET /api/opps?country=Kenya&kw=leadership
 const { aggregate } = require("../lib/opps");
 module.exports = async (req, res) => {
   const country = String(req.query.country || "").slice(0, 60); const kw = String(req.query.kw || "").slice(0, 80);
