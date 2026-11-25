@@ -103,7 +103,7 @@ module.exports = async (req, res) => {
     if (!r.ok) return res.status(502).json({ error: "Couldn't save your application just now. Please try again." });
     const saved = (await r.json())[0] || {}; const pos = before + 1; const wl = row.status === "waitlist";
     // also put them on the weekly opportunities list (they consented to emails from DeoCoach)
-    try { await fetch(`${url}/rest/v1/deocoach_alerts?on_conflict=email`, { method: "POST", headers: { ...H, "Content-Type": "application/json", Prefer: "resolution=ignore-duplicates,return=minimal" }, body: JSON.stringify({ email, countries: row.country ? [row.country] : [], kw: "coaching leadership training", cadence: "weekly", token: require("crypto").randomBytes(16).toString("hex"), updated_at: new Date().toISOString() }) }); } catch (x) {}
+    try { await fetch(`${url}/rest/v1/deocoach_alerts?on_conflict=email`, { method: "POST", headers: { ...H, "Content-Type": "application/json", Prefer: "resolution=ignore-duplicates,return=minimal" }, body: JSON.stringify({ email, countries: row.country ? [row.country] : [], kw: require("../lib/prokw").proKw(row.pro), cadence: "weekly", token: require("crypto").randomBytes(16).toString("hex"), updated_at: new Date().toISOString() }) }); } catch (x) {}
     const first = esc(name.split(" ")[0]);
     await mail(e, email, wl ? "You're on the Founding 100 waiting list" : `Your Founding 100 place is reserved (#${pos} of ${CAP})`,
       `<div style="font-family:Arial,sans-serif;max-width:560px;color:#1d1a14;line-height:1.55">

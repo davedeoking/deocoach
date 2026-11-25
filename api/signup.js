@@ -6,6 +6,7 @@ const { mail, esc, wrap } = require("../lib/mail");
 const { PLANS, ACW } = require("../lib/plans");
 const clip = (s, n) => String(s || "").trim().slice(0, n);
 const KINDS = ["acw", "exec", "member", "bank"];
+const PROS_OK = ["coach", "trainer", "facilitator", "mentor", "speaker", "consultant"];
 const SEG = { nation: "Nation or government", board: "Board or executive team", leader: "Leader or founder", coach: "Coach, trainer or advisor", consultant: "Consultant or consulting firm", consulting: "Client seeking consulting services", org: "Organisation" };
 module.exports = async (req, res) => {
   const e = process.env, { SUPABASE_URL: url, SUPABASE_SERVICE_KEY: key } = e;
@@ -27,7 +28,7 @@ module.exports = async (req, res) => {
     const row = { kind, name, email, phone: clip(b.phone, 30) || null, org: clip(b.org, 120) || null, role: clip(b.role, 120) || null,
       segment: SEG[b.segment] ? b.segment : null, plan, cycle: b.cycle === "year" ? "year" : b.cycle === "month" ? "month" : null,
       currency: b.currency === "USD" ? "USD" : b.currency === "NGN" ? "NGN" : null, amount: Number.isFinite(+b.amount) && +b.amount > 0 ? Math.round(+b.amount) : null,
-      ref: clip(b.ref, 80) || null, note: clip(b.note, 1200) || null, country: clip(b.country, 60) || null, src: clip(b.src, 30) || null,
+      ref: clip(b.ref, 80) || null, note: (b.pro && PROS_OK.includes(b.pro) ? "[" + b.pro + "] " : "") + (clip(b.note, 1200) || "") || null, country: clip(b.country, 60) || null, src: clip(b.src, 30) || null,
       status: kind === "bank" ? "pending" : kind === "member" ? "reserved" : "new" };
     if (kind === "acw") {
       const dup = await fetch(`${url}/rest/v1/deocoach_signups?select=id&kind=eq.acw&email=eq.${encodeURIComponent(email)}`, { headers: H });
@@ -37,7 +38,7 @@ module.exports = async (req, res) => {
     if (!r.ok) return res.status(502).json({ error: "Couldn't save that just now. Please try again." });
     const saved = (await r.json())[0] || {};
     // everyone who signs on also gets the weekly opportunities (they consented to DeoCoach emails)
-    try { await fetch(`${url}/rest/v1/deocoach_alerts?on_conflict=email`, { method: "POST", headers: { ...H, "Content-Type": "application/json", Prefer: "resolution=ignore-duplicates,return=minimal" }, body: JSON.stringify({ email, countries: row.country ? [row.country] : [], kw: "coaching leadership training", cadence: "weekly", token: require("crypto").randomBytes(16).toString("hex"), updated_at: new Date().toISOString() }) }); } catch (x) {}
+    try { await fetch(`${url}/rest/v1/deocoach_alerts?on_conflict=email`, { method: "POST", headers: { ...H, "Content-Type": "application/json", Prefer: "resolution=ignore-duplicates,return=minimal" }, body: JSON.stringify({ email, countries: row.country ? [row.country] : [], kw: require("../lib/prokw").proKw(b.pro || ({ consultant: "consultant", coach: "coach" })[b.segment]), cadence: "weekly", token: require("crypto").randomBytes(16).toString("hex"), updated_at: new Date().toISOString() }) }); } catch (x) {}
     const first = esc(name.split(" ")[0]), zoom = e.ACW_ZOOM_LINK, when = e.ACW_TIME || "", book = e.CALENDLY_URL || "https://calendly.com/adeoyedavid/30min";
     const planName = plan ? PLANS[plan].name : "DeoCoach membership";
     const msg = {
