@@ -33,7 +33,7 @@ function evCheckReminders(){const all=[...EVENTS,...Object.values(S.ev.ai||{}).f
  const n=evNiche();HAPPEN.filter(h=>h.ni.includes(n)&&evDays(h)<=30&&evDays(h)>=0).forEach(h=>{const key="h:"+h.id;if(S.ev.sent[key])return;S.ev.sent[key]=1;S.ev.inbox.unshift({t:Date.now(),id:h.id,msg:`Shift ahead: ${h.n} (${evWhen(h)}). ${h.move}`});fresh++;});
  if(fresh){S.ev.inbox=S.ev.inbox.slice(0,30);save();toast(`${fresh} new radar alert${fresh>1?"s":""}`);}}
 async function evScout(){const c=cityById(S.ev.city)||evHome()||cityById("lagos");const n=evNiche(),nn=nicheById(n);const key=c.id+"|"+n;const b=document.getElementById("scoutbtn");if(b){b.disabled=true;b.textContent="Searching the web… (up to a minute)";}
- try{const r=await fetch("/api/events",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({city:c.n,country:c.c,niche:nn.n,months:S.ev.win})});const j=await r.json();
+ try{const r=await fetch("/api/events",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({city:c.n,country:c.c,niche:nn.n,months:S.ev.win,pro:PRO().n})});const j=await r.json();
   if(!r.ok)throw new Error(j.error||"failed");S.ev.ai[key]=(j.events||[]).map((e,i)=>({id:"ai-"+c.id+"-"+n+"-"+i,n:e.name,city:c.id,venue:e.venue||"",s:e.start,e:e.end||e.start,st:e.confidence==="confirmed"?"confirmed":"announced",mag:5,ni:[n],who:e.audience||"",why:e.why||"",url:e.url||"",ai:1}));S.ev.aiAt=Date.now();save();render();toast(`${S.ev.ai[key].length} events found by AI web search`);}
  catch(e){toast(String(e.message).includes("not configured")?"AI not configured yet":"Search didn't complete — try again shortly");if(b){b.disabled=false;b.textContent="✦ Find more events with AI";}}}
 

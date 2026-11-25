@@ -8,10 +8,10 @@ module.exports = async (req, res) => {
   const key = process.env.ANTHROPIC_API_KEY; if (!key) return res.status(503).json({ error: "AI not configured" });
   const ip = (req.headers["x-forwarded-for"] || "").split(",")[0].trim() || "anon"; const now = Date.now(); const limit = +(process.env.EVENTS_HOURLY_LIMIT || 8);
   const h = (hits.get(ip) || []).filter((t) => now - t < 3600e3); if (h.length >= limit) return res.status(429).json({ error: "rate_limited" }); h.push(now); hits.set(ip, h);
-  const b = req.body || {}; const city = clean(b.city, 60), country = clean(b.country, 60), niche = clean(b.niche, 120); const months = Math.max(1, Math.min(12, +b.months || 6));
+  const b = req.body || {}; const city = clean(b.city, 60), country = clean(b.country, 60), niche = clean(b.niche, 120); const pro = clean(b.pro, 30).toLowerCase() || "coach"; const months = Math.max(1, Math.min(12, +b.months || 6));
   if (!city || !niche) return res.status(400).json({ error: "city and niche required" });
   const today = new Date().toISOString().slice(0, 10);
-  const prompt = `Today is ${today}. Use web search to find real, upcoming events (conferences, summits, expos, festivals, professional or industry gatherings, major church or community conventions) taking place in or near ${city}, ${country} between today and ${months} months from now, where a coach serving "${niche}" could meet clients, buyers or partners.
+  const prompt = `Today is ${today}. Use web search to find real, upcoming events (conferences, summits, expos, festivals, professional or industry gatherings, major church or community conventions) taking place in or near ${city}, ${country} between today and ${months} months from now, where a ${pro} serving "${niche}" could meet clients, buyers or partners.
 Rules: include only events you found on a web page that states the dates; never invent events, dates or venues; prefer the organiser's own page as the url; skip events that have already ended; at most 8 events.
 Reply with ONLY a JSON array, no prose, each item: {"name":"","start":"YYYY-MM-DD","end":"YYYY-MM-DD","venue":"","url":"","audience":"who attends, in a few words","why":"one sentence on why it fits this niche","confidence":"confirmed|announced"}. If you find nothing reliable, reply [].`;
   try {

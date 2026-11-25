@@ -144,7 +144,7 @@ track("visit");window.addEventListener("hashchange",()=>{VPAGES++;track("view");
 
 // ---- quick subscribe: weekly opportunities by email, from the welcome card or the header ----
 function subCountry(){const c=typeof cityById==="function"&&S.profile&&cityById(S.profile.cityId);return c?c.c:(S.ed==="africa"?"Nigeria":"United Kingdom");}
-function subKw(){return ({coach:"coaching leadership training",trainer:"training workshop capacity building",facilitator:"facilitation workshop strategy",mentor:"mentoring programme",speaker:"keynote speaker conference",consultant:"consultancy advisory"})[PRO().k];}
+function subKw(){return ({coach:"coaching leadership training",trainer:"training workshop capacity building",facilitator:"facilitation workshop strategy",mentor:"mentoring programme",speaker:"keynote speaker conference",consultant:"consultancy consulting advisory"})[PRO().k];}
 async function quickSub(email,cadence,where){email=String(email||"").trim();if(!/^[^@\s]+@[^@\s]+\.[a-z]{2,}$/i.test(email))return "Please enter a valid email.";
  try{const r=await fetch("/api/subscribe",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({email,consent:true,countries:[subCountry()],kw:subKw(),cadence:cadence||"weekly"})});
   if(!r.ok)return "Couldn't subscribe just now — please try again.";S.subbed=email;S.subHide=0;save();track("sub",{p:where||"modal"});const b=document.getElementById("subbar");if(b)b.remove();return "";}catch(e){return "Couldn't subscribe just now — please try again.";}}
