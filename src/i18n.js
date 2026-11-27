@@ -13,26 +13,39 @@ const CHROME={
  sw:{"Start here":"Anza hapa","Command Centre":"Kituo cha uongozi","Horizon Atlas":"Atlasi ya upeo","Daily & weekly briefing":"Taarifa ya kila siku na wiki","City Minds & Culture":"Fikra za miji na utamaduni","Opportunity Desk":"Dawati la fursa","Evidence & insight feeds":"Ushahidi na vyanzo vya takwimu","Future Activation hub":"Kitovu cha kuamsha siku zijazo","Client workspaces":"Nafasi za wateja","Coach Backcasting":"Mpango wa kurudi nyuma wa kocha","Power Moves":"Hatua zenye nguvu","Scenario Engine":"Injini ya matukio","Strategic Interaction":"Mwingiliano wa kimkakati","CoachCoCreation":"Uundaji pamoja wa makocha","320 Capabilities":"Uwezo 320","Methodology Atlas":"Atlasi ya mbinu","Working Templates":"Violezo vya kazi","Measurement & Governance":"Upimaji na utawala","My profile":"Wasifu wangu","Coach Signature":"Saini ya kocha","Competency Ladder":"Ngazi ya umahiri","Niche Radar · 10 years":"Rada ya fani · miaka 10","Capability to Income":"Kutoka uwezo hadi kipato","Brand Compass":"Dira ya chapa","Brand Funnel":"Faneli ya chapa","Stuck & growth plan":"Vikwazo na mpango wa ukuaji","Client Toolkit":"Zana za mteja","Supervisor Desk":"Dawati la usimamizi","Futures & opportunities":"Siku zijazo na fursa","Future Activation":"Kuamsha siku zijazo","Me":"Mimi","Money":"Pesa","Brand":"Chapa","Grow":"Kua","✦ Experience":"✦ Mwonekano","✦ Ask DeoMentor":"✦ Uliza DeoMentor","NEW":"MPYA"}};
 let TCACHE={};try{TCACHE=JSON.parse(localStorage.getItem("deocoach-tr")||"{}");}catch(e){}
 function trSave(){try{localStorage.setItem("deocoach-tr",JSON.stringify(TCACHE));}catch(e){}}
-let TR_STATE={busy:false,fail:false,pending:new Set(),timer:null};
+let TR_STATE={busy:false,fail:false,pending:new Set(),inflight:new Set(),skip:new Set(),done:0,timer:null};
 function langName(c){const l=LANGS.find(x=>x[0]===c);return l?l[2]:"English";}
 function trLookup(s){const L=S.lang;if(!L||L==="en")return null;const c=CHROME[L];if(c&&c[s])return c[s];const m=TCACHE[L];return m&&m[s]||null;}
-function trNodes(root){const out=[];const w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT,{acceptNode:n=>{const p=n.parentNode;if(!p||/^(SCRIPT|STYLE|TEXTAREA|OPTION)$/.test(p.nodeName)||p.closest("[data-notr]"))return NodeFilter.FILTER_REJECT;const t=n.nodeValue.trim();return n.__en!==undefined||(t.length>1&&/[A-Za-z]/.test(t))?NodeFilter.FILTER_ACCEPT:NodeFilter.FILTER_REJECT;}});let n;while(n=w.nextNode())out.push(n);return out;}
-function translatePage(){const L=S.lang||"en";applyDir();const roots=[document.getElementById("main"),document.getElementById("nav"),document.querySelector(".top"),document.querySelector("footer"),document.querySelector(".dmfloat")].filter(Boolean);
+function trNodes(root){const out=[];const w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT,{acceptNode:n=>{const p=n.parentNode;if(!p||/^(SCRIPT|STYLE|TEXTAREA|OPTION)$/.test(p.nodeName)||p.closest("[data-notr],#langmenu,.lookmenu"))return NodeFilter.FILTER_REJECT;const t=n.nodeValue.trim();return n.__en!==undefined||(t.length>1&&/[A-Za-z]/.test(t))?NodeFilter.FILTER_ACCEPT:NodeFilter.FILTER_REJECT;}});let n;while(n=w.nextNode())out.push(n);return out;}
+function translatePage(){const L=S.lang||"en";applyDir();const roots=[document.querySelector(".top"),document.getElementById("nav"),document.getElementById("main"),document.querySelector("footer"),document.querySelector(".dmfloat")].filter(Boolean);
  roots.forEach(r=>{trNodes(r).forEach(n=>{if(n.__en===undefined||(n.__set!==undefined&&n.nodeValue!==n.__set))n.__en=n.nodeValue;const raw=n.__en,t=raw.trim();
    if(L==="en"){if(n.nodeValue!==raw){n.nodeValue=raw;}n.__set=raw;return;}
-   const v=trLookup(t);const want=v?raw.replace(t,v):raw;if(n.nodeValue!==want)n.nodeValue=want;n.__set=want;if(!v)TR_STATE.pending.add(t);});
-  r.querySelectorAll&&r.querySelectorAll("input[placeholder],textarea[placeholder]").forEach(el=>{const t=el.getAttribute("data-ph")||el.placeholder;if(!t||!/[A-Za-z]/.test(t))return;el.setAttribute("data-ph",t);if(L==="en"){el.placeholder=t;return;}const v=trLookup(t);el.placeholder=v||t;if(!v)TR_STATE.pending.add(t);});});
+   const v=trLookup(t);const want=v?raw.replace(t,v):raw;if(n.nodeValue!==want)n.nodeValue=want;n.__set=want;if(!v)trQueue(t);});
+  r.querySelectorAll&&r.querySelectorAll("input[placeholder],textarea[placeholder]").forEach(el=>{const t=el.getAttribute("data-ph")||el.placeholder;if(!t||!/[A-Za-z]/.test(t))return;el.setAttribute("data-ph",t);if(L==="en"){el.placeholder=t;return;}const v=trLookup(t);el.placeholder=v||t;if(!v)trQueue(t);});});
  if(L!=="en"&&TR_STATE.pending.size&&!TR_STATE.fail)fetchTranslations();}
-async function fetchTranslations(){if(TR_STATE.busy)return;TR_STATE.busy=true;const L=S.lang;
- try{while(TR_STATE.pending.size&&S.lang===L){const batch=[...TR_STATE.pending].slice(0,90);batch.forEach(s=>TR_STATE.pending.delete(s));
-   const r=await fetch("/api/translate",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({lang:L,name:langName(L),strings:batch})});const j=await r.json();if(!r.ok||!Array.isArray(j.out))throw 0;
-   TCACHE[L]=TCACHE[L]||{};batch.forEach((s,i)=>{if(j.out[i])TCACHE[L][s]=j.out[i];});trSave();}
-  TR_STATE.busy=false;if(S.lang===L)translatePage();}
- catch(e){TR_STATE.busy=false;TR_STATE.fail=true;TR_STATE.pending.clear();langNote(true);}}
+function trQueue(t){if(!TR_STATE.inflight.has(t)&&!TR_STATE.skip.has(t))TR_STATE.pending.add(t);}
+// Translate in small batches, several at once, showing each batch on the page as soon as it arrives.
+async function trBatch(L,batch){for(let attempt=0;attempt<2;attempt++){const ctl=new AbortController();const tm=setTimeout(()=>ctl.abort(),60000);
+  try{const r=await fetch("/api/translate",{method:"POST",signal:ctl.signal,headers:{"content-type":"application/json"},body:JSON.stringify({lang:L,name:langName(L),strings:batch})});clearTimeout(tm);
+   const j=await r.json().catch(()=>({}));if(r.status===503)return "off";if(!r.ok||!Array.isArray(j.out))throw 0;
+   TCACHE[L]=TCACHE[L]||{};batch.forEach((s,i)=>{if(j.out[i])TCACHE[L][s]=j.out[i];});trSave();return "ok";}
+  catch(e){clearTimeout(tm);}}return "fail";}
+async function fetchTranslations(){if(TR_STATE.busy)return;TR_STATE.busy=true;const L=S.lang;let ok=0,bad=0,off=false;const total0=TR_STATE.pending.size;TR_STATE.done=0;trProgress(L,0,total0);
+ const worker=async()=>{while(TR_STATE.pending.size&&S.lang===L&&!off){const batch=[...TR_STATE.pending].slice(0,24);batch.forEach(s=>{TR_STATE.pending.delete(s);TR_STATE.inflight.add(s);});
+   const res=await trBatch(L,batch);batch.forEach(s=>TR_STATE.inflight.delete(s));
+   if(res==="off"){off=true;break;}if(res==="ok")ok++;else{bad++;batch.forEach(s=>TR_STATE.skip.add(s));}
+   TR_STATE.done+=batch.length;if(S.lang===L){translatePage();trProgress(L,TR_STATE.done,TR_STATE.done+TR_STATE.pending.size+TR_STATE.inflight.size);}}};
+ await Promise.all([worker(),worker(),worker(),worker()]);
+ TR_STATE.busy=false;trProgress(L,-1);
+ if(off||(!ok&&bad)){TR_STATE.fail=true;TR_STATE.pending.clear();langNote(true);return;}
+ if(S.lang===L&&TR_STATE.pending.size)fetchTranslations();}
+function trProgress(L,done,total){let el=document.getElementById("trprog");if(done<0||!L||L==="en"){if(el)el.remove();return;}
+ if(!el){el=document.createElement("div");el.id="trprog";el.setAttribute("data-notr","1");el.className="trprog";document.body.appendChild(el);}
+ const pct=total?Math.min(99,Math.round(done/total*100)):0;el.innerHTML=`🌐 Translating into ${esc(langName(L))}… ${pct}%`;}
 function applyDir(){const L=S.lang||"en";document.documentElement.lang=L;document.documentElement.dir=RTL.includes(L)?"rtl":"ltr";}
 function langNote(show){let el=document.getElementById("langnote");if(!show){if(el)el.remove();return;}if(el)return;el=document.createElement("div");el.id="langnote";el.setAttribute("data-notr","1");el.className="langnote";
  el.innerHTML=`<b>${esc(langName(S.lang))}:</b> ${CHROME[S.lang]?"the menu is translated (beta).":"translation is being prepared."} Full-page translation into all 24 pan-African languages switches on when DeoCoach's AI translator is connected on its own site. <a href="javascript:langNote(false)">Close</a>`;document.body.appendChild(el);}
-function setLang(c){S.lang=c;save();TR_STATE.fail=false;TR_STATE.pending.clear();langNote(false);document.getElementById("langmenu").classList.remove("open");render();}
+function setLang(c){S.lang=c;save();TR_STATE.fail=false;TR_STATE.pending.clear();TR_STATE.skip.clear();langNote(false);document.getElementById("langmenu").classList.remove("open");render();}
 function langMenu(){const m=document.getElementById("langmenu");if(!m)return;const L=S.lang||"en";let g="";
  m.innerHTML=LANGS.map(l=>{const h=l[3]!==g?(g=l[3],`<div class="small lg">${l[3]}</div>`):"";return h+`<button class="${l[0]===L?"on":""}" onclick="setLang('${l[0]}')"><b>${l[1]}</b><span class="small">${l[2]}${l[0]==="en"?"":" · beta"}</span></button>`;}).join("")+`<div style="padding:8px;border-top:1px solid var(--line);margin-top:6px"><p class="small">Translations are beta. Speak one of these languages? Help us get it right.</p><button class="btn sm" onclick="toggleSuggest()">${SUGGEST?"✓ Stop suggesting":"✎ Suggest a better translation"}</button>${(S.trSug||[]).length?` <button class="btn sm ghost" onclick="copySuggestions()">Copy my ${(S.trSug||[]).length} suggestion${(S.trSug||[]).length>1?"s":""}</button>`:""}</div>`;
  const b=document.getElementById("langbtn");if(b)b.textContent="🌐 "+(LANGS.find(x=>x[0]===L)||LANGS[0])[1];}
