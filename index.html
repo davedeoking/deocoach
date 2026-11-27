@@ -1191,6 +1191,8 @@ function setLang(c){S.lang=c;save();TR_STATE.fail=false;TR_STATE.pending.clear()
 function langMenu(){const m=document.getElementById("langmenu");if(!m)return;const L=S.lang||"en";let g="";
  m.innerHTML=LANGS.map(l=>{const h=l[3]!==g?(g=l[3],`<div class="small lg">${l[3]}</div>`):"";return h+`<button class="${l[0]===L?"on":""}" onclick="setLang('${l[0]}')"><b>${l[1]}</b><span class="small">${l[2]}${l[0]==="en"?"":" · beta"}</span></button>`;}).join("")+`<div style="padding:8px;border-top:1px solid var(--line);margin-top:6px"><p class="small">Translations are beta. Speak one of these languages? Help us get it right.</p><button class="btn sm" onclick="toggleSuggest()">${SUGGEST?"✓ Stop suggesting":"✎ Suggest a better translation"}</button>${(S.trSug||[]).length?` <button class="btn sm ghost" onclick="copySuggestions()">Copy my ${(S.trSug||[]).length} suggestion${(S.trSug||[]).length>1?"s":""}</button>`:""}</div>`;
  const b=document.getElementById("langbtn");if(b)b.textContent="🌐 "+(LANGS.find(x=>x[0]===L)||LANGS[0])[1];}
+// watchdog: if anything is still untranslated and nothing is running, pick it up again
+setInterval(()=>{if(S.lang&&S.lang!=="en"&&!TR_STATE.busy&&!TR_STATE.fail&&document.visibilityState==="visible")translatePage();},4000);
 // re-translate whenever the page changes (debounced)
 (function(){const mo=new MutationObserver(()=>{if(!S.lang||S.lang==="en")return;clearTimeout(TR_STATE.timer);TR_STATE.timer=setTimeout(translatePage,250);});
  window.addEventListener("load",()=>{const m=document.getElementById("main");if(m)mo.observe(m,{childList:true,subtree:true});});})();
