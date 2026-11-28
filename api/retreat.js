@@ -12,12 +12,16 @@ const { LETTERS, subjectOf, render } = require("../lib/retreat_letters");
 const SITE = "https://deoretreat-app.vercel.app";
 const API = "https://www.deocoach.com/api/retreat";
 const FEE = 2500, FINAL = "2027-02-15";
-// Experience tiers (Blueprint v2 ladder, re-based on the US$2,500 journey) and the School of Apostles & Prophets track
-const TIERS = { heritage: { name: "Heritage Journey", price: 2500 }, covenant: { name: "Covenant Journey", price: 3750 }, founders: { name: "Founders Circle", price: 5500, cap: 12 } };
-const SAP_ADD = 1000;
+// Experience tiers: only the Heritage Journey (US$2,500) is priced. Covenant, Founders Circle and the SAP Immersion
+// are "register your interest" for now; set priced:true and a price when David confirms them.
+const TIERS = { heritage: { name: "Heritage Journey", price: 2500, priced: true }, covenant: { name: "Covenant Journey", price: 0, priced: false }, founders: { name: "Founders Circle", price: 0, priced: false, cap: 12 } };
+const SAP_ADD = 0, SAP_PRICED = false;
 const tierOf = (row) => TIERS[(row.data && row.data.tier)] ? row.data.tier : "heritage";
-const feeOf = (row) => TIERS[tierOf(row)].price + (row.data && (row.data.sap === true || row.data.sap === "yes") ? SAP_ADD : 0);
-const offerOf = (row) => TIERS[tierOf(row)].name + (row.data && (row.data.sap === true || row.data.sap === "yes") ? " + School of Apostles & Prophets Immersion" : "");
+const sapOf = (row) => !!(row.data && (row.data.sap === true || row.data.sap === "yes"));
+const feeOf = (row) => (TIERS[tierOf(row)].priced ? TIERS[tierOf(row)].price : TIERS.heritage.price) + (sapOf(row) && SAP_PRICED ? SAP_ADD : 0);
+const offerOf = (row) => { const t = TIERS[tierOf(row)], got = t.priced ? t.name : "Heritage Journey", wish = [];
+  if (!t.priced) wish.push(t.name); if (sapOf(row)) wish.push("School of Apostles & Prophets Immersion");
+  return got + (sapOf(row) && SAP_PRICED ? " + School of Apostles & Prophets Immersion" : "") + (wish.length ? " (interest registered: " + wish.join(", ") + ")" : ""); };
 const EVENTS = { "divine-encounter": { title: "A Summons to Divine Encounter", when: "4–11 April 2027 (Israel)", pre: "DR27" }, "family-covenant": { title: "Family Prayer Covenant", when: "Israel, April 2027", pre: "FPC27" } };
 const ROOMS = { "share-named": "Sharing (named)", "share-pair": "Happy to be paired", single: "Single room" };
 const PLANS = { full: "Pay in full", monthly: "Monthly to 15 February", weekly: "Weekly to 15 February" };
@@ -91,7 +95,7 @@ module.exports = async (req, res) => {
     if (a === "tiers") {
       const r = await D(`deoretreat_registrations?select=data,status&event=eq.divine-encounter`); const rows = r.ok ? await r.json() : [];
       const live = rows.filter((x) => !["withdrawn", "test"].includes(x.status)); const taken = (k) => live.filter((x) => x.data && x.data.tier === k).length;
-      return res.json({ tiers: Object.keys(TIERS).map((k) => ({ key: k, ...TIERS[k], taken: taken(k), left: TIERS[k].cap ? Math.max(0, TIERS[k].cap - taken(k)) : null })), sap: { price: SAP_ADD, taken: live.filter((x) => x.data && (x.data.sap === true || x.data.sap === "yes")).length } });
+      return res.json({ tiers: Object.keys(TIERS).map((k) => ({ key: k, name: TIERS[k].name, priced: TIERS[k].priced, price: TIERS[k].priced ? TIERS[k].price : null, cap: TIERS[k].cap || null, interest: taken(k), left: TIERS[k].cap ? Math.max(0, TIERS[k].cap - taken(k)) : null })), sap: { priced: SAP_PRICED, price: SAP_PRICED ? SAP_ADD : null, interest: live.filter((x) => x.data && (x.data.sap === true || x.data.sap === "yes")).length } });
     }
     // ---------------- the pilgrim's own portal ----------------
     if (a === "me" || a === "unsub") {
@@ -110,7 +114,7 @@ module.exports = async (req, res) => {
       await patch(row.ref, { last_seen: new Date().toISOString() });
       const pays = row.event === "divine-encounter" ? await paysOf(row.ref) : []; const plan = planOf(row, pays);
       const refs = await D(`deoretreat_registrations?select=ref&referred_by=eq.${encodeURIComponent(row.ref)}`); const referrals = refs.ok ? (await refs.json()).length : 0;
-      const me = {}; SAFE.forEach((k) => { me[k] = row[k]; }); me.letters_on = !(row.data && row.data.c_letters === false); me.first = String(row.name || "").split(" ")[0]; me.tier = tierOf(row); me.sap = !!(row.data && (row.data.sap === true || row.data.sap === "yes")); me.offer = offerOf(row);
+      const me = {}; SAFE.forEach((k) => { me[k] = row[k]; }); me.letters_on = !(row.data && row.data.c_letters === false); me.first = String(row.name || "").split(" ")[0]; me.tier = tierOf(row); me.sap = sapOf(row); me.offer = offerOf(row);
       const today = ymd(Date.now());
       const letters = LETTERS.filter((L) => L.date <= today).slice(-6).reverse().map((L) => ({ date: L.date, kind: L.kind, subject: subjectOf(L), html: render(L, { first: me.first, portal: portalOf(row.token), unsub: `${API}?a=unsub&t=${row.token}` }) }));
       return res.json({ me, plan, payments: pays.map((p) => ({ paid_on: p.paid_on, amount: p.amount, method: p.method })), metrics: metrics(row, plan), referrals, letters });
