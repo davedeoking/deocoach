@@ -91,6 +91,24 @@ module.exports = async (req, res) => {
   const one = async (filter) => { const r = await D(`deoretreat_registrations?select=*&${filter}&limit=1`); const j = r.ok ? await r.json() : []; return j[0] || null; };
   const paysOf = async (ref) => { const r = await D(`deoretreat_payments?select=*&ref=eq.${encodeURIComponent(ref)}&order=paid_on.asc`); return r.ok ? await r.json() : []; };
   const patch = (ref, body) => D(`deoretreat_registrations?ref=eq.${encodeURIComponent(ref)}`, { method: "PATCH", headers: { Prefer: "return=minimal" }, body: JSON.stringify(body) });
+  // Record a payment, update the status and send the thank-you (used by the host and by Stripe)
+  async function recordPayment(row, amount, paid_on, method, txref, note) {
+    const first = esc(String(row.name).split(" ")[0]);
+    const r = await D("deoretreat_payments", { method: "POST", headers: { Prefer: "return=minimal" }, body: JSON.stringify({ ref: row.ref, paid_on, amount, method, txref, note: note || "" }) });
+    if (!r.ok) return false;
+    const P = planOf(row, await paysOf(row.ref)); await patch(row.ref, { status: P.balance <= 0 ? "paid" : "committed" });
+        await mail(e, row.email, P.balance <= 0 ? "Fully committed: thank you" : "A step of commitment, received with thanks", wrap(`<p>Dear ${first},</p>
+          <p>Thank you. We have received <b>${usd(amount)}</b> on ${new Date(paid_on + "T12:00Z").toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })}. Every step you take is a step of faith towards what God is preparing in you.</p>
+          <p>${P.balance <= 0 ? "Your journey is now fully committed. Thank you for your faithfulness." : `So far you have committed <b>${usd(P.paid)}</b> of ${usd(P.fee)}.${P.next ? ` Your next step is ${usd(P.next.amount)} by ${new Date(P.next.due + "T12:00Z").toLocaleDateString("en-GB", { day: "numeric", month: "long" })}.` : ""}`}</p>
+          <p><a href="${portalOf(row.token)}">Open your pilgrim portal</a></p>`));
+    return true;
+  }
+  // ---------------- Stripe (card payments) ----------------
+  const STRIPE = e.STRIPE_SECRET_KEY || "";
+  async function stripe(path, form) {
+    const r = await fetch("https://api.stripe.com/v1/" + path, { method: form ? "POST" : "GET", headers: { Authorization: "Bearer " + STRIPE, ...(form ? { "content-type": "application/x-www-form-urlencoded" } : {}) }, body: form ? new URLSearchParams(form).toString() : undefined });
+    const j = await r.json().catch(() => ({})); if (!r.ok) throw new Error((j.error && j.error.message) || "Stripe error"); return j;
+  }
   try {
     // ---------------- public: tiers and places left ----------------
     if (a === "tiers") {
@@ -114,6 +132,29 @@ module.exports = async (req, res) => {
     if (a === "me" || a === "unsub") {
       const t = clip(q.t, 64); if (t.length < 20) return res.status(404).json({ error: "Not found" });
       const row = await one(`token=eq.${encodeURIComponent(t)}`); if (!row) return res.status(404).json({ error: "Not found" });
+      if (q.pay === "checkout" && req.method === "POST") {
+        if (!STRIPE) return res.status(503).json({ error: "Card payments are not switched on yet." });
+        if (!row.accepted_at) return res.status(400).json({ error: "Card payments open once your place is accepted." });
+        const P = planOf(row, await paysOf(row.ref)); if (P.balance <= 0) return res.status(400).json({ error: "Your journey is fully committed." });
+        const want = Number(b.amount); const amount = Math.round(Math.min(P.balance, want > 0 ? want : (P.next ? P.next.amount : P.balance)) * 100) / 100;
+        if (!(amount >= 1)) return res.status(400).json({ error: "Check the amount" });
+        const portal = portalOf(row.token);
+        const sess = await stripe("checkout/sessions", { mode: "payment", "line_items[0][quantity]": "1", "line_items[0][price_data][currency]": "usd", "line_items[0][price_data][unit_amount]": String(Math.round(amount * 100)),
+          "line_items[0][price_data][product_data][name]": "Kairos Israel Formation Journey 2027 · " + offerOf(row).split(" (")[0], "line_items[0][price_data][product_data][description]": "Pilgrim " + row.ref + " · a step of commitment",
+          customer_email: row.email, client_reference_id: row.ref, "metadata[ref]": row.ref, "metadata[token]": row.token, "payment_intent_data[description]": "Kairos Israel 2027 · " + row.ref, "payment_intent_data[statement_descriptor_suffix]": "ISRAEL 2027",
+          success_url: `${SITE}/?paid={CHECKOUT_SESSION_ID}#/kairos/pilgrim/${row.token}`, cancel_url: portal });
+        return res.json({ url: sess.url });
+      }
+      if (q.pay === "confirm") {
+        if (!STRIPE) return res.status(503).json({ error: "Card payments are not switched on yet." });
+        const sid = clip(q.s, 120); if (!/^cs_(test|live)_[A-Za-z0-9]+$/.test(sid)) return res.status(400).json({ error: "Bad session" });
+        const sess = await stripe("checkout/sessions/" + sid);
+        if (!sess.metadata || sess.metadata.token !== row.token) return res.status(403).json({ error: "Not your payment" });
+        if (sess.payment_status !== "paid") return res.json({ ok: false, status: sess.payment_status });
+        const seen = await D(`deoretreat_payments?select=id&txref=eq.${encodeURIComponent(sid)}&limit=1`); const had = seen.ok ? await seen.json() : [];
+        if (!had.length) await recordPayment(row, sess.amount_total / 100, ymd(Date.now()), "Card (Stripe" + (sid.startsWith("cs_test") ? ", test" : "") + ")", sid, "");
+        return res.json({ ok: true, amount: sess.amount_total / 100, recorded: !had.length });
+      }
       if (a === "unsub") { await patch(row.ref, { data: { ...(row.data || {}), c_letters: false } }); res.setHeader("content-type", "text/html"); return res.status(200).send("<p style='font-family:Georgia;padding:40px'>You will no longer receive the Friday and Sunday letters. Your portal stays open, and you can switch them back on there.</p>"); }
       if (req.method === "POST") {
         const up = { last_seen: new Date().toISOString() };
@@ -130,7 +171,7 @@ module.exports = async (req, res) => {
       const me = {}; SAFE.forEach((k) => { me[k] = row[k]; }); me.letters_on = !(row.data && row.data.c_letters === false); me.first = String(row.name || "").split(" ")[0]; me.tier = tierOf(row); me.sap = sapOf(row); me.offer = offerOf(row);
       const today = ymd(Date.now());
       const letters = LETTERS.filter((L) => L.date <= today).slice(-6).reverse().map((L) => ({ date: L.date, kind: L.kind, subject: subjectOf(L), html: render(L, { first: me.first, portal: portalOf(row.token), unsub: `${API}?a=unsub&t=${row.token}` }) }));
-      return res.json({ me, plan, payments: pays.map((p) => ({ paid_on: p.paid_on, amount: p.amount, method: p.method })), metrics: metrics(row, plan), referrals, letters });
+      return res.json({ me, plan, cards: !!STRIPE && !!row.accepted_at, cardMode: STRIPE.startsWith("sk_test") ? "test" : "live", payments: pays.map((p) => ({ paid_on: p.paid_on, amount: p.amount, method: p.method })), metrics: metrics(row, plan), referrals, letters });
     }
     // ---------------- the daily letters run ----------------
     if (a === "cron") {
@@ -186,13 +227,8 @@ module.exports = async (req, res) => {
       if (a === "pay") {
         const amount = Number(b.amount); if (!(amount > 0) || amount > 20000) return res.status(400).json({ error: "Check the amount" });
         const paid_on = /^\d{4}-\d{2}-\d{2}$/.test(String(b.paid_on || "")) ? b.paid_on : ymd(Date.now());
-        const r = await D("deoretreat_payments", { method: "POST", headers: { Prefer: "return=minimal" }, body: JSON.stringify({ ref: row.ref, paid_on, amount, method: clip(b.method, 40), txref: clip(b.txref, 80), note: clip(b.note, 300) }) });
-        if (!r.ok) return res.status(502).json({ error: "Couldn't save" });
-        const P = planOf(row, await paysOf(row.ref)); await patch(row.ref, { status: P.balance <= 0 ? "paid" : "committed" });
-        await mail(e, row.email, P.balance <= 0 ? "Fully committed: thank you" : "A step of commitment, received with thanks", wrap(`<p>Dear ${first},</p>
-          <p>Thank you. We have received <b>${usd(amount)}</b> on ${new Date(paid_on + "T12:00Z").toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })}. Every step you take is a step of faith towards what God is preparing in you.</p>
-          <p>${P.balance <= 0 ? "Your journey is now fully committed. Thank you for your faithfulness." : `So far you have committed <b>${usd(P.paid)}</b> of ${usd(P.fee)}.${P.next ? ` Your next step is ${usd(P.next.amount)} by ${new Date(P.next.due + "T12:00Z").toLocaleDateString("en-GB", { day: "numeric", month: "long" })}.` : ""}`}</p>
-          <p><a href="${portalOf(row.token)}">Open your pilgrim portal</a></p>`));
+        const ok = await recordPayment(row, amount, paid_on, clip(b.method, 40), clip(b.txref, 80), clip(b.note, 400)); if (!ok) return res.status(502).json({ error: "Couldn't save" });
+        const P = planOf(row, await paysOf(row.ref));
         return res.json({ ok: true, balance: P.balance });
       }
       if (a === "status") { const st = clip(b.status, 20); await patch(row.ref, { status: st || row.status, notes: clip(b.notes, 2000) }); return res.json({ ok: true }); }
