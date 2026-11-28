@@ -72,8 +72,8 @@ async function mail(e, to, subject, html, replyTo) {
   try { const r = await fetch("https://api.resend.com/emails", { method: "POST", headers: { Authorization: `Bearer ${e.RESEND_API_KEY}`, "Content-Type": "application/json" },
     body: JSON.stringify({ from: e.RETREAT_FROM || e.DIGEST_FROM, reply_to: replyTo || e.RETREAT_REPLY_TO || "deoking@gmail.com", to, subject, html }) }); return r.ok; } catch (x) { return false; }
 }
-const wrap = (b) => `<div style="font-family:Georgia,serif;max-width:600px;color:#203A30;line-height:1.6">${b}<p>With every blessing,<br><b>Apostle David Adeoye Abodunrin</b><br>Kairos Israel Formation Journey 2027 · <a href="${SITE}">DeoRetreat</a></p></div>`;
-const portalOf = (t) => `${SITE}/#/pilgrim/${t}`;
+const wrap = (b) => `<div style="font-family:Georgia,serif;max-width:600px;color:#203A30;line-height:1.6">${b}<p>With every blessing,<br><b>Apostle David Adeoye Abodunrin</b><br>Kairos Israel Formation Journey 2027 · <a href="${SITE}/#/kairos">DeoRetreat</a></p></div>`;
+const portalOf = (t) => `${SITE}/#/kairos/pilgrim/${t}`;
 const planTable = (p) => `<table style="border-collapse:collapse;font-family:Arial,sans-serif;font-size:14px">${p.instalments.map((x) => `<tr><td style="padding:4px 14px 4px 0">${new Date(x.due + "T12:00Z").toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })}</td><td style="padding:4px 0"><b>${usd(x.amount)}</b></td></tr>`).join("")}</table>`;
 const SAFE = ["ref", "event", "status", "name", "email", "at", "accepted_at", "plan", "readiness", "progress", "assessments", "referred_by", "country", "travel_from", "room", "id"];
 
@@ -96,6 +96,13 @@ module.exports = async (req, res) => {
       const r = await D(`deoretreat_registrations?select=data,status&event=eq.divine-encounter`); const rows = r.ok ? await r.json() : [];
       const live = rows.filter((x) => !["withdrawn", "test"].includes(x.status)); const taken = (k) => live.filter((x) => x.data && x.data.tier === k).length;
       return res.json({ tiers: Object.keys(TIERS).map((k) => ({ key: k, name: TIERS[k].name, priced: TIERS[k].priced, price: TIERS[k].priced ? TIERS[k].price : null, cap: TIERS[k].cap || null, interest: taken(k), left: TIERS[k].cap ? Math.max(0, TIERS[k].cap - taken(k)) : null })), sap: { priced: SAP_PRICED, price: SAP_PRICED ? SAP_ADD : null, interest: live.filter((x) => x.data && (x.data.sap === true || x.data.sap === "yes")).length } });
+    }
+    // ---------------- public: re-send a pilgrim their portal link (always answers ok, so emails can't be probed) ----------------
+    if (a === "resend" && req.method === "POST") {
+      const email = clip(b.email, 160).toLowerCase();
+      if (/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) { const row = await one(`event=eq.divine-encounter&email=eq.${encodeURIComponent(email)}`);
+        if (row && row.token) await mail(e, row.email, "Your pilgrim portal link", wrap(`<p>Dear ${esc(String(row.name).split(" ")[0])},</p><p>Here is your private pilgrim portal for A Summons to Divine Encounter (${esc(row.ref)}):</p><p><a href="${portalOf(row.token)}">Open my pilgrim portal</a></p><p>Keep this link private: it opens your own portal.</p>`)); }
+      return res.json({ ok: true });
     }
     // ---------------- the pilgrim's own portal ----------------
     if (a === "me" || a === "unsub") {
@@ -211,7 +218,7 @@ module.exports = async (req, res) => {
     await mail(e, e.RETREAT_NOTIFY || "deoking@gmail.com", fam ? `FAMILY PRAYER COVENANT: ${name} (${ref})` : `ISRAEL 2027 APPLICATION: ${name} (${ref})`, `<div style="font-family:Arial,sans-serif;line-height:1.5">
       <p><b>${esc(name)}</b> · <a href="mailto:${esc(email)}">${esc(email)}</a> · ${esc(row.phone)}</p><p>${esc(row.country)}${row.nationality ? " · nationality " + esc(row.nationality) : ""}${row.church ? " · " + esc(row.church) : ""}</p>
       ${fam ? `<p><b>Family:</b> ${esc(row.party)}</p>${row.hope ? `<p><b>Requests:</b> ${esc(row.hope)}</p>` : ""}` : `<p><b>From:</b> ${esc(row.travel_from)} · <b>Flights:</b> ${esc(row.flights)} · <b>Passport OK:</b> ${esc(row.passport)} · <b>Room:</b> ${esc(row.room)} · <b>Plan:</b> ${esc(PLANS[data.payment] || "-")}</p><p><b>Experience:</b> ${esc(offerOf(row))} · ${usd(feeOf(row))}</p>${data.why ? `<p><b>Why this journey:</b> ${esc(data.why)}</p>` : ""}${row.referred_by ? `<p><b>Referred by:</b> ${esc(row.referred_by)}</p>` : ""}`}
-      <p>Accept and manage: <a href="${SITE}/#/registrations">${SITE.replace("https://", "")}/#/registrations</a></p></div>`, email);
+      <p>Accept and manage: <a href="${SITE}/host">${SITE.replace("https://", "")}/#/registrations</a></p></div>`, email);
     return res.json({ ok: true, ref, token });
   } catch (x) { return res.status(502).json({ error: "Couldn't complete that just now. Please try again." }); }
 };
