@@ -9,7 +9,7 @@
 //  GET  ?a=cron (Authorization: Bearer CRON_SECRET; daily 07:00 UTC) → sends today's approved letters
 const crypto = require("crypto");
 const { LETTERS, subjectOf, render } = require("../lib/retreat_letters");
-const SITE = "https://deoretreat-app.vercel.app";
+const SITE = "https://www.deoretreat.com";
 const API = "https://www.deocoach.com/api/retreat";
 const FEE = 2500, FINAL = "2027-02-15";
 // Experience tiers: only the Heritage Journey (US$2,500) is priced. Covenant, Founders Circle and the SAP Immersion
