@@ -98,14 +98,11 @@ module.exports = async (req, res) => {
       const live = rows.filter((x) => !["withdrawn", "test"].includes(x.status)); const taken = (k) => live.filter((x) => x.data && x.data.tier === k).length;
       return res.json({ tiers: Object.keys(TIERS).map((k) => ({ key: k, name: TIERS[k].name, priced: TIERS[k].priced, price: TIERS[k].priced ? TIERS[k].price : null, cap: TIERS[k].cap || null, interest: taken(k), left: TIERS[k].cap ? Math.max(0, TIERS[k].cap - taken(k)) : null })), sap: { priced: SAP_PRICED, price: SAP_PRICED ? SAP_ADD : null, interest: live.filter((x) => x.data && (x.data.sap === true || x.data.sap === "yes")).length } });
     }
-    // ---------------- the detailed journey plan: pilgrims (portal token) and the host (key) only ----------------
-    if (a === "journey") {
-      let ok = admin();
-      if (!ok) { const t = clip(q.t, 64); if (t.length >= 20) { const row = await one(`token=eq.${encodeURIComponent(t)}`); ok = !!(row && !["withdrawn", "test"].includes(row.status)); } }
-      if (!ok) return res.status(403).json({ error: "This plan is for registered pilgrims." });
-      res.setHeader("Cache-Control", "private, no-store");
-      return res.json({ journey: JOURNEY });
-    }
+    // ---------------- planners only: the Israel cost figures for Plan the costs ----------------
+    if (a === "costs") { if (!admin()) return res.status(401).json({ error: "Not allowed" }); res.setHeader("Cache-Control", "private, no-store");
+      return res.json({ defaults: { currency: "USD", guests: 16, staff: 2, perRoom: 2, n1: 3, n2: 3, n3: 2, n4: 0, room: 280, coach: 5500, guide: 2200, honor: 3000, meals: 45, acts: 140, flights: 0, cont: 10, markup: 0, deposit: 500, inst: 4 } }); }
+    // ---------------- the journey plan (itinerary and formation programme): public; no costs in it ----------------
+    if (a === "journey") { res.setHeader("Cache-Control", "public, max-age=300"); return res.json({ journey: JOURNEY }); }
     // ---------------- public: re-send a pilgrim their portal link (always answers ok, so emails can't be probed) ----------------
     if (a === "resend" && req.method === "POST") {
       const email = clip(b.email, 160).toLowerCase();
