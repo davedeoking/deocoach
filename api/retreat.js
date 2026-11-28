@@ -39,12 +39,24 @@ const hits = new Map();
 function planOf(row, pays) {
   const FEE = feeOf(row);
   const paid = (pays || []).reduce((s, p) => s + Number(p.amount || 0), 0);
-  if (!row.accepted_at) return { kind: row.plan || (row.data && row.data.payment) || "monthly", instalments: [], paid, balance: FEE - paid, due: 0, overdue: 0, next: null, fee: FEE };
+  const own = validSchedule(row.data && row.data.schedule, FEE);
+  if (!row.accepted_at && !own) return { kind: row.plan || (row.data && row.data.payment) || "monthly", instalments: [], paid, balance: FEE - paid, due: 0, overdue: 0, next: null, fee: FEE };
+  if (own) return settle("custom", own, paid, FEE);
   const kind = PLANS[row.plan] ? row.plan : "monthly"; const first = addDays(ymd(row.accepted_at), 7); const dates = [];
   if (kind === "full" || first >= FINAL) dates.push(first > FINAL ? first : first);
   else { let d = first; while (d < FINAL) { dates.push(d); d = kind === "weekly" ? addDays(d, 7) : addMonths(d, 1); } const gap = (Date.parse(FINAL) - Date.parse(dates[dates.length - 1])) / 864e5; if (dates.length > 1 && gap < (kind === "weekly" ? 4 : 18)) dates[dates.length - 1] = FINAL; else dates.push(FINAL); }
   const n = dates.length, base = Math.floor(FEE / n);
   const instalments = dates.map((due, i) => ({ due, amount: i === n - 1 ? FEE - base * (n - 1) : base }));
+  return settle(kind, instalments, paid, FEE);
+}
+// A pilgrim's own instalments: 1–24 dated steps, each at least US$50 (except the last), adding up to the fee, all by 15 February
+function validSchedule(sc, FEE) {
+  if (!Array.isArray(sc) || !sc.length || sc.length > 24) return null;
+  const out = sc.map((x) => ({ due: String(x.due || "").slice(0, 10), amount: Math.round(Number(x.amount) * 100) / 100 })).filter((x) => /^\d{4}-\d{2}-\d{2}$/.test(x.due) && x.amount > 0).sort((a, b) => a.due < b.due ? -1 : 1);
+  if (out.length !== sc.length || out.some((x) => x.due > FINAL)) return null;
+  const sum = Math.round(out.reduce((t, x) => t + x.amount, 0) * 100) / 100; return Math.abs(sum - FEE) < 0.01 ? out : null;
+}
+function settle(kind, instalments, paid, FEE) {
   const today = ymd(Date.now()); let cum = 0, due = 0, oldest = null;
   instalments.forEach((x) => { if (x.due <= today) { due += x.amount; } });
   instalments.forEach((x) => { cum += x.amount; if (x.due <= today && cum > paid && !oldest) oldest = x.due; });
@@ -162,7 +174,14 @@ module.exports = async (req, res) => {
         if (b.readiness) up.readiness = merge(row.readiness, b.readiness, ["passport", "eta", "visa", "insurance", "flights", "flight_details", "packing"]);
         if (b.progress) up.progress = merge(row.progress, b.progress, ["m1", "m2", "m3", "m4", "journal", "consecration", "prayer_partner"]);
         if (b.assessments) up.assessments = merge(row.assessments, b.assessments, ["prayer", "disciplines", "calling", "gifts"]);
-        if (b.letters !== undefined) up.data = { ...(row.data || {}), c_letters: !!b.letters };
+        if (b.letters !== undefined) up.data = { ...(up.data || row.data || {}), c_letters: !!b.letters };
+        if (b.schedule !== undefined) {
+          if (b.schedule === null) up.data = { ...(up.data || row.data || {}), schedule: null, payment: PLANS[b.payment] ? b.payment : (row.data && row.data.payment) };
+          else { const sc = validSchedule(b.schedule, feeOf(row)); if (!sc) return res.status(400).json({ error: "Your steps must add up to " + usd(feeOf(row)) + ", with every date on or before 15 February 2027." });
+            if (sc[0].due < ymd(Date.now() - 864e5) && !row.accepted_at) return res.status(400).json({ error: "Please choose dates from today onwards." });
+            up.data = { ...(up.data || row.data || {}), schedule: sc }; }
+          if (b.payment && PLANS[b.payment] && row.accepted_at) up.plan = b.payment;
+        }
         await patch(row.ref, up); return res.json({ ok: true });
       }
       await patch(row.ref, { last_seen: new Date().toISOString() });
