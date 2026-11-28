@@ -19,6 +19,10 @@
     {
       "path": "/api/remind?what=f50",
       "schedule": "0 8 * * 4"
+    },
+    {
+      "path": "/api/retreat?a=cron",
+      "schedule": "0 7 * * *"
     }
   ],
   "functions": {
@@ -32,6 +36,9 @@
       "maxDuration": 60
     },
     "api/translate.js": {
+      "maxDuration": 60
+    },
+    "api/retreat.js": {
       "maxDuration": 60
     }
   },
