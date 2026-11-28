@@ -12,6 +12,12 @@ const { LETTERS, subjectOf, render } = require("../lib/retreat_letters");
 const SITE = "https://deoretreat-app.vercel.app";
 const API = "https://www.deocoach.com/api/retreat";
 const FEE = 2500, FINAL = "2027-02-15";
+// Experience tiers (Blueprint v2 ladder, re-based on the US$2,500 journey) and the School of Apostles & Prophets track
+const TIERS = { heritage: { name: "Heritage Journey", price: 2500 }, covenant: { name: "Covenant Journey", price: 3750 }, founders: { name: "Founders Circle", price: 5500, cap: 12 } };
+const SAP_ADD = 1000;
+const tierOf = (row) => TIERS[(row.data && row.data.tier)] ? row.data.tier : "heritage";
+const feeOf = (row) => TIERS[tierOf(row)].price + (row.data && (row.data.sap === true || row.data.sap === "yes") ? SAP_ADD : 0);
+const offerOf = (row) => TIERS[tierOf(row)].name + (row.data && (row.data.sap === true || row.data.sap === "yes") ? " + School of Apostles & Prophets Immersion" : "");
 const EVENTS = { "divine-encounter": { title: "A Summons to Divine Encounter", when: "4–11 April 2027 (Israel)", pre: "DR27" }, "family-covenant": { title: "Family Prayer Covenant", when: "Israel, April 2027", pre: "FPC27" } };
 const ROOMS = { "share-named": "Sharing (named)", "share-pair": "Happy to be paired", single: "Single room" };
 const PLANS = { full: "Pay in full", monthly: "Monthly to 15 February", weekly: "Weekly to 15 February" };
@@ -26,6 +32,7 @@ const hits = new Map();
 
 // ---------- the payment plan: equal instalments from 7 days after acceptance to 15 February ----------
 function planOf(row, pays) {
+  const FEE = feeOf(row);
   const paid = (pays || []).reduce((s, p) => s + Number(p.amount || 0), 0);
   if (!row.accepted_at) return { kind: row.plan || (row.data && row.data.payment) || "monthly", instalments: [], paid, balance: FEE - paid, due: 0, overdue: 0, next: null, fee: FEE };
   const kind = PLANS[row.plan] ? row.plan : "monthly"; const first = addDays(ymd(row.accepted_at), 7); const dates = [];
@@ -43,7 +50,7 @@ function planOf(row, pays) {
 // ---------- readiness, engagement and the green / amber / red flag ----------
 function metrics(row, plan) {
   const r = row.readiness || {}, pr = row.progress || {}, a = row.assessments || {};
-  const items = { passport: r.passport === "valid", entry: !!(r.eta || r.visa), insurance: !!r.insurance, flights: !!r.flights, payment: plan.paid >= FEE };
+  const items = { passport: r.passport === "valid", entry: !!(r.eta || r.visa), insurance: !!r.insurance, flights: !!r.flights, payment: plan.paid >= plan.fee };
   const readiness = Math.round((Object.values(items).filter(Boolean).length / 5) * 100);
   const mods = [1, 2, 3, 4].filter((m) => pr["m" + m]).length, assessed = Object.keys(a).length;
   const engagement = Math.round(((mods / 4) * 0.6 + (Math.min(assessed, 4) / 4) * 0.4) * 100);
@@ -80,6 +87,12 @@ module.exports = async (req, res) => {
   const paysOf = async (ref) => { const r = await D(`deoretreat_payments?select=*&ref=eq.${encodeURIComponent(ref)}&order=paid_on.asc`); return r.ok ? await r.json() : []; };
   const patch = (ref, body) => D(`deoretreat_registrations?ref=eq.${encodeURIComponent(ref)}`, { method: "PATCH", headers: { Prefer: "return=minimal" }, body: JSON.stringify(body) });
   try {
+    // ---------------- public: tiers and places left ----------------
+    if (a === "tiers") {
+      const r = await D(`deoretreat_registrations?select=data,status&event=eq.divine-encounter`); const rows = r.ok ? await r.json() : [];
+      const live = rows.filter((x) => !["withdrawn", "test"].includes(x.status)); const taken = (k) => live.filter((x) => x.data && x.data.tier === k).length;
+      return res.json({ tiers: Object.keys(TIERS).map((k) => ({ key: k, ...TIERS[k], taken: taken(k), left: TIERS[k].cap ? Math.max(0, TIERS[k].cap - taken(k)) : null })), sap: { price: SAP_ADD, taken: live.filter((x) => x.data && (x.data.sap === true || x.data.sap === "yes")).length } });
+    }
     // ---------------- the pilgrim's own portal ----------------
     if (a === "me" || a === "unsub") {
       const t = clip(q.t, 64); if (t.length < 20) return res.status(404).json({ error: "Not found" });
@@ -97,7 +110,7 @@ module.exports = async (req, res) => {
       await patch(row.ref, { last_seen: new Date().toISOString() });
       const pays = row.event === "divine-encounter" ? await paysOf(row.ref) : []; const plan = planOf(row, pays);
       const refs = await D(`deoretreat_registrations?select=ref&referred_by=eq.${encodeURIComponent(row.ref)}`); const referrals = refs.ok ? (await refs.json()).length : 0;
-      const me = {}; SAFE.forEach((k) => { me[k] = row[k]; }); me.letters_on = !(row.data && row.data.c_letters === false); me.first = String(row.name || "").split(" ")[0];
+      const me = {}; SAFE.forEach((k) => { me[k] = row[k]; }); me.letters_on = !(row.data && row.data.c_letters === false); me.first = String(row.name || "").split(" ")[0]; me.tier = tierOf(row); me.sap = !!(row.data && (row.data.sap === true || row.data.sap === "yes")); me.offer = offerOf(row);
       const today = ymd(Date.now());
       const letters = LETTERS.filter((L) => L.date <= today).slice(-6).reverse().map((L) => ({ date: L.date, kind: L.kind, subject: subjectOf(L), html: render(L, { first: me.first, portal: portalOf(row.token), unsub: `${API}?a=unsub&t=${row.token}` }) }));
       return res.json({ me, plan, payments: pays.map((p) => ({ paid_on: p.paid_on, amount: p.amount, method: p.method })), metrics: metrics(row, plan), referrals, letters });
@@ -146,7 +159,7 @@ module.exports = async (req, res) => {
         await mail(e, row.email, "Welcome, pilgrim: your place on A Summons to Divine Encounter", wrap(`<p>Dear ${first},</p>
           <p>With great joy we welcome you to <b>A Summons to Divine Encounter</b>, our Israel pilgrimage from 4 to 11 April 2027. You are pilgrim <b>${esc(row.ref)}</b>.</p>
           <p>You have not simply joined a trip. You have accepted an invitation to become someone new. The journey begins now: 17 weeks of preparation, eight days in the land, and 90 days of integration at home.</p>
-          <p><b>Your commitment steps</b> (${esc(PLANS[plan])}, US$2,500 in total):</p>${planTable(P)}
+          <p><b>Your commitment steps</b> (${esc(PLANS[plan])}, ${esc(offerOf(row))}, ${usd(P.fee)} in total):</p>${planTable(P)}
           <p>Every step is a step of faith, and we will celebrate each one with you. We will send the payment details separately.</p>
           <p><b>Your first step:</b> open your pilgrim portal, complete your first reflections and assessments, and meet your prayer partner.</p>
           <p style="text-align:center;margin:22px 0"><a href="${portalOf(row.token)}" style="background:#214C3B;color:#F5F4EB;padding:12px 22px;border-radius:999px;text-decoration:none;font-family:Arial,sans-serif">Open my pilgrim portal</a></p>
@@ -161,7 +174,7 @@ module.exports = async (req, res) => {
         const P = planOf(row, await paysOf(row.ref)); await patch(row.ref, { status: P.balance <= 0 ? "paid" : "committed" });
         await mail(e, row.email, P.balance <= 0 ? "Fully committed: thank you" : "A step of commitment, received with thanks", wrap(`<p>Dear ${first},</p>
           <p>Thank you. We have received <b>${usd(amount)}</b> on ${new Date(paid_on + "T12:00Z").toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })}. Every step you take is a step of faith towards what God is preparing in you.</p>
-          <p>${P.balance <= 0 ? "Your journey is now fully committed. Thank you for your faithfulness." : `So far you have committed <b>${usd(P.paid)}</b> of US$2,500.${P.next ? ` Your next step is ${usd(P.next.amount)} by ${new Date(P.next.due + "T12:00Z").toLocaleDateString("en-GB", { day: "numeric", month: "long" })}.` : ""}`}</p>
+          <p>${P.balance <= 0 ? "Your journey is now fully committed. Thank you for your faithfulness." : `So far you have committed <b>${usd(P.paid)}</b> of ${usd(P.fee)}.${P.next ? ` Your next step is ${usd(P.next.amount)} by ${new Date(P.next.due + "T12:00Z").toLocaleDateString("en-GB", { day: "numeric", month: "long" })}.` : ""}`}</p>
           <p><a href="${portalOf(row.token)}">Open your pilgrim portal</a></p>`));
         return res.json({ ok: true, balance: P.balance });
       }
@@ -178,7 +191,7 @@ module.exports = async (req, res) => {
     if (dup) { if (dup.token) await mail(e, email, "Your pilgrim portal link", wrap(`<p>Dear ${esc(String(dup.name).split(" ")[0])},</p><p>You are already registered (${esc(dup.ref)}). Here is your private portal link:</p><p><a href="${portalOf(dup.token)}">Open my pilgrim portal</a></p>`)); return res.json({ ok: true, ref: dup.ref, already: true }); }
     const ref = EVENTS[ev].pre + "-" + crypto.randomBytes(4).toString("hex").slice(0, 5).toUpperCase();
     const token = crypto.randomBytes(18).toString("base64url");
-    const D_KEYS = ["gender", "dob", "city", "whatsapp", "occupation", "pastor", "passport_expiry", "visa_needed", "prior_israel", "airport", "emergency_name", "emergency_relation", "emergency_phone", "emergency_email", "medical", "dietary", "payment", "why", "praying", "growth", "hopes", "ambassador", "c_email", "c_whatsapp", "c_letters", "c_assess", "family", "address"];
+    const D_KEYS = ["tier", "sap", "gender", "dob", "city", "whatsapp", "occupation", "pastor", "passport_expiry", "visa_needed", "prior_israel", "airport", "emergency_name", "emergency_relation", "emergency_phone", "emergency_email", "medical", "dietary", "payment", "why", "praying", "growth", "hopes", "ambassador", "c_email", "c_whatsapp", "c_letters", "c_assess", "family", "address"];
     const data = {}; D_KEYS.forEach((k) => { if (b[k] !== undefined && b[k] !== "") data[k] = typeof b[k] === "boolean" ? b[k] : clip(b[k], 1500); });
     if (data.c_letters === undefined) data.c_letters = true;
     const referred = clip(b.referred_by, 30).toUpperCase();
@@ -193,7 +206,7 @@ module.exports = async (req, res) => {
       : wrap(`<p>Dear ${first},</p><p>Thank you for applying for <b>A Summons to Divine Encounter</b>, our pilgrimage to Israel from 4 to 11 April 2027. Your reference is <b>${ref}</b>.</p><p>Your application is a first step of reflection. We will read it prayerfully and write to you personally with your acceptance letter and your commitment steps.</p><p>Meanwhile, your private pilgrim portal is open. Keep this link safe:</p><p style="text-align:center;margin:22px 0"><a href="${portalOf(token)}" style="background:#214C3B;color:#F5F4EB;padding:12px 22px;border-radius:999px;text-decoration:none;font-family:Arial,sans-serif">Open my pilgrim portal</a></p><p>Please check now that your passport will be valid until at least October 2027.</p>`));
     await mail(e, e.RETREAT_NOTIFY || "deoking@gmail.com", fam ? `FAMILY PRAYER COVENANT: ${name} (${ref})` : `ISRAEL 2027 APPLICATION: ${name} (${ref})`, `<div style="font-family:Arial,sans-serif;line-height:1.5">
       <p><b>${esc(name)}</b> · <a href="mailto:${esc(email)}">${esc(email)}</a> · ${esc(row.phone)}</p><p>${esc(row.country)}${row.nationality ? " · nationality " + esc(row.nationality) : ""}${row.church ? " · " + esc(row.church) : ""}</p>
-      ${fam ? `<p><b>Family:</b> ${esc(row.party)}</p>${row.hope ? `<p><b>Requests:</b> ${esc(row.hope)}</p>` : ""}` : `<p><b>From:</b> ${esc(row.travel_from)} · <b>Flights:</b> ${esc(row.flights)} · <b>Passport OK:</b> ${esc(row.passport)} · <b>Room:</b> ${esc(row.room)} · <b>Plan:</b> ${esc(PLANS[data.payment] || "-")}</p>${data.why ? `<p><b>Why this journey:</b> ${esc(data.why)}</p>` : ""}${row.referred_by ? `<p><b>Referred by:</b> ${esc(row.referred_by)}</p>` : ""}`}
+      ${fam ? `<p><b>Family:</b> ${esc(row.party)}</p>${row.hope ? `<p><b>Requests:</b> ${esc(row.hope)}</p>` : ""}` : `<p><b>From:</b> ${esc(row.travel_from)} · <b>Flights:</b> ${esc(row.flights)} · <b>Passport OK:</b> ${esc(row.passport)} · <b>Room:</b> ${esc(row.room)} · <b>Plan:</b> ${esc(PLANS[data.payment] || "-")}</p><p><b>Experience:</b> ${esc(offerOf(row))} · ${usd(feeOf(row))}</p>${data.why ? `<p><b>Why this journey:</b> ${esc(data.why)}</p>` : ""}${row.referred_by ? `<p><b>Referred by:</b> ${esc(row.referred_by)}</p>` : ""}`}
       <p>Accept and manage: <a href="${SITE}/#/registrations">${SITE.replace("https://", "")}/#/registrations</a></p></div>`, email);
     return res.json({ ok: true, ref, token });
   } catch (x) { return res.status(502).json({ error: "Couldn't complete that just now. Please try again." }); }
