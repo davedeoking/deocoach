@@ -9,6 +9,7 @@
 //  GET  ?a=cron (Authorization: Bearer CRON_SECRET; daily 07:00 UTC) → sends today's approved letters
 const crypto = require("crypto");
 const { LETTERS, subjectOf, render } = require("../lib/retreat_letters");
+const JOURNEY = require("../lib/retreat_journey");
 const SITE = "https://www.deoretreat.com";
 const API = "https://www.deocoach.com/api/retreat";
 const FEE = 2500, FINAL = "2027-02-15";
@@ -96,6 +97,14 @@ module.exports = async (req, res) => {
       const r = await D(`deoretreat_registrations?select=data,status&event=eq.divine-encounter`); const rows = r.ok ? await r.json() : [];
       const live = rows.filter((x) => !["withdrawn", "test"].includes(x.status)); const taken = (k) => live.filter((x) => x.data && x.data.tier === k).length;
       return res.json({ tiers: Object.keys(TIERS).map((k) => ({ key: k, name: TIERS[k].name, priced: TIERS[k].priced, price: TIERS[k].priced ? TIERS[k].price : null, cap: TIERS[k].cap || null, interest: taken(k), left: TIERS[k].cap ? Math.max(0, TIERS[k].cap - taken(k)) : null })), sap: { priced: SAP_PRICED, price: SAP_PRICED ? SAP_ADD : null, interest: live.filter((x) => x.data && (x.data.sap === true || x.data.sap === "yes")).length } });
+    }
+    // ---------------- the detailed journey plan: pilgrims (portal token) and the host (key) only ----------------
+    if (a === "journey") {
+      let ok = admin();
+      if (!ok) { const t = clip(q.t, 64); if (t.length >= 20) { const row = await one(`token=eq.${encodeURIComponent(t)}`); ok = !!(row && !["withdrawn", "test"].includes(row.status)); } }
+      if (!ok) return res.status(403).json({ error: "This plan is for registered pilgrims." });
+      res.setHeader("Cache-Control", "private, no-store");
+      return res.json({ journey: JOURNEY });
     }
     // ---------------- public: re-send a pilgrim their portal link (always answers ok, so emails can't be probed) ----------------
     if (a === "resend" && req.method === "POST") {
